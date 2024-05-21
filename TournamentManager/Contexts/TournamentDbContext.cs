@@ -7,96 +7,57 @@ namespace TournamentManager.Contexts
     {
         public TournamentDbContext(DbContextOptions<TournamentDbContext> options) : base(options) { }
 
-        // General lists
-        public virtual DbSet<Player> Players { get; set; }
-        public virtual DbSet<Song> Songs { get; set; }
-
-        //Tournament
-        public virtual DbSet<Division> Divisions { get; set; }
-        public virtual DbSet<Match> Matches { get; set; }
-        public virtual DbSet<Phase> Phases { get; set; }
-        public virtual DbSet<Round> Rounds { get; set; }
-        public virtual DbSet<Standing> Standings { get; set; }
-
-        // n-to-n relations
-        public virtual DbSet<PlayerInMatch> PlayersInMatches { get; set; }
-        public virtual DbSet<SongInMatch> SongsInMatches { get; set; }
-        public virtual DbSet<StandingInRound> StandingInRounds { get; set; }
+        public DbSet<Division> Divisions { get; set; }
+        public DbSet<Phase> Phases { get; set; }
+        public DbSet<Match> Matches { get; set; }
+        public DbSet<Player> Players { get; set; }
+        public DbSet<PlayerInMatch> PlayersInMatches { get; set; }
+        public DbSet<Round> Rounds { get; set; }
+        public DbSet<Song> Songs { get; set; }
+        public DbSet<SongInMatch> SongsInMatches { get; set; }
+        public DbSet<Standing> Standings { get; set; }
+        public DbSet<StandingInRound> StandingsInRounds { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Player>(e =>
-            {
-                e.ToTable("Players");
-                e.HasKey(p => p.Id);
-            });
+            modelBuilder.Entity<PlayerInMatch>()
+                .HasKey(pm => new { pm.PlayerId, pm.MatchId });
 
-            modelBuilder.Entity<Song>(e =>
-            {
-                e.ToTable("Songs");
-                e.HasKey(s => s.Id);
-            });
+            modelBuilder.Entity<PlayerInMatch>()
+                .HasOne(pm => pm.Player)
+                .WithMany(p => p.PlayersInMatches)
+                .HasForeignKey(pm => pm.PlayerId);
 
-            modelBuilder.Entity<Division>(e =>
-            {
-                e.ToTable("Divisions");
-                e.HasKey(d => d.Id);
-            });
+            modelBuilder.Entity<PlayerInMatch>()
+                .HasOne(pm => pm.Match)
+                .WithMany(m => m.PlayersInMatches)
+                .HasForeignKey(pm => pm.MatchId);
 
-            modelBuilder.Entity<Match>(e =>
-            {
-                e.ToTable("Matches");
-                e.HasKey(m => m.Id);
-            });
+            modelBuilder.Entity<SongInMatch>()
+                .HasKey(sm => new { sm.SongId, sm.MatchId });
 
-            modelBuilder.Entity<Phase>(e =>
-            {
-                e.ToTable("Phases");
-                e.HasKey(p => p.Id);
-            });
+            modelBuilder.Entity<SongInMatch>()
+                .HasOne(sm => sm.Song)
+                .WithMany(s => s.SongsInMatches)
+                .HasForeignKey(sm => sm.SongId);
 
-            modelBuilder.Entity<Round>(e =>
-            {
-                e.ToTable("Rounds");
-                e.HasKey(r => r.Id);
-            });
+            modelBuilder.Entity<SongInMatch>()
+                .HasOne(sm => sm.Match)
+                .WithMany(m => m.SongsInMatches)
+                .HasForeignKey(sm => sm.MatchId);
 
-            modelBuilder.Entity<Standing>(e =>
-            {
-                e.ToTable("Standings");
-                e.HasKey(s => s.Id);
-            });
+            modelBuilder.Entity<StandingInRound>()
+                .HasKey(sr => new { sr.StandingId, sr.RoundId });
 
-            modelBuilder.Entity<PlayerInMatch>(e =>
-            {
-                e.ToTable("PlayersInMatches");
-                e.HasKey(pim => new { pim.PlayerId, pim.MatchId });
-            });
+            modelBuilder.Entity<StandingInRound>()
+                .HasOne(sr => sr.Standing)
+                .WithMany(s => s.StandingsInRounds)
+                .HasForeignKey(sr => sr.StandingId);
 
-            modelBuilder.Entity<SongInMatch>(e =>
-            {
-                e.ToTable("SongsInMatches");
-                e.HasKey(sim => new { sim.SongId, sim.MatchId });
-            });
-
-            modelBuilder.Entity<StandingInRound>(e =>
-            {
-                e.ToTable("StandingsInRounds");
-                e.HasKey(sir => new { sir.StandingId, sir.RoundId });
-            });
-
-            // Division has multiple phases
-            modelBuilder.Entity<Phase>()
-                .HasOne(p => p.Division)
-                .WithMany(d => d.Phases)
-                .HasForeignKey(p => p.DivisionId);
-
-            // Phase has multiple matches
-            modelBuilder.Entity<Match>()
-                .HasOne(m => m.Phase)
-                .WithMany(p => p.Matches)
-                .HasForeignKey(m => m.PhaseId);
-
+            modelBuilder.Entity<StandingInRound>()
+                .HasOne(sr => sr.Round)
+                .WithMany(r => r.StandingsInRounds)
+                .HasForeignKey(sr => sr.RoundId);
         }
     }
 }

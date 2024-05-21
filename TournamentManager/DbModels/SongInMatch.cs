@@ -5,7 +5,8 @@
         public int SongId { get; set; }
         public int MatchId { get; set; }
 
-        public virtual Song? Song { get; set; }
-        public virtual Match? Match { get; set; }
+        public Song Song { get; set; }
+        public Match Match { get; set; }
     }
+
 }
