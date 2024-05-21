@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 using TournamentManager.Contexts;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,7 +13,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<TournamentDbContext>(options =>
 {
-    options.UseSqlite("Data Source=DB/db.db");
+    var exeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+    options.UseSqlite($"Data Source={exeDir}/DB/db.db");
 });
 
 var app = builder.Build();
