@@ -15,7 +15,7 @@ namespace TournamentManager.Controllers
         private Match _activeMatch = null;
         private Round _currRound = null;
 
-        public IEnumerator<Round> GetNextRound()
+        private IEnumerator<Round> GetNextRound()
         {
             foreach (var round in _activeMatch.Rounds)
                 yield return round;
@@ -51,12 +51,12 @@ namespace TournamentManager.Controllers
         }
 
 
-        public Song GetSongByName(string name)
+        private Song GetSongByName(string name)
         {
             return null;
         }
 
-        public Player GetPLayerByName(string name)
+        private Player GetPLayerByName(string name)
         {
             return null;
         }
