@@ -82,5 +82,70 @@ namespace TournamentManager.Controllers
             return Ok();
         }
 
+        [HttpGet("{id}/phases")]
+        public IActionResult ListPhases(int id)
+        {
+            var division = _context.Divisions.Find(id);
+
+            if (division == null)
+            {
+                return NotFound();
+            }
+
+            var phases = _context.Phases.Where(p => p.DivisionId == id);
+
+            return Ok(phases);
+        }
+
+        [HttpGet("{id}/phases/{phaseId}/matches")]
+        public IActionResult ListMatches(int id, int phaseId)
+        {
+            var division = _context.Divisions.Find(id);
+
+            if (division == null)
+            {
+                return NotFound();
+            }
+
+            var phase = _context.Phases.Find(phaseId);
+
+            if (phase == null)
+            {
+                return NotFound();
+            }
+
+            var matches = _context.Matches.Where(m => m.PhaseId == phaseId);
+
+            return Ok(matches);
+        }
+
+        [HttpGet("{id}/phases/{phaseId}/matches/{matchId}/rounds")]
+        public IActionResult ListRounds(int id, int phaseId, int matchId)
+        {
+            var division = _context.Divisions.Find(id);
+
+            if (division == null)
+            {
+                return NotFound();
+            }
+
+            var phase = _context.Phases.Find(phaseId);
+
+            if (phase == null)
+            {
+                return NotFound();
+            }
+
+            var match = _context.Matches.Find(matchId);
+
+            if (match == null)
+            {
+                return NotFound();
+            }
+
+            var rounds = _context.Rounds.Where(r => r.MatchId == matchId);
+
+            return Ok(rounds);
+        }
     }
 }
