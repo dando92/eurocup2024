@@ -17,6 +17,8 @@ builder.Services.AddDbContext<TournamentDbContext>(options =>
     options.UseSqlite($"Data Source={exeDir}/DB/db.db");
 });
 
+
+
 // cors
 builder.Services.AddCors(options =>
 {
