@@ -8,14 +8,9 @@ namespace TournamentManager.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PlayersController : ControllerBase
+    public class PlayersController(TournamentDbContext context) : ControllerBase
     {
-        private readonly TournamentDbContext _context;
-
-        public PlayersController(TournamentDbContext context)
-        {
-            _context = context;
-        }
+        private readonly TournamentDbContext _context = context;
 
         [HttpGet]
         public IActionResult ListAllPlayers()
@@ -32,6 +27,40 @@ namespace TournamentManager.Controllers
             };
 
             _context.Players.Add(player);
+            _context.SaveChanges();
+
+            return Ok(player);
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdatePlayer(int id, [FromBody] PostPlayerRequest request)
+        {
+            var player = _context.Players.Find(id);
+
+            if (player == null)
+            {
+                return NotFound();
+            }
+
+            player.Name = request.Name;
+
+            _context.SaveChanges();
+
+            return Ok(player);
+        }
+
+        [HttpPatch("{id}")]
+        public IActionResult UpdatePlayerPartial(int id, [FromBody] PostPlayerRequest request)
+        {
+            var player = _context.Players.Find(id);
+
+            if (player == null)
+            {
+                return NotFound();
+            }
+
+            player.Name = request.Name;
+
             _context.SaveChanges();
 
             return Ok(player);
