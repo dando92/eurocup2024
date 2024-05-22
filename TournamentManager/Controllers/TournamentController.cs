@@ -61,7 +61,7 @@ namespace TournamentManager.Controllers
             return null;
         }
 
-        [HttpPost]
+        [HttpPost("updateScore")]
         public IActionResult UpdateScore(PostStandingRequest request)
         {
             Song song = GetSongByName(request.Player);

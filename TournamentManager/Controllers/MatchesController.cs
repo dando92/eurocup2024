@@ -49,7 +49,7 @@ namespace TournamentManager.Controllers
             return Ok(match);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public IActionResult DeleteMatch(int id)
         {
             var match = _context.Matches.Find(id);
