@@ -1,6 +1,6 @@
 ﻿using TournamentManager.DbModels;
 
-namespace TournamentManager.Controllers
+namespace TournamentManager
 {
     public static class Extension
     {
@@ -20,7 +20,7 @@ namespace TournamentManager.Controllers
             {
                 orderedStandings[i].Score = maxPoints;
 
-                if ((i + 1) < orderedStandings.Count)
+                if (i + 1 < orderedStandings.Count)
                 {
                     if (orderedStandings[i].Percentage > orderedStandings[i + 1].Percentage)
                         maxPoints--;
