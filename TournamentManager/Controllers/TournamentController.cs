@@ -9,16 +9,24 @@ namespace TournamentManager.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TournamentController(TournamentDbContext context) : ControllerBase
+    public class TournamentController : ControllerBase
     {
-        private readonly TournamentDbContext _context = context;
+        public const string ActiveMatchKey = "ActiveCache";
+        public const string CurrentRoundKey = "CurrentRound";
+
+        private readonly TournamentDbContext _context;
+        private readonly ICache _cache;
+
         private Match _activeMatch = null;
         private Round _currRound = null;
 
-        private IEnumerator<Round> GetNextRound()
+        public TournamentController(TournamentDbContext context, ICache cache)
         {
-            foreach (var round in _activeMatch.Rounds)
-                yield return round;
+            _context = context;
+            _cache = cache;
+
+            _activeMatch = _cache.Get<Match>(ActiveMatchKey);
+            _currRound = _cache.Get<Round>(CurrentRoundKey);
         }
 
         [HttpGet]
@@ -40,12 +48,13 @@ namespace TournamentManager.Controllers
             if (activePhase == null)
                 return NotFound();
 
-            _activeMatch = activePhase.Matches.Where(m => m.Id == request.MatchId).FirstOrDefault();
+            var activeMatch = activePhase.Matches.Where(m => m.Id == request.MatchId).FirstOrDefault();
 
-            if (_activeMatch == null)
+            if (activeMatch == null)
                 return NotFound();
 
-            _currRound = GetNextRound().Current;
+            _cache.Add(ActiveMatchKey, activeMatch);
+            _cache.Add(CurrentRoundKey, activeMatch.GetNextRound().Current);
 
             return Ok();
         }
@@ -53,12 +62,62 @@ namespace TournamentManager.Controllers
 
         private Song GetSongByName(string name)
         {
+            foreach (var sim in _activeMatch.SongInMatches)
+            {
+                if (sim.Song.Title == name)
+                    return sim.Song;
+            }
+
             return null;
         }
 
-        private Player GetPLayerByName(string name)
+        private Player GetPlayerByName(string name)
         {
+            foreach(var pim in _activeMatch.PlayerInMatches)
+            {
+                if (pim.Player.Name == name)
+                    return pim.Player;
+            }
+
             return null;
+        }
+
+        [HttpPost("updateScore")]
+        public IActionResult UpdateScore(PostStandingRequest request)
+        {
+            //TODO: Registriamo comunque lo score?
+            if (_activeMatch == null || _currRound == null)
+                return NotFound();
+
+            Song song = GetSongByName(request.Player);
+            Player player = GetPlayerByName(request.Song);
+
+            if (song == null || player == null)
+                return NotFound();
+
+            Standing standing = new Standing()
+            {
+                Percentage = request.Percentage,
+                Player = player,
+                Song = song
+            };
+
+            _context.Standings.Add(standing);
+            _currRound.Standings.Add(standing);
+
+            if (_currRound.Standings.Count >= _activeMatch.PlayerInMatches.Count)
+            {
+                _currRound.Standings = _currRound.Standings.Recalc();
+                _currRound = _activeMatch.GetNextRound().Current;
+            }    
+
+            //Match ended since all the rounds have been played
+            if(_currRound == null)
+                _activeMatch = null;
+            
+            _context.SaveChanges();
+
+            return Ok();
         }
     }
 }

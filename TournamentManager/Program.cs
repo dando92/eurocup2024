@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
+using TournamentManager;
 using TournamentManager.Contexts;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,8 @@ builder.Services.AddDbContext<TournamentDbContext>(options =>
     var exeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
     options.UseSqlite($"Data Source={exeDir}/DB/db.db");
 });
+
+builder.Services.AddSingleton<ICache, LocalCacheMemory>();
 
 
 
