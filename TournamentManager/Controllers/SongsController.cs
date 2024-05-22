@@ -24,7 +24,7 @@ namespace TournamentManager.Controllers
             var song = new Song
             {
                 Title = request.Title,
-                Difficulty = request.Difficulty,
+                Difficulty = request.Difficulty ?? 0,
                 Group = request.Group
             };
 

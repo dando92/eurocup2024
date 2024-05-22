@@ -60,42 +60,5 @@ namespace TournamentManager.Controllers
         {
             return null;
         }
-
-        [HttpPost("updateScore")]
-        public IActionResult UpdateScore(PostStandingRequest request)
-        {
-            Song song = GetSongByName(request.Player);
-            Player player = GetPLayerByName(request.Song);
-
-            Standing standing = new Standing()
-            {
-                Percentage = request.Percentage,
-                Player = player,
-                Song = song
-            };
-
-            _context.Standings.Add(standing);
-            _context.SaveChanges();
-
-            _currRound.StandingsInRounds.Add(new StandingInRound()
-            {
-                Round = _currRound,
-                Standing = standing
-            });
-
-            if (_currRound.StandingsInRounds.Count >= _activeMatch.PlayersInMatches.Count)
-            {
-                //TODO:
-                //Order standings and calc points
-
-                _currRound = GetNextRound().Current;
-            }    
-
-            //Match ended since all the rounds have been played
-            if(_currRound == null)
-                _activeMatch = null;
-
-            return Ok();
-        }
     }
 }

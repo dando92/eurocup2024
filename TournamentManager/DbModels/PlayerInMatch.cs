@@ -8,5 +8,4 @@
         public Player Player { get; set; }
         public Match Match { get; set; }
     }
-
 }

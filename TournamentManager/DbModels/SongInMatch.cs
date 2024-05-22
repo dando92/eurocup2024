@@ -8,5 +8,4 @@
         public Song Song { get; set; }
         public Match Match { get; set; }
     }
-
 }
