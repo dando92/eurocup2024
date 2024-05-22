@@ -29,12 +29,6 @@ namespace TournamentManager.Controllers
             _currRound = _cache.Get<Round>(CurrentRoundKey);
         }
 
-        [HttpGet]
-        public IActionResult ListDivision()
-        {
-            return Ok(_context.Divisions);
-        }
-
         [HttpPost]
         public IActionResult SetActiveMatch([FromBody] PostActiveMatchRequest request)
         {

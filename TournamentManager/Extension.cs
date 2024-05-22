@@ -15,7 +15,6 @@ namespace TournamentManager
             int maxPoints = standings.Count;
             var orderedStandings = standings.OrderByDescending(s => s.Percentage).ToList();
 
-
             for (int i = 0; i < standings.Count; i++)
             {
                 orderedStandings[i].Score = maxPoints;
