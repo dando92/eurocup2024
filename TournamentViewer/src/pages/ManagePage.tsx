@@ -1,7 +1,22 @@
+import { Tab, TabGroup, TabList, TabPanels, TabPanel } from "@headlessui/react";
+
 export default function ManagePage() {
   return (
-    <div className="font-bold text-3xl">
-      <h1>Manage Page</h1>
+    <div >
+      <h1 className="text-3xl text-middle">Tournament settings</h1>
+      {/* Three tabs: Tournament, Songs, Players with headlessui */}
+      <TabGroup className="text-lg mt-5">
+        <TabList className="flex flex-row gap-10 border-b">
+          <Tab className={({selected}) => `${selected ? "border-b border-blu font-bold text-blu" : ""}`}>General</Tab>
+          <Tab className={({selected}) => `${selected ? "border-b border-blu font-bold text-blu" : ""}`}>Songs</Tab>
+          <Tab className={({selected}) => `${selected ? "border-b border-blu font-bold text-blu" : ""}`}>Players</Tab>
+        </TabList>
+        <TabPanels className="mt-3">
+          <TabPanel>Content 1</TabPanel>
+          <TabPanel>Content 2</TabPanel>
+          <TabPanel>Content 3</TabPanel>
+        </TabPanels>
+      </TabGroup>
     </div>
   );
 }
