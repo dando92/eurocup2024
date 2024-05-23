@@ -1,15 +1,16 @@
+import { Route, Routes } from "react-router-dom";
 import "./App.css";
+import ViewPage from "./pages/ViewPage";
+import ManagePage from "./pages/ManagePage";
 
 function App() {
   return (
-    <div className="font-bold text-3xl">
-      <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Corporis
-        voluptatum, laudantium voluptatibus accusamus pariatur sit doloribus
-        expedita porro hic consectetur incidunt enim ipsam dicta suscipit
-        maiores molestias, fugit quia quibusdam?
-      </p>
-    </div>
+    <Routes>
+      <Route path="/" element={<ViewPage />} />
+      <Route path="/view" element={<ViewPage />} />
+      <Route path="/manage" element={<ManagePage />} />
+      <Route path="*" element={<ViewPage />}></Route>
+    </Routes>
   );
 }
 
