@@ -1,3 +1,15 @@
+@import url("fonts.css");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+    font-family: "dinpro", sans-serif;
+    
+}
+
+h1, h2, h3 {
+    font-family: "NeufreitEx", sans-serif;
+    @apply text-middle
+}

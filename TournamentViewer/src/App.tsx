@@ -7,13 +7,15 @@ import Navbar from "./components/layout/Navbar";
 function App() {
   return (
     <div>
-      <Navbar/>
-    <Routes>
-      <Route path="/" element={<ViewPage />} />
-      <Route path="/view" element={<ViewPage />} />
-      <Route path="/manage" element={<ManagePage />} />
-      <Route path="*" element={<ViewPage />}></Route>
-    </Routes>
+      <Navbar />
+      <div className="lg:container lg:mx-auto mx-3 mt-3">
+        <Routes>
+          <Route path="/" element={<ViewPage />} />
+          <Route path="/view" element={<ViewPage />} />
+          <Route path="/manage" element={<ManagePage />} />
+          <Route path="*" element={<ViewPage />}></Route>
+        </Routes>
+      </div>
     </div>
   );
 }
