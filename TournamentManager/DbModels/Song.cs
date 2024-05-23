@@ -9,6 +9,7 @@
 
         public ICollection<SongInMatch> SongInMatches { get; set; }
         public ICollection<Standing> Standings { get; set; }
+        public string GetTitleWithFolder() => Path.Combine(Group, Title);
     }
 
 }

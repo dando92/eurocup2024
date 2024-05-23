@@ -14,25 +14,24 @@ namespace TournamentManager.Controllers
         public const string ActiveMatchKey = "ActiveCache";
         public const string CurrentRoundKey = "CurrentRound";
 
-        private readonly TournamentDbContext _context;
-        private readonly ICache _cache;
+        private readonly IGenericRepository<Standing> _standingsRepo;
+        private readonly IGenericRepository<Division> _divisionRepo;
+        private readonly ITournamentInfoContainer _infoContainer;
 
-        private Match _activeMatch = null;
-        private Round _currRound = null;
+        private List<IStandingSubscriber> _subscribers;
 
-        public TournamentController(TournamentDbContext context, ICache cache)
+        public TournamentController(ITournamentInfoContainer infoContainer, IGenericRepository<Division> divisionRepo, IGenericRepository<Standing> standingsRepo, List<IStandingSubscriber> subscribers)
         {
-            _context = context;
-            _cache = cache;
-
-            _activeMatch = _cache.Get<Match>(ActiveMatchKey);
-            _currRound = _cache.Get<Round>(CurrentRoundKey);
+            _standingsRepo = standingsRepo;
+            _divisionRepo = divisionRepo;
+            _infoContainer = infoContainer;
+            _subscribers = subscribers;
         }
 
         [HttpPost]
         public IActionResult SetActiveMatch([FromBody] PostActiveMatchRequest request)
         {
-            var activeDivision = _context.Divisions.Where(d => d.Id == request.DivisionId).FirstOrDefault();
+            var activeDivision = _divisionRepo.GetById(request.DivisionId);
 
             if (activeDivision == null)
                 return NotFound();
@@ -47,71 +46,48 @@ namespace TournamentManager.Controllers
             if (activeMatch == null)
                 return NotFound();
 
-            _cache.Add(ActiveMatchKey, activeMatch);
-            _cache.Add(CurrentRoundKey, activeMatch.GetNextRound().Current);
+            _infoContainer.SetActiveMatch(activeMatch);
 
             return Ok();
         }
 
 
-        private Song GetSongByName(string name)
-        {
-            foreach (var sim in _activeMatch.SongInMatches)
-            {
-                if (sim.Song.Title == name)
-                    return sim.Song;
-            }
-
-            return null;
-        }
-
-        private Player GetPlayerByName(string name)
-        {
-            foreach(var pim in _activeMatch.PlayerInMatches)
-            {
-                if (pim.Player.Name == name)
-                    return pim.Player;
-            }
-
-            return null;
-        }
-
         [HttpPost("updateScore")]
         public IActionResult UpdateScore(PostStandingRequest request)
         {
-            //TODO: Registriamo comunque lo score?
-            if (_activeMatch == null || _currRound == null)
-                return NotFound();
+            //TODO: Register score on standings anyway. Just don't update torunament info.
+            //if (Match == null || Round == null)
+            //    return NotFound();
 
-            Song song = GetSongByName(request.Player);
-            Player player = GetPlayerByName(request.Song);
+            Song song = _infoContainer.GetSongByName(request.Player);
+            Player player = _infoContainer.GetPlayerByName(request.Song);
 
+            //Player or song not registered, do nothing
             if (song == null || player == null)
                 return NotFound();
 
             Standing standing = new Standing()
             {
                 Percentage = request.Percentage,
-                Player = player,
-                Song = song
+                RoundId = _infoContainer.GetCurrentRound().Id,
+                PlayerId = player.Id,
+                SongId = song.Id
             };
-
-            _context.Standings.Add(standing);
-            _currRound.Standings.Add(standing);
-
-            if (_currRound.Standings.Count >= _activeMatch.PlayerInMatches.Count)
-            {
-                _currRound.Standings = _currRound.Standings.Recalc();
-                _currRound = _activeMatch.GetNextRound().Current;
-            }    
-
-            //Match ended since all the rounds have been played
-            if(_currRound == null)
-                _activeMatch = null;
             
-            _context.SaveChanges();
+            NotifyNewStanding(standing);
+
+            _standingsRepo.Add(standing);
 
             return Ok();
+        }
+
+        private void NotifyNewStanding(Standing standing)
+        {
+            if (_subscribers == null)
+                return;
+
+            foreach (var subscriber in _subscribers)
+                subscriber.OnNewStanding(standing);
         }
     }
 }

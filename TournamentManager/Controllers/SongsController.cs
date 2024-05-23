@@ -8,14 +8,14 @@ namespace TournamentManager.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SongsController(TournamentDbContext context) : ControllerBase
+    public class SongsController(IGenericRepository<Song> repo) : ControllerBase
     {
-        private readonly TournamentDbContext _context = context;
+        private readonly IGenericRepository<Song> _repo = repo;
 
         [HttpGet]
         public IActionResult ListAllSongs()
         {
-            return Ok(_context.Songs);
+            return Ok(_repo.GetAll());
         }
 
         [HttpPost]
@@ -28,8 +28,7 @@ namespace TournamentManager.Controllers
                 Group = request.Group
             };
 
-            _context.Songs.Add(song);
-            _context.SaveChanges();
+            _repo.Add(song);
 
             return Ok(song);
         }
@@ -37,7 +36,7 @@ namespace TournamentManager.Controllers
         [HttpPut("{id}")]
         public IActionResult UpdateSong(int id, [FromBody] PostSongRequest request)
         {
-            var song = _context.Songs.Find(id);
+            var song = _repo.GetById(id);
 
             if (song == null)
             {
@@ -48,7 +47,7 @@ namespace TournamentManager.Controllers
             song.Difficulty = request.Difficulty;
             song.Group = request.Group;
 
-            _context.SaveChanges();
+            _repo.Update(song);
 
             return Ok(song);
         }
@@ -56,7 +55,7 @@ namespace TournamentManager.Controllers
         [HttpPatch("{id}")]
         public IActionResult UpdateSongPartial(int id, [FromBody] PostSongRequest request)
         {
-            var song = _context.Songs.Find(id);
+            var song = _repo.GetById(id);
 
             if (song == null)
             {
@@ -78,7 +77,7 @@ namespace TournamentManager.Controllers
                 song.Group = request.Group;
             }
 
-            _context.SaveChanges();
+            _repo.Update(song);
 
             return Ok(song);
         }
@@ -86,15 +85,7 @@ namespace TournamentManager.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteSong(int id)
         {
-            var song = _context.Songs.Find(id);
-
-            if (song == null)
-            {
-                return NotFound();
-            }
-
-            _context.Songs.Remove(song);
-            _context.SaveChanges();
+            _repo.DeleteById(id);
 
             return Ok();
         }

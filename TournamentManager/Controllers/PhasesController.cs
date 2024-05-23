@@ -8,14 +8,14 @@ namespace TournamentManager.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PhasesController(TournamentDbContext context) : ControllerBase
+    public class PhasesController(IGenericRepository<Phase> repo) : ControllerBase
     {
-        private readonly TournamentDbContext _context = context;
+        private readonly IGenericRepository<Phase> _repo = repo;
 
         [HttpGet]
         public IActionResult ListPhase()
         {
-            return Ok(_context.Phases);
+            return Ok(_repo.GetAll());
         }
 
         [HttpPost]
@@ -27,8 +27,7 @@ namespace TournamentManager.Controllers
                 Name = request.Name
             };
 
-            _context.Phases.Add(phase);
-            _context.SaveChanges();
+            _repo.Add(phase);
 
             return Ok(phase);
         }
@@ -36,7 +35,7 @@ namespace TournamentManager.Controllers
         [HttpPut("{id}")]
         public IActionResult UpdatePhase(int id, [FromBody] PostPhaseRequest request)
         {
-            var phase = _context.Phases.Find(id);
+            var phase = _repo.GetById(id);
 
             if (phase == null)
             {
@@ -45,7 +44,7 @@ namespace TournamentManager.Controllers
 
             phase.Name = request.Name;
 
-            _context.SaveChanges();
+            _repo.Update(phase);
 
             return Ok(phase);
         }
@@ -53,7 +52,7 @@ namespace TournamentManager.Controllers
         [HttpPatch("{id}")]
         public IActionResult UpdatePhasePartial(int id, [FromBody] PostPhaseRequest request)
         {
-            var phase = _context.Phases.Find(id);
+            var phase = _repo.GetById(id);
 
             if (phase == null)
             {
@@ -62,7 +61,7 @@ namespace TournamentManager.Controllers
 
             phase.Name = request.Name;
 
-            _context.SaveChanges();
+            _repo.Update(phase);
 
             return Ok(phase);
         }
@@ -70,15 +69,7 @@ namespace TournamentManager.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeletePhase(int id)
         {
-            var phase = _context.Phases.Find(id);
-
-            if (phase == null)
-            {
-                return NotFound();
-            }
-
-            _context.Phases.Remove(phase);
-            _context.SaveChanges();
+            _repo.DeleteById(id);
 
             return Ok();
         }

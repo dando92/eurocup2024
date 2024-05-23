@@ -7,14 +7,14 @@ namespace TournamentManager.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MatchesController(TournamentDbContext context) : ControllerBase
+    public class MatchesController(IGenericRepository<Match> repo) : ControllerBase
     {
-        private readonly TournamentDbContext _context = context;
+        private readonly IGenericRepository<Match> _repo = repo;
 
         [HttpGet]
         public IActionResult ListMatches()
         {
-            return Ok(_context.Matches);
+            return Ok(_repo.GetAll());
         }
 
         [HttpPost]
@@ -26,8 +26,7 @@ namespace TournamentManager.Controllers
                 PhaseId = request.PhaseId,
             };
 
-            _context.Matches.Add(match);
-            _context.SaveChanges();
+            _repo.Add(match);
 
             return Ok(match);
         }
@@ -35,7 +34,7 @@ namespace TournamentManager.Controllers
         [HttpPut("{id}")]
         public IActionResult UpdateMatch(int id, [FromBody] PostMatchRequest request)
         {
-            var match = _context.Matches.Find(id);
+            var match = _repo.GetById(id);
 
             if (match == null)
             {
@@ -44,7 +43,7 @@ namespace TournamentManager.Controllers
 
             match.Name = request.Name;
 
-            _context.SaveChanges();
+            _repo.Update(match);
 
             return Ok(match);
         }
@@ -52,15 +51,7 @@ namespace TournamentManager.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteMatch(int id)
         {
-            var match = _context.Matches.Find(id);
-
-            if (match == null)
-            {
-                return NotFound();
-            }
-
-            _context.Matches.Remove(match);
-            _context.SaveChanges();
+            _repo.DeleteById(id);
 
             return Ok();
         }

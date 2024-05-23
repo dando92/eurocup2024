@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
 using TournamentManager.DbModels;
 
 namespace TournamentManager.Contexts
@@ -6,16 +8,6 @@ namespace TournamentManager.Contexts
     public class TournamentDbContext : DbContext
     {
         public TournamentDbContext(DbContextOptions<TournamentDbContext> options) : base(options) { }
-
-        public DbSet<Division> Divisions { get; set; }
-        public DbSet<Phase> Phases { get; set; }
-        public DbSet<Match> Matches { get; set; }
-        public DbSet<Player> Players { get; set; }
-        public DbSet<Round> Rounds { get; set; }
-        public DbSet<Song> Songs { get; set; }
-        public DbSet<PlayerInMatch> PlayersInMatches { get; set; }
-        public DbSet<SongInMatch> SongsInMatches { get; set; }
-        public DbSet<Standing> Standings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

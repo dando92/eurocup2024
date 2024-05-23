@@ -4,7 +4,7 @@ namespace TournamentManager
 {
     public static class Extension
     {
-        public static IEnumerator<Round> GetNextRound(this Match match)
+        public static IEnumerator<Round> AdvanceRound(this Match match)
         {
             foreach (var round in match.Rounds)
                 yield return round;

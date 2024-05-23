@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using TournamentManager;
 using TournamentManager.Contexts;
+using TournamentManager.DbModels;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,9 +19,19 @@ builder.Services.AddDbContext<TournamentDbContext>(options =>
     options.UseSqlite($"Data Source={exeDir}/DB/db.db");
 });
 
-builder.Services.AddSingleton<ICache, LocalCacheMemory>();
+//// Generic Repository
+builder.Services.AddScoped<IGenericRepository<Match>, GenericRepository<Match>>();
+builder.Services.AddScoped<IGenericRepository<Division>, GenericRepository<Division>>();
+builder.Services.AddScoped<IGenericRepository<Phase>, GenericRepository<Phase>>();
+builder.Services.AddScoped<IGenericRepository<Round>, GenericRepository<Round>>();
+builder.Services.AddScoped<IGenericRepository<Song>, GenericRepository<Song>>();
+builder.Services.AddScoped<IGenericRepository<Player>, GenericRepository<Player>>();
+builder.Services.AddScoped<IGenericRepository<Standing>, GenericRepository<Standing>>();
 
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddSingleton<ITournamentInfoContainer, DbTournamentInfoContainer>();
 
+builder.Services.AddSingleton<TournamentManager.Services.TournamentManager>();
 
 // cors
 builder.Services.AddCors(options =>

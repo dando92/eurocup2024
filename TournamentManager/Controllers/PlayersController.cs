@@ -7,14 +7,14 @@ namespace TournamentManager.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PlayersController(TournamentDbContext context) : ControllerBase
+    public class PlayersController(IGenericRepository<Player> repo) : ControllerBase
     {
-        private readonly TournamentDbContext _context = context;
+        private readonly IGenericRepository<Player> _repo = repo;
 
         [HttpGet]
         public IActionResult ListAllPlayers()
         {
-            return Ok(_context.Players);
+            return Ok(_repo.GetAll());
         }
 
         [HttpPost]
@@ -24,9 +24,8 @@ namespace TournamentManager.Controllers
             {
                 Name = request.Name
             };
+            _repo.Add(player);
 
-            _context.Players.Add(player);
-            _context.SaveChanges();
 
             return Ok(player);
         }
@@ -34,7 +33,7 @@ namespace TournamentManager.Controllers
         [HttpPut("{id}")]
         public IActionResult UpdatePlayer(int id, [FromBody] PostPlayerRequest request)
         {
-            var player = _context.Players.Find(id);
+            var player = _repo.GetById(id);
 
             if (player == null)
             {
@@ -43,7 +42,7 @@ namespace TournamentManager.Controllers
 
             player.Name = request.Name;
 
-            _context.SaveChanges();
+            _repo.Update(player);
 
             return Ok(player);
         }
@@ -51,7 +50,7 @@ namespace TournamentManager.Controllers
         [HttpPatch("{id}")]
         public IActionResult UpdatePlayerPartial(int id, [FromBody] PostPlayerRequest request)
         {
-            var player = _context.Players.Find(id);
+            var player = _repo.GetById(id);
 
             if (player == null)
             {
@@ -60,7 +59,7 @@ namespace TournamentManager.Controllers
 
             player.Name = request.Name;
 
-            _context.SaveChanges();
+            _repo.Update(player);
 
             return Ok(player);
         }
@@ -68,15 +67,7 @@ namespace TournamentManager.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeletePlayer(int id)
         {
-            var player = _context.Players.Find(id);
-
-            if (player == null)
-            {
-                return NotFound();
-            }
-
-            _context.Players.Remove(player);
-            _context.SaveChanges();
+            _repo.DeleteById(id);
 
             return Ok();
         }
