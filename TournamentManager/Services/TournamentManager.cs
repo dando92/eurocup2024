@@ -35,12 +35,12 @@ namespace TournamentManager.Services
 
             _localStandings.Add(standing);
 
-            if (Round.Standings.Count >= Match.PlayerInMatches.Count)
+            if (_localStandings.Count >= Match.PlayerInMatches.Count)
             {
                 _localStandings = _localStandings.Recalc();
 
                 foreach (var std in _localStandings)
-                    Round.Standings.Add(standing);
+                    Round.Standings.Add(std);
 
                 _roundRepository.Update(Round);
                 Match.AdvanceRound();
