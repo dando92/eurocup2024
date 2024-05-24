@@ -53,8 +53,7 @@ namespace TournamentManager.SongExtractor
 
                 if (lines[i].Contains("Challenge:"))
                 {
-                    difficulty = lines[i].Split(":")[0].Trim();
-                    difficulty = difficulty.Remove(difficulty.Length - 1);
+                    difficulty = lines[i + 1].Split(":")[0].Trim();
                     break;
                 }
             }
@@ -85,12 +84,13 @@ namespace TournamentManager.SongExtractor
 
                     if (ssc != null)
                         canzoncine.Add(GetSongFromSSC(pack, ssc));
+                    else 
+                    {
+                        string sm = files.Where(f => Path.GetExtension(f) == ".sm").FirstOrDefault();
 
-                    string sm = files.Where(f => Path.GetExtension(f) == ".sm").FirstOrDefault();
-
-                    if (sm != null)
-                        canzoncine.Add(GetSongFromSSC(pack, sm));
-
+                        if (sm != null)
+                            canzoncine.Add(GetSongFromSM(pack, sm));
+                    }
                 }
             }
 
