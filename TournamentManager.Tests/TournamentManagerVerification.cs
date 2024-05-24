@@ -20,6 +20,13 @@ namespace TournamentManager.Tests
             _tournamentManager = new Services.TournamentManager(_cache, _mock.Object);
         }
 
+        [TestCleanup]
+        public void Cleanup()
+        {
+            foreach(Round round in TestUtils.Match.Rounds.ToArray())
+                round.Standings.Clear();
+        }
+
         [TestMethod]
         public void AdvanceRoundTillMatchEnd()
         {
@@ -46,7 +53,7 @@ namespace TournamentManager.Tests
         }
 
         [TestMethod]
-        public void OnAllStandingsAdvanceRound()
+        public void CachedStandings_AreCorrect()
         {
             _cache.SetActiveMatch(TestUtils.Match);
             Assert.AreEqual(TestUtils.Match.Rounds.ToArray()[0], _cache.CurrentRound);
@@ -55,7 +62,18 @@ namespace TournamentManager.Tests
             _tournamentManager.OnNewStanding(new Standing()
             {
                 Id = index,
-                Percentage = 100,
+                Percentage = 80,
+                Player = TestUtils.PlayersInMatch[index],
+                Song = TestUtils.SongsInMatch[index]
+            });
+
+            Assert.AreEqual(TestUtils.Match.Rounds.ToArray()[0], _cache.CurrentRound);
+            Assert.AreEqual(++index, _cache.Standings.Count);
+
+            _tournamentManager.OnNewStanding(new Standing()
+            {
+                Id = index,
+                Percentage = 60,
                 Player = TestUtils.PlayersInMatch[index],
                 Song = TestUtils.SongsInMatch[index]
             });
@@ -77,26 +95,39 @@ namespace TournamentManager.Tests
             _tournamentManager.OnNewStanding(new Standing()
             {
                 Id = index,
-                Percentage = 100,
-                Player = TestUtils.PlayersInMatch[index],
-                Song = TestUtils.SongsInMatch[index]
-            });
-
-            Assert.AreEqual(TestUtils.Match.Rounds.ToArray()[0], _cache.CurrentRound);
-            Assert.AreEqual(++index, _cache.Standings.Count);
-
-            _tournamentManager.OnNewStanding(new Standing()
-            {
-                Id = index,
-                Percentage = 100,
+                Percentage = 40,
                 Player = TestUtils.PlayersInMatch[index],
                 Song = TestUtils.SongsInMatch[index]
             });
 
             Assert.AreEqual(TestUtils.Match.Rounds.ToArray()[1], _cache.CurrentRound);
             Assert.AreEqual(0, _cache.Standings.Count);
-
             Assert.IsNotNull(_cache.ActiveMatch);
+        }
+
+        [TestMethod]
+        public void UpdateStandingsRepository_WorksCorrectly()
+        {
+            Round updatedRound = null;
+            _mock.Setup(c => c.Update(It.IsAny<Round>()))
+                .Callback<Round>((round) => { updatedRound = round; });
+            
+            CachedStandings_AreCorrect();
+
+            _mock.Verify(c => c.Update(It.IsAny<Round>()), Times.Once());
+
+            // Assert about saveObject
+            Assert.AreEqual(4, updatedRound.Standings.ToArray()[0].Score);
+            Assert.AreEqual(100, updatedRound.Standings.ToArray()[0].Percentage);
+            
+            Assert.AreEqual(3, updatedRound.Standings.ToArray()[1].Score);
+            Assert.AreEqual(80, updatedRound.Standings.ToArray()[1].Percentage);
+
+            Assert.AreEqual(2, updatedRound.Standings.ToArray()[2].Score);
+            Assert.AreEqual(60, updatedRound.Standings.ToArray()[2].Percentage);
+
+            Assert.AreEqual(1, updatedRound.Standings.ToArray()[3].Score);
+            Assert.AreEqual(40, updatedRound.Standings.ToArray()[3].Percentage);
         }
     }
 }
