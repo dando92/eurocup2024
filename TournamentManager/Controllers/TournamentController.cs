@@ -56,7 +56,7 @@ namespace TournamentManager.Controllers
             foreach (int player in request.PlayerIds)
                 match.PlayerInMatches.Add(new PlayerInMatch() { PlayerId = player, MatchId = match.Id, Match = match });
 
-            List<int> availableSongs = _songRepo.GetAvailableSong(phase);
+            List<int> availableSongs = _songRepo.GetAvailableSong(phase, request.Group);
 
             foreach (var level in levels)
             {

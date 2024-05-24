@@ -47,13 +47,54 @@ namespace TournamentManager.Tests
                 .Returns(TestUtils.SongsInMatch);
 
             var banned = phase.GetBannedSongs();
-            
+
             Assert.IsTrue(banned.Count == 3);
             Assert.IsTrue(banned.Contains(0));
             Assert.IsTrue(banned.Contains(1));
             Assert.IsTrue(banned.Contains(2));
 
-            var availble = _mock.Object.GetAvailableSong(phase);
+            var availble = _mock.Object.GetAvailableSong(phase, null);
+
+            Assert.IsTrue(availble.Count == 2);
+            Assert.IsTrue(availble.Contains(3));
+            Assert.IsTrue(availble.Contains(4));
+        }
+
+        [TestMethod]
+        public void GroupsFiltered_Correctly()
+        {
+            IEnumerable<string> packs = TestUtils.SongsInMatch.ListGroups();
+
+            Assert.AreEqual("g1", packs.ElementAt(0));
+            Assert.AreEqual("g2", packs.ElementAt(1));
+        }
+
+        [TestMethod]
+        public void AvailableAndBannedSongsByGroup_WorksCorrectly()
+        {
+            Mock<IGenericRepository<Song>> _mock = new Mock<IGenericRepository<Song>>();
+            Phase phase = new Phase()
+            {
+                Id = 0,
+                Name = "First",
+                Matches = new List<DbModels.Match>()
+            };
+
+            phase
+                .AddMatch(0, [0])
+                .AddMatch(1, [2]);
+
+            _mock
+                .Setup(s => s.GetAll(true))
+                .Returns(TestUtils.SongsInMatch);
+
+            var banned = phase.GetBannedSongs();
+
+            Assert.IsTrue(banned.Count == 2);
+            Assert.IsTrue(banned.Contains(0));
+            Assert.IsTrue(banned.Contains(2));
+
+            var availble = _mock.Object.GetAvailableSong(phase, "g2");
 
             Assert.IsTrue(availble.Count == 2);
             Assert.IsTrue(availble.Contains(3));

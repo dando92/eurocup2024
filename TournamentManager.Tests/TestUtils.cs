@@ -14,11 +14,11 @@ namespace TournamentManager.Tests
 
         public static List<Song> SongsInMatch = new List<Song>()
         {
-            new Song(){ Id = 0, Title="s1", Difficulty =7},
-            new Song(){ Id = 1, Title="s2", Difficulty =8},
-            new Song(){ Id = 2, Title="s3", Difficulty =9},
-            new Song(){ Id = 3, Title="s4", Difficulty =10},
-            new Song(){ Id = 4, Title="s4", Difficulty =11}
+            new Song(){ Id = 0, Title="s1",Group = "g1", Difficulty =7},
+            new Song(){ Id = 1, Title="s2",Group = "g1", Difficulty =8},
+            new Song(){ Id = 2, Title="s3",Group = "g2", Difficulty =9},
+            new Song(){ Id = 3, Title="s4",Group = "g2", Difficulty =10},
+            new Song(){ Id = 4, Title="s4",Group = "g2", Difficulty =11}
         };
 
         public static DbModels.Match Match = new DbModels.Match()

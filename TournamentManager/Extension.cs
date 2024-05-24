@@ -5,6 +5,11 @@ namespace TournamentManager
 {
     public static class Extension
     {
+        public static IEnumerable<string> ListGroups(this List<Song> songs)
+        { 
+            return songs.Select(s => s.Group).Distinct();
+        }
+
         public static List<int> GetBannedSongs(this Phase phase)
         {
             List<int> bannedSongs = new List<int>();
@@ -17,10 +22,10 @@ namespace TournamentManager
             return bannedSongs;
         }
 
-        public static List<int> GetAvailableSong(this IGenericRepository<Song> songRepository, Phase phase)
+        public static List<int> GetAvailableSong(this IGenericRepository<Song> songRepository, Phase phase, string group)
         {
             List<int> availableSongs = new List<int>();
-            List<int> allSongs = songRepository.GetAll().Select(s => s.Id).ToList();
+            List<int> allSongs = songRepository.GetAll().Where(s => group == null || (group!=null && s.Group == group)).Select(s => s.Id).ToList();
             List<int> bannedSongs = phase.GetBannedSongs();
 
             foreach (int s in allSongs)
