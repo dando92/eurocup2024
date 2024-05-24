@@ -1,5 +1,6 @@
 import { Tab, TabGroup, TabList, TabPanels, TabPanel } from "@headlessui/react";
 import PlayersList from "../components/manage/PlayersList";
+import SongsList from "../components/manage/SongsList";
 
 export default function ManagePage() {
   return (
@@ -14,7 +15,7 @@ export default function ManagePage() {
         </TabList>
         <TabPanels className="mt-3">
           <TabPanel>Tournament</TabPanel>
-          <TabPanel>Content 2</TabPanel>
+          <TabPanel><SongsList /></TabPanel>
           <TabPanel><PlayersList /></TabPanel>
         </TabPanels>
       </TabGroup>
