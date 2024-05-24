@@ -5,6 +5,68 @@ namespace TournamentManager.SongExtractor
 {
     public class Program
     {
+        public static Song GetSongFromSSC(string pack, string fileName)
+        {
+            string[] lines = File.ReadAllLines(fileName);
+            string title = "";
+            string difficulty = "";
+
+            foreach (string line in lines)
+            {
+                if (line.Contains("#TITLE:"))
+                {
+                    title = line.Split(":")[1];
+
+                    title = title.Remove(title.Length - 1);
+                }
+
+                if (line.Contains("#METER:"))
+                {
+                    difficulty = line.Split(":")[1];
+                    difficulty = difficulty.Remove(difficulty.Length - 1);
+                    break;
+                }
+            }
+
+            return new Song()
+            {
+                Title = title,
+                Group = Path.GetFileName(pack),
+                Difficulty = int.Parse(difficulty)
+            };
+        }
+
+        public static Song GetSongFromSM(string pack, string fileName)
+        {
+            string[] lines = File.ReadAllLines(fileName);
+            string title = "";
+            string difficulty = "";
+
+            for(int i = 0; i < lines.Length; i++)
+            {
+                if (lines[i].Contains("#TITLE:"))
+                {
+                    title = lines[i].Split(":")[1];
+
+                    title = title.Remove(title.Length - 1);
+                }
+
+                if (lines[i].Contains("Challenge:"))
+                {
+                    difficulty = lines[i].Split(":")[0].Trim();
+                    difficulty = difficulty.Remove(difficulty.Length - 1);
+                    break;
+                }
+            }
+
+            return new Song()
+            {
+                Title = title,
+                Group = Path.GetFileName(pack),
+                Difficulty = int.Parse(difficulty)
+            };
+        }
+
         public static List<Song> GetSong(string songsPath)
         {
             List<Song> canzoncine = new List<Song>();
@@ -19,34 +81,15 @@ namespace TournamentManager.SongExtractor
                 {
                     string[] files = Directory.GetFiles(song);
 
-                    string file = files.Where(f => Path.GetExtension(f) == ".ssc").First();
-                    string[] lines = File.ReadAllLines(file);
-                    string title = "";
-                    string difficulty = "";
+                    string ssc = files.Where(f => Path.GetExtension(f) == ".ssc").FirstOrDefault();
 
-                    foreach (string line in lines)
-                    {
-                        if (line.Contains("#TITLE:"))
-                        {
-                            title = line.Split(":")[1];
+                    if (ssc != null)
+                        canzoncine.Add(GetSongFromSSC(pack, ssc));
 
-                            title = title.Remove(title.Length - 1);
-                        }
+                    string sm = files.Where(f => Path.GetExtension(f) == ".sm").FirstOrDefault();
 
-                        if (line.Contains("#METER:"))
-                        {
-                            difficulty = line.Split(":")[1];
-                            difficulty = difficulty.Remove(difficulty.Length - 1);
-                            break;
-                        }
-                    }
-
-                    canzoncine.Add(new Song()
-                    {
-                        Title = title,
-                        Group = Path.GetFileName(pack),
-                        Difficulty = int.Parse(difficulty)
-                    });
+                    if (sm != null)
+                        canzoncine.Add(GetSongFromSSC(pack, sm));
 
                 }
             }
