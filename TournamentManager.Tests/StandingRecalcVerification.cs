@@ -11,7 +11,7 @@ namespace TournamentManager.Tests
         [DataRow(10, 13, 12, 11)]
         [DataRow(10, 13, 11, 12)]
         [DataRow(12, 11, 13, 10)]
-        public void NoTiesOrderedCorrectly(int p1, int p2, int p3, int p4)
+        public void NoTies_OrderedCorrectly(int p1, int p2, int p3, int p4)
         {
             List<Standing> standings = new List<Standing>()
             {
@@ -36,7 +36,7 @@ namespace TournamentManager.Tests
         [TestMethod]
         [DataRow(11, 11, 12, 12)]
         [DataRow(12, 11, 12, 11)]
-        public void TwoTie(int p1, int p2, int p3, int p4)
+        public void TwoTie_OrderedCorrectly(int p1, int p2, int p3, int p4)
         {
             List<Standing> standings = new List<Standing>()
             {
@@ -79,7 +79,7 @@ namespace TournamentManager.Tests
 
         [TestMethod]
         [DataRow(12, 12)]
-        public void TwoPlayerTie(int p1, int p2)
+        public void TwoPlayerTie_OrderedCorrectly(int p1, int p2)
         {
             List<Standing> standings = new List<Standing>()
             {

@@ -14,7 +14,7 @@ namespace TournamentManager.Tests
         }
 
         [TestMethod]
-        public void ActiveMatchManagedCorrectly()
+        public void ActiveMatch_ManagedCorrectly()
         {
             _cache.SetActiveMatch(TestUtils.Match);
             Assert.AreEqual(TestUtils.Match, _cache.ActiveMatch);
@@ -25,7 +25,7 @@ namespace TournamentManager.Tests
         }
 
         [TestMethod]
-        public void IteratorManagedCorrectly()
+        public void Iterator_ManagedCorrectly()
         {
             _cache.SetActiveMatch(TestUtils.Match);
             Assert.AreEqual(TestUtils.Match, _cache.ActiveMatch);

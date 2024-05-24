@@ -28,7 +28,7 @@ namespace TournamentManager.Tests
     public class SongRollVerification
     {
         [TestMethod]
-        public void Test1()
+        public void AvailableAndBannedSongs_WorksCorrectly()
         {
             Mock<IGenericRepository<Song>> _mock = new Mock<IGenericRepository<Song>>();
             Phase phase = new Phase()
