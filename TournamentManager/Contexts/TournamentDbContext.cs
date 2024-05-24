@@ -11,6 +11,17 @@ namespace TournamentManager.Contexts
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // give table names on every entity
+            modelBuilder.Entity<Player>().ToTable("Players");
+            modelBuilder.Entity<Match>().ToTable("Matches");
+            modelBuilder.Entity<Division>().ToTable("Divisions");
+            modelBuilder.Entity<Phase>().ToTable("Phases");
+            modelBuilder.Entity<Song>().ToTable("Songs");
+            modelBuilder.Entity<PlayerInMatch>().ToTable("PlayerInMatches");
+            modelBuilder.Entity<SongInMatch>().ToTable("SongInMatches");
+            modelBuilder.Entity<Round>().ToTable("Rounds");
+            modelBuilder.Entity<Standing>().ToTable("Standings");
+
             modelBuilder.Entity<PlayerInMatch>()
                        .HasKey(pim => new { pim.PlayerId, pim.MatchId });
 
