@@ -16,11 +16,11 @@ namespace TournamentManager.Contexts
         public void Add(T entity)
         {
             _dbSet.Add(entity);
+            Save();
         }
 
         public void DeleteById(int id)
         {
-            
             var entityToDelete = _dbSet.Find(id);
 
             if (entityToDelete != null)
@@ -29,6 +29,7 @@ namespace TournamentManager.Contexts
                 Save();
             }
         }
+
         public T GetById(int id)
         {
             return _dbSet.Find(id);
