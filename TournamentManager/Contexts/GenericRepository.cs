@@ -19,6 +19,12 @@ namespace TournamentManager.Contexts
             Save();
         }
 
+        public void AddRange(ICollection<T> entities)
+        {
+            _dbSet.AddRange(entities);
+            Save();
+        }
+
         public void DeleteById(int id)
         {
             var entityToDelete = _dbSet.Find(id);

@@ -17,6 +17,24 @@ namespace TournamentManager.Controllers
             return Ok(_repo.GetAll());
         }
 
+        [HttpPost("AddBatchSongs")]
+        public IActionResult AddBatchSongs([FromBody] PostBatchSongRequest request)
+        {
+            List<Song> _players = new List<Song>();
+
+            foreach (PostSongRequest song in request.Songs)
+                _players.Add(new Song
+                {
+                    Title = song.Title,
+                    Group = song.Group,
+                    Difficulty = song.Difficulty,
+                });
+
+            _repo.AddRange(_players);
+
+            return Ok(_players);
+        }
+
         [HttpPost]
         public IActionResult AddSong([FromBody] PostSongRequest request)
         {

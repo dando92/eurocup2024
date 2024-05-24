@@ -17,6 +17,22 @@ namespace TournamentManager.Controllers
             return Ok(_repo.GetAll());
         }
 
+        [HttpPost("addBatchPlayer")]
+        public IActionResult AddBatchPlayer([FromBody] PostBatchPlayerRequest request)
+        {
+            List<Player> _players = new List<Player>();
+
+            foreach (PostPlayerRequest p in request.Players)
+                _players.Add(new Player
+                {
+                    Name = p.Name
+                });
+
+            _repo.AddRange(_players);
+
+            return Ok(_players);
+        }
+
         [HttpPost]
         public IActionResult AddPlayer([FromBody] PostPlayerRequest request)
         {
