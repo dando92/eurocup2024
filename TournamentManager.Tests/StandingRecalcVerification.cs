@@ -2,6 +2,7 @@ using TournamentManager.DbModels;
 
 namespace TournamentManager.Tests
 {
+
     [TestClass]
     public class StandingRecalcVerification 
     {

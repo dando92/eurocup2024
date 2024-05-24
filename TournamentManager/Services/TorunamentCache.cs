@@ -33,27 +33,31 @@ namespace TournamentManager.Services
 
             if (_activeMatch != null && match == null)
             {
+                _iterator = null;
                 _currentRound = null;
+                _activeMatch = match;
             }
             else if (_activeMatch == null && match != null)
             {
+                _activeMatch = match;
                 AdvanceRound();
             }
-
-            _activeMatch = match;
         }
 
         public Round AdvanceRound()
         {
             if (_activeMatch == null)
-                return null;
+                return null; 
 
             if (_iterator == null)
                 _iterator = GetIterator();
-            else
-                _iterator.MoveNext();
+            
+            bool notLastElement =_iterator.MoveNext();
 
-            _currentRound = _iterator.Current;
+            if (notLastElement)
+                _currentRound = _iterator.Current;
+            else
+                _currentRound = null;
 
             return _currentRound;
         }
