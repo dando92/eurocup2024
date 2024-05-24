@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Security.Cryptography;
 using TournamentManager.Contexts;
 using TournamentManager.DbModels;
 using TournamentManager.Requests;
@@ -11,6 +12,7 @@ namespace TournamentManager.Controllers
     public class TournamentController : ControllerBase
     {
         private readonly IGenericRepository<Division> _divisionRepo;
+        private readonly IGenericRepository<Song> _songRepo;
         private readonly TorunamentCache _cache;
         private IRawStandingSubscriber _subscriber;
 
@@ -21,6 +23,64 @@ namespace TournamentManager.Controllers
             _subscriber = subscriber;
             _divisionRepo = divisionRepo;
             _cache = cache;
+        }
+
+        [HttpPost("addMatch")]
+        public IActionResult AddMatch(PostAddMatch request)
+        {
+            var division = _divisionRepo
+                .GetById(request.DivisionId);
+            
+            if (division == null)
+                return NotFound();
+
+            var phase = division
+                .Phases
+                .Where(p => p.Id == request.PhaseId).FirstOrDefault();
+
+            if (phase == null)
+                return NotFound();
+
+            int[] levels = request.Levels.Split(",").Select(s => int.Parse(s)).ToArray();
+            
+            var match = new Match()
+            {
+                Name = request.MatchName,
+                Phase = phase,
+                PhaseId = phase.Id,
+                PlayerInMatches = new List<PlayerInMatch>(request.PlayerIds.Length),
+                SongInMatches = new List<SongInMatch>(levels.Length),
+                Rounds = new List<Round>(levels.Length),
+            };
+
+            foreach (int player in request.PlayerIds)
+                match.PlayerInMatches.Add(new PlayerInMatch() { PlayerId = player, MatchId = match.Id, Match = match });
+
+            List<Song> availableSongs = _songRepo.GetAvailableSong(phase);
+
+            foreach (var level in levels)
+            {
+                var round = new Round()
+                {
+                    Match = match,
+                    MatchId = match.Id,
+                    Standings = new List<Standing>()
+                };
+
+                Song randomSong = availableSongs.RandomElement();
+                
+                availableSongs.Remove(randomSong);
+
+                match.SongInMatches.Add(new SongInMatch() { SongId = randomSong.Id, MatchId = match.Id });
+
+                match.Rounds.Add(round);
+            }
+
+            phase.Matches.Add(match);
+
+            _divisionRepo.Update(division);
+
+            return Ok();
         }
 
         [HttpPost]

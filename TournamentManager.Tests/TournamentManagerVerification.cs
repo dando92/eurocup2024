@@ -116,7 +116,6 @@ namespace TournamentManager.Tests
 
             _mock.Verify(c => c.Update(It.IsAny<Round>()), Times.Once());
 
-            // Assert about saveObject
             Assert.AreEqual(4, updatedRound.Standings.ToArray()[0].Score);
             Assert.AreEqual(100, updatedRound.Standings.ToArray()[0].Percentage);
             
