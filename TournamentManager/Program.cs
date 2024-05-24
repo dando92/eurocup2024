@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
-using TournamentManager;
 using TournamentManager.Contexts;
 using TournamentManager.DbModels;
 

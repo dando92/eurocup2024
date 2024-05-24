@@ -4,12 +4,6 @@ namespace TournamentManager
 {
     public static class Extension
     {
-        public static IEnumerator<Round> AdvanceRound(this Match match)
-        {
-            foreach (var round in match.Rounds)
-                yield return round;
-        }
-
         public static List<Standing> Recalc(this ICollection<Standing> standings)
         {
             int maxPoints = standings.Count;

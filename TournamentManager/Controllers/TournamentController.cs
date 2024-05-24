@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Collections;
+﻿using Microsoft.AspNetCore.Mvc;
 using TournamentManager.Contexts;
 using TournamentManager.DbModels;
 using TournamentManager.Requests;
@@ -11,21 +9,20 @@ namespace TournamentManager.Controllers
     [ApiController]
     public class TournamentController : ControllerBase
     {
-        public const string ActiveMatchKey = "ActiveCache";
-        public const string CurrentRoundKey = "CurrentRound";
-
-        private readonly IGenericRepository<Standing> _standingsRepo;
         private readonly IGenericRepository<Division> _divisionRepo;
-        private readonly ITournamentInfoContainer _infoContainer;
+        private readonly Services.TournamentManager _manager;
+        private IRawStandingSubscriber _subscriber;
 
-        private List<IStandingSubscriber> _subscribers;
-
-        public TournamentController(ITournamentInfoContainer infoContainer, IGenericRepository<Division> divisionRepo, IGenericRepository<Standing> standingsRepo, List<IStandingSubscriber> subscribers)
+        public TournamentController(Services.TournamentManager manager,
+            IGenericRepository<Division> divisionRepo,
+            IGenericRepository<Standing> standingsRepo,
+            IGenericRepository<Song> songRepo,
+            IGenericRepository<Player> playerRepo,
+            IRawStandingSubscriber subscriber)
         {
-            _standingsRepo = standingsRepo;
+            _subscriber = subscriber;
             _divisionRepo = divisionRepo;
-            _infoContainer = infoContainer;
-            _subscribers = subscribers;
+            _manager = manager;
         }
 
         [HttpPost]
@@ -46,48 +43,17 @@ namespace TournamentManager.Controllers
             if (activeMatch == null)
                 return NotFound();
 
-            _infoContainer.SetActiveMatch(activeMatch);
+            _manager.SetActiveMatch(activeMatch);
 
             return Ok();
         }
-
 
         [HttpPost("updateScore")]
         public IActionResult UpdateScore(PostStandingRequest request)
         {
-            //TODO: Register score on standings anyway. Just don't update torunament info.
-            //if (Match == null || Round == null)
-            //    return NotFound();
-
-            Song song = _infoContainer.GetSongByName(request.Player);
-            Player player = _infoContainer.GetPlayerByName(request.Song);
-
-            //Player or song not registered, do nothing
-            if (song == null || player == null)
-                return NotFound();
-
-            Standing standing = new Standing()
-            {
-                Percentage = request.Percentage,
-                RoundId = _infoContainer.GetCurrentRound().Id,
-                PlayerId = player.Id,
-                SongId = song.Id
-            };
-            
-            NotifyNewStanding(standing);
-
-            _standingsRepo.Add(standing);
-
+            _subscriber.OnNewStanding(request);
             return Ok();
         }
 
-        private void NotifyNewStanding(Standing standing)
-        {
-            if (_subscribers == null)
-                return;
-
-            foreach (var subscriber in _subscribers)
-                subscriber.OnNewStanding(standing);
-        }
     }
 }
