@@ -1,7 +1,7 @@
 ﻿using TournamentManager.DbModels;
 using TournamentManager.Requests;
 
-namespace TournamentManager
+namespace TournamentManager.Services
 {
     public interface IRawStandingSubscriber
     {

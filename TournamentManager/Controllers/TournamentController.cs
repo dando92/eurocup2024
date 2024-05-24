@@ -2,6 +2,7 @@
 using TournamentManager.Contexts;
 using TournamentManager.DbModels;
 using TournamentManager.Requests;
+using TournamentManager.Services;
 
 namespace TournamentManager.Controllers
 {
@@ -15,9 +16,6 @@ namespace TournamentManager.Controllers
 
         public TournamentController(Services.TournamentManager manager,
             IGenericRepository<Division> divisionRepo,
-            IGenericRepository<Standing> standingsRepo,
-            IGenericRepository<Song> songRepo,
-            IGenericRepository<Player> playerRepo,
             IRawStandingSubscriber subscriber)
         {
             _subscriber = subscriber;

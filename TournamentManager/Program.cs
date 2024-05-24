@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using TournamentManager.Contexts;
 using TournamentManager.DbModels;
+using TournamentManager.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,18 +20,19 @@ builder.Services.AddDbContext<TournamentDbContext>(options =>
 });
 
 //// Generic Repository
-builder.Services.AddScoped<IGenericRepository<Match>, GenericRepository<Match>>();
-builder.Services.AddScoped<IGenericRepository<Division>, GenericRepository<Division>>();
-builder.Services.AddScoped<IGenericRepository<Phase>, GenericRepository<Phase>>();
-builder.Services.AddScoped<IGenericRepository<Round>, GenericRepository<Round>>();
-builder.Services.AddScoped<IGenericRepository<Song>, GenericRepository<Song>>();
-builder.Services.AddScoped<IGenericRepository<Player>, GenericRepository<Player>>();
-builder.Services.AddScoped<IGenericRepository<Standing>, GenericRepository<Standing>>();
+builder.Services.AddScoped<IGenericRepository<Match>, GenericRepository<Match>>()
+    .AddScoped<IGenericRepository<Division>, GenericRepository<Division>>()
+    .AddScoped<IGenericRepository<Phase>, GenericRepository<Phase>>()
+    .AddScoped<IGenericRepository<Round>, GenericRepository<Round>>()
+    .AddScoped<IGenericRepository<Song>, GenericRepository<Song>>()
+    .AddScoped<IGenericRepository<Player>, GenericRepository<Player>>()
+    .AddScoped<IGenericRepository<Standing>, GenericRepository<Standing>>();
+    //TODO: me li aggiunge tutti in automatico?
+    //.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
-builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-builder.Services.AddSingleton<ITournamentInfoContainer, DbTournamentInfoContainer>();
-
-builder.Services.AddSingleton<TournamentManager.Services.TournamentManager>();
+builder.Services
+    .AddSingleton<IRawStandingSubscriber, RawStandingSubscriber>()
+    .AddSingleton<IStandingSubscriber, TournamentManager.Services.TournamentManager>();
 
 // cors
 builder.Services.AddCors(options =>

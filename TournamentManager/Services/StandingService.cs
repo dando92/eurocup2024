@@ -28,7 +28,7 @@ namespace TournamentManager.Services
             _server.Start(conn =>
             {
                 conn.OnOpen = () =>
-                {
+                { 
                     //TODO: Necessary?
                 };
                 conn.OnMessage = message =>
