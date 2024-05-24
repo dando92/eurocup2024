@@ -56,7 +56,7 @@ namespace TournamentManager.Controllers
             foreach (int player in request.PlayerIds)
                 match.PlayerInMatches.Add(new PlayerInMatch() { PlayerId = player, MatchId = match.Id, Match = match });
 
-            List<Song> availableSongs = _songRepo.GetAvailableSong(phase);
+            List<int> availableSongs = _songRepo.GetAvailableSong(phase);
 
             foreach (var level in levels)
             {
@@ -67,11 +67,11 @@ namespace TournamentManager.Controllers
                     Standings = new List<Standing>()
                 };
 
-                Song randomSong = availableSongs.RandomElement();
+                int randomSong = availableSongs.RandomElement();
                 
                 availableSongs.Remove(randomSong);
 
-                match.SongInMatches.Add(new SongInMatch() { SongId = randomSong.Id, MatchId = match.Id });
+                match.SongInMatches.Add(new SongInMatch() { SongId = randomSong, MatchId = match.Id });
 
                 match.Rounds.Add(round);
             }

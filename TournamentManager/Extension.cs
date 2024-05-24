@@ -5,10 +5,31 @@ namespace TournamentManager
 {
     public static class Extension
     {
-        public static List<Song> GetAvailableSong(this IGenericRepository<Song> songRepository, Phase phase)
+        public static List<int> GetBannedSongs(this Phase phase)
         {
-            List<Song> bannedSongs = phase.Matches.Select(m => m.SongInMatches.Select(sim => sim.Song)).First().ToList();
-            return songRepository.GetAll().Where(s => !bannedSongs.Contains(s)).ToList();
+            List<int> bannedSongs = new List<int>();
+            
+            var songInMathces = phase.Matches.Select(m => m.SongInMatches);
+            
+            foreach(IEnumerable<SongInMatch> sim in songInMathces)
+                bannedSongs.AddRange(sim.Select(m => m.SongId));
+
+            return bannedSongs;
+        }
+
+        public static List<int> GetAvailableSong(this IGenericRepository<Song> songRepository, Phase phase)
+        {
+            List<int> availableSongs = new List<int>();
+            List<int> allSongs = songRepository.GetAll().Select(s => s.Id).ToList();
+            List<int> bannedSongs = phase.GetBannedSongs();
+
+            foreach (int s in allSongs)
+            {
+                if (!bannedSongs.Contains(s))
+                    availableSongs.Add(s);
+            }
+            
+            return availableSongs;
         }
 
         public static T RandomElement<T>(this IEnumerable<T> enumerable)

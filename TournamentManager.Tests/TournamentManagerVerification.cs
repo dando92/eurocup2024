@@ -5,6 +5,7 @@ using TournamentManager.Services;
 
 namespace TournamentManager.Tests
 {
+
     [TestClass]
     public class TournamentManagerVerification
     {
@@ -23,7 +24,7 @@ namespace TournamentManager.Tests
         [TestCleanup]
         public void Cleanup()
         {
-            foreach(Round round in TestUtils.Match.Rounds.ToArray())
+            foreach (Round round in TestUtils.Match.Rounds.ToArray())
                 round.Standings.Clear();
         }
 
@@ -32,7 +33,7 @@ namespace TournamentManager.Tests
         {
             _cache.SetActiveMatch(TestUtils.Match);
 
-            for(int i = 0; i  < TestUtils.Match.Rounds.Count; i++)
+            for (int i = 0; i < TestUtils.Match.Rounds.Count; i++)
             {
                 Assert.AreEqual(TestUtils.Match.Rounds.ToArray()[i], _cache.CurrentRound);
 
@@ -111,14 +112,14 @@ namespace TournamentManager.Tests
             Round updatedRound = null;
             _mock.Setup(c => c.Update(It.IsAny<Round>()))
                 .Callback<Round>((round) => { updatedRound = round; });
-            
+
             CachedStandings_AreCorrect();
 
             _mock.Verify(c => c.Update(It.IsAny<Round>()), Times.Once());
 
             Assert.AreEqual(4, updatedRound.Standings.ToArray()[0].Score);
             Assert.AreEqual(100, updatedRound.Standings.ToArray()[0].Percentage);
-            
+
             Assert.AreEqual(3, updatedRound.Standings.ToArray()[1].Score);
             Assert.AreEqual(80, updatedRound.Standings.ToArray()[1].Percentage);
 

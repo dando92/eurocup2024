@@ -51,7 +51,6 @@ namespace TournamentManager.Services
             NotifyNewStanding(standing);
 
             _standingRepo.Add(standing);
-
         }
 
         private void NotifyNewStanding(Standing standing)
