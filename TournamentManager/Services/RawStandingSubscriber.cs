@@ -6,7 +6,7 @@ namespace TournamentManager.Services
 {
     public class RawStandingSubscriber : IRawStandingSubscriber
     {
-        private List<IStandingSubscriber> _subscribers;
+        private IStandingSubscriber _subscribers;
 
         private readonly IGenericRepository<Standing> _standingRepo;
         private readonly IGenericRepository<Song> _songRepo;
@@ -15,7 +15,7 @@ namespace TournamentManager.Services
         public RawStandingSubscriber(IGenericRepository<Song> songRepo,
             IGenericRepository<Player> playerRepo,
             IGenericRepository<Standing> standingRepo,
-            List<IStandingSubscriber> subscribers)
+            IStandingSubscriber subscribers)
         {
             _songRepo = songRepo;
             _playerRepo = playerRepo;
@@ -59,8 +59,7 @@ namespace TournamentManager.Services
             if (_subscribers == null)
                 return;
 
-            foreach (var subscriber in _subscribers)
-                subscriber.OnNewStanding(standing);
+            _subscribers.OnNewStanding(standing);
         }
     }
 }

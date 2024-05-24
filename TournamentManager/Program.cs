@@ -19,20 +19,15 @@ builder.Services.AddDbContext<TournamentDbContext>(options =>
     options.UseSqlite($"Data Source={exeDir}/DB/db.db");
 });
 
-//// Generic Repository
-builder.Services.AddScoped<IGenericRepository<Match>, GenericRepository<Match>>()
-    .AddScoped<IGenericRepository<Division>, GenericRepository<Division>>()
-    .AddScoped<IGenericRepository<Phase>, GenericRepository<Phase>>()
-    .AddScoped<IGenericRepository<Round>, GenericRepository<Round>>()
-    .AddScoped<IGenericRepository<Song>, GenericRepository<Song>>()
-    .AddScoped<IGenericRepository<Player>, GenericRepository<Player>>()
-    .AddScoped<IGenericRepository<Standing>, GenericRepository<Standing>>();
-    //TODO: me li aggiunge tutti in automatico?
-    //.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+//repos
+builder.Services
+                //TODO: me li aggiunge tutti in automatico?
+                .AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
 builder.Services
-    .AddSingleton<IRawStandingSubscriber, RawStandingSubscriber>()
-    .AddSingleton<IStandingSubscriber, TournamentManager.Services.TournamentManager>();
+    .AddSingleton<TorunamentCache>()
+    .AddScoped<IStandingSubscriber, TournamentManager.Services.TournamentManager>()
+    .AddScoped<IRawStandingSubscriber, RawStandingSubscriber>();
 
 // cors
 builder.Services.AddCors(options =>

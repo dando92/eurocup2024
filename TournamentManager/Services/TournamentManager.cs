@@ -5,85 +5,42 @@ namespace TournamentManager.Services
 {
     public class TournamentManager : IStandingSubscriber
     {
-        private IEnumerator<Round> _iterator;
-        private Round _currentRound = null;
-        private Match _activeMatch;
-
-        private List<Standing> _localStandings;
-
+        private TorunamentCache _cache;
         private readonly IGenericRepository<Round> _roundRepository;
 
-        public TournamentManager(IGenericRepository<Round> roundRepository)
+        public TournamentManager(TorunamentCache cache, IGenericRepository<Round> roundRepository)
         {
+            _cache = cache;
             _roundRepository = roundRepository;
-            _localStandings = new List<Standing>();
-        }
-
-        public void SetActiveMatch(Match match)
-        {
-            if (match == _activeMatch)
-                return;
-
-            if (_activeMatch != null && match == null)
-            {
-                _currentRound = null;
-            }
-            else if (_activeMatch == null && match != null)
-            {
-                AdvanceRound();
-            }
-
-            _activeMatch = match;
         }
 
         public void OnNewStanding(Standing standing)
         {
-            if (_activeMatch == null || _currentRound == null)
+            if (_cache.ActiveMatch == null || _cache.CurrentRound == null)
                 return;
-            
-            standing.RoundId = _currentRound.Id;
+
+            standing.RoundId = _cache.CurrentRound.Id;
 
             if (standing.Song == null || standing.Player == null)
                 return;
 
-            _localStandings.Add(standing);
+            _cache.Standings.Add(standing);
 
-            if (_localStandings.Count >= _activeMatch.PlayerInMatches.Count)
+            if (_cache.Standings.Count >= _cache.ActiveMatch.PlayerInMatches.Count)
             {
-                _localStandings = _localStandings.Recalc();
+                _cache.Standings = _cache.Standings.Recalc();
 
-                foreach (var std in _localStandings)
-                    _currentRound.Standings.Add(std);
+                foreach (var std in _cache.Standings)
+                    _cache.CurrentRound.Standings.Add(std);
 
-                _roundRepository.Update(_currentRound);
-                AdvanceRound();
-                _localStandings.Clear();
+                _roundRepository.Update(_cache.CurrentRound);
+                _cache.AdvanceRound();
+                _cache.Standings.Clear();
             }
 
             //Match ended since all the rounds have been played
-            if (_currentRound == null)
-                _activeMatch = null;
-        }
-
-        public Round AdvanceRound()
-        {
-            if (_activeMatch == null)
-                return null;
-
-            if (_iterator == null)
-                _iterator = GetIterator();
-            else
-                _iterator.MoveNext();
-
-            _currentRound = _iterator.Current;
-
-            return _currentRound;
-        }
-
-        private IEnumerator<Round> GetIterator()
-        {
-            foreach (var round in _activeMatch.Rounds)
-                yield return round;
+            if (_cache.CurrentRound == null)
+                _cache.SetActiveMatch(null);
         }
     }
 }

@@ -11,16 +11,16 @@ namespace TournamentManager.Controllers
     public class TournamentController : ControllerBase
     {
         private readonly IGenericRepository<Division> _divisionRepo;
-        private readonly Services.TournamentManager _manager;
+        private readonly TorunamentCache _cache;
         private IRawStandingSubscriber _subscriber;
 
-        public TournamentController(Services.TournamentManager manager,
+        public TournamentController(TorunamentCache cache,
             IGenericRepository<Division> divisionRepo,
             IRawStandingSubscriber subscriber)
         {
             _subscriber = subscriber;
             _divisionRepo = divisionRepo;
-            _manager = manager;
+            _cache = cache;
         }
 
         [HttpPost]
@@ -41,7 +41,7 @@ namespace TournamentManager.Controllers
             if (activeMatch == null)
                 return NotFound();
 
-            _manager.SetActiveMatch(activeMatch);
+            _cache.SetActiveMatch(activeMatch);
 
             return Ok();
         }
@@ -50,6 +50,7 @@ namespace TournamentManager.Controllers
         public IActionResult UpdateScore(PostStandingRequest request)
         {
             _subscriber.OnNewStanding(request);
+
             return Ok();
         }
 
