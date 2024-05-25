@@ -2,29 +2,56 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Division } from "../../../models/Division";
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import Select from "react-select";
+import { useState } from "react";
+import axios from "axios";
 
 type DivisionListProps = {
-  divisions: Division[];
-  selectedDivisionId: number;
-  onDivisionSelect: (id: number) => void;
-  onDivisionDelete: () => void;
-  onDivisionCreate: () => void;
+  onDivisionSelect: (division: Division | null) => void;
 };
 
-export default function DivisionList({
-  divisions,
-  selectedDivisionId,
-  onDivisionSelect,
-  onDivisionDelete,
-  onDivisionCreate,
-}: DivisionListProps) {
+export default function DivisionList({ onDivisionSelect }: DivisionListProps) {
+  const [divisions, setDivisions] = useState<Division[]>([]);
+  const [selectedDivisionId, setSelectedDivisionId] = useState<number>(-1);
+
+  // Division functions
+  const createDivision = () => {
+    const name = prompt("Enter division name");
+
+    if (name) {
+      axios.post<Division>("divisions", { name }).then((response) => {
+        setDivisions([...divisions, response.data]);
+        setSelectedDivisionId(response.data.id);
+      });
+    }
+  };
+
+  const deleteDivision = () => {
+    // ask the user double confirmation because it's a dangerous action
+    if (
+      window.confirm("WARNING!! Are you sure you want to delete this division?")
+    ) {
+      if (
+        window.confirm(
+          "WARNING!! This action is irreversible. Are you really sure?"
+        )
+      ) {
+        axios.delete(`divisions/${selectedDivisionId}`).then(() => {
+          setDivisions(divisions.filter((d) => d.id !== selectedDivisionId));
+          setSelectedDivisionId(-1);
+        });
+      }
+    }
+  };
   return (
     <div className="flex flex-row gap-3">
       <Select
         className="min-w-[300px]"
         placeholder="Select division"
         options={divisions.map((d) => ({ value: d.id, label: d.name }))}
-        onChange={(e) => onDivisionSelect(e?.value ?? -1)}
+        onChange={(e) => {
+          onDivisionSelect(divisions.find((d) => d.id === selectedDivisionId) ?? null);
+          setSelectedDivisionId(e?.value ?? -1);
+        }}
         value={
           selectedDivisionId >= 0
             ? {
@@ -35,14 +62,14 @@ export default function DivisionList({
         }
       />
       <button
-        onClick={onDivisionCreate}
+        onClick={createDivision}
         className="text-green-700"
         title="Create new division"
       >
         <FontAwesomeIcon icon={faPlus} />
       </button>
       <button
-        onClick={onDivisionDelete}
+        onClick={deleteDivision}
         className="text-red-700 disabled:text-red-200"
         disabled={selectedDivisionId === -1}
         title={
