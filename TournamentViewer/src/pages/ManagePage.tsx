@@ -1,6 +1,7 @@
 import { Tab, TabGroup, TabList, TabPanels, TabPanel } from "@headlessui/react";
-import PlayersList from "../components/manage/PlayersList";
-import SongsList from "../components/manage/SongsList";
+import PlayersList from "../components/manage/players/PlayersList";
+import SongsList from "../components/manage/songs/SongsList";
+import TournamentSettings from "../components/manage/TournamentSettings";
 
 export default function ManagePage() {
   return (
@@ -14,7 +15,7 @@ export default function ManagePage() {
           <Tab className={({selected}) => `${selected ? "border-b border-blu font-bold text-blu" : ""}`}>Players</Tab>
         </TabList>
         <TabPanels className="mt-3">
-          <TabPanel>Tournament</TabPanel>
+          <TabPanel><TournamentSettings /></TabPanel>
           <TabPanel><SongsList /></TabPanel>
           <TabPanel><PlayersList /></TabPanel>
         </TabPanels>

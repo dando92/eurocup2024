@@ -5,7 +5,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
-import { Song } from "../../models/Song";
+import { Song } from "../../../models/Song";
 import axios from "axios";
 import Select from "react-select";
 
