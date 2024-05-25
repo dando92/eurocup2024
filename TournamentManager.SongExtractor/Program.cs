@@ -51,7 +51,7 @@ namespace TournamentManager.SongExtractor
                     title = title.Remove(title.Length - 1);
                 }
 
-                if (lines[i].Contains("Challenge:"))
+                if (lines[i].Contains("Challenge:") || lines[i].Contains("Hard:") || lines[i].Contains("Medium:") || lines[i].Contains("Easy:"))
                 {
                     difficulty = lines[i + 1].Split(":")[0].Trim();
                     break;
