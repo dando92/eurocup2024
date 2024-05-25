@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { Division } from "../../../models/Division";
 import DivisionList from "./DivisionList";
+import PhaseList from "./PhaseList";
+import { Phase } from "../../../models/Phase";
 
 export default function TournamentSettings() {
   const [selectedDivision, setSelectedDivision] = useState<Division | null>(
     null
   );
+  const [selectedPhase, setSelectedPhase] = useState<Phase | null>(null);
 
   return (
     <div>
@@ -16,6 +19,12 @@ export default function TournamentSettings() {
         <DivisionList
           onDivisionSelect={(division) => setSelectedDivision(division)}
         />
+        {selectedDivision && (
+          <PhaseList
+            onPhaseSelect={setSelectedPhase}
+            divisionId={selectedDivision.id}
+          />
+        )}
       </div>
     </div>
   );

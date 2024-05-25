@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Division } from "../../../models/Division";
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import Select from "react-select";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 
 type DivisionListProps = {
@@ -12,6 +12,12 @@ type DivisionListProps = {
 export default function DivisionList({ onDivisionSelect }: DivisionListProps) {
   const [divisions, setDivisions] = useState<Division[]>([]);
   const [selectedDivisionId, setSelectedDivisionId] = useState<number>(-1);
+
+  useEffect(() => {
+    axios.get<Division[]>("divisions").then((response) => {
+      setDivisions(response.data);
+    });
+  }, []);
 
   // Division functions
   const createDivision = () => {
@@ -49,7 +55,9 @@ export default function DivisionList({ onDivisionSelect }: DivisionListProps) {
         placeholder="Select division"
         options={divisions.map((d) => ({ value: d.id, label: d.name }))}
         onChange={(e) => {
-          onDivisionSelect(divisions.find((d) => d.id === selectedDivisionId) ?? null);
+          onDivisionSelect(
+            divisions.find((d) => d.id === e?.value) ?? null
+          );
           setSelectedDivisionId(e?.value ?? -1);
         }}
         value={

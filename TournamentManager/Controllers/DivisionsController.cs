@@ -8,14 +8,17 @@ namespace TournamentManager.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DivisionsController(IGenericRepository<Division> repo) : ControllerBase
+    public class DivisionsController(IGenericRepository<Division> divisionRepo, IGenericRepository<Phase> phaseRepo, IGenericRepository<Match> matchRepo, IGenericRepository<Round> roundRepo) : ControllerBase
     {
-        private readonly IGenericRepository<Division> repo = repo;
+        private readonly IGenericRepository<Division> _divisionRepo = divisionRepo;
+        private readonly IGenericRepository<Phase> _phaseRepo = phaseRepo;
+        private readonly IGenericRepository<Match> _matchRepo = matchRepo;
+        private readonly IGenericRepository<Round> _roundRepo = roundRepo;
 
         [HttpGet]
         public IActionResult ListDivision()
         {
-            return Ok(repo.GetAll());
+            return Ok(_divisionRepo.GetAll());
         }
 
         [HttpPost]
@@ -26,7 +29,7 @@ namespace TournamentManager.Controllers
                 Name = request.Name
             };
 
-            repo.Add(division);
+            _divisionRepo.Add(division);
 
             return Ok(division);
         }
@@ -34,7 +37,7 @@ namespace TournamentManager.Controllers
         [HttpPut("{id}")]
         public IActionResult UpdateDivision(int id, [FromBody] PostDivisionRequest request)
         {
-            var division = repo.GetById(id);
+            var division = _divisionRepo.GetById(id);
 
             if (division == null)
             {
@@ -43,7 +46,7 @@ namespace TournamentManager.Controllers
 
             division.Name = request.Name;
 
-            repo.Update(division);
+            _divisionRepo.Update(division);
 
             return Ok(division);
         }
@@ -51,7 +54,7 @@ namespace TournamentManager.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteDivision(int id)
         {
-            repo.DeleteById(id);
+            _divisionRepo.DeleteById(id);
 
             return Ok();
         }
@@ -59,24 +62,39 @@ namespace TournamentManager.Controllers
         [HttpGet("{id}/phases")]
         public IActionResult ListPhases(int id)
         {
-            return Ok(repo.GetById(id).Phases);
+            return Ok(_phaseRepo.GetAll().Where(p => p.DivisionId == id));
         }
 
         [HttpGet("{id}/phases/{phaseId}/matches")]
         public IActionResult ListMatches(int id, int phaseId)
         {
-            return Ok(repo.GetById(id)
-                .Phases.Where(p => p.Id == phaseId).First()
-                .Matches);
+            if(_divisionRepo.GetById(id) == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(_matchRepo.GetAll().Where(m => m.PhaseId  == phaseId));
         }
 
         [HttpGet("{id}/phases/{phaseId}/matches/{matchId}/rounds")]
         public IActionResult ListRounds(int id, int phaseId, int matchId)
         {
-            return Ok(repo.GetById(id)
-                .Phases.Where(p => p.Id == phaseId).First()
-                .Matches.Where(m => m.Id == matchId).First()
-                .Rounds);
+            if(_divisionRepo.GetById(id) == null)
+            {
+                return NotFound();
+            }
+
+            if(_phaseRepo.GetById(phaseId) == null)
+            {
+                return NotFound();
+            }
+
+            if(_matchRepo.GetById(matchId) == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(_roundRepo.GetAll().Where(r => r.MatchId == matchId));
         }
     }
 }
