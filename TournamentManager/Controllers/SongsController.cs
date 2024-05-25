@@ -17,7 +17,7 @@ namespace TournamentManager.Controllers
             return Ok(_repo.GetAll());
         }
 
-        [HttpGet]
+        [HttpGet("groups")]
         public IActionResult ListAllGroups()
         {
             return Ok(_repo.GetAll().ListGroups());
