@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
-import { Division } from "../../models/Division";
+import { Division } from "../../../models/Division";
 import axios from "axios";
-import Select from "react-select";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import DivisionList from "./DivisionList";
 
 export default function TournamentSettings() {
   const [divisions, setDivisions] = useState<Division[]>([]);
@@ -16,6 +14,7 @@ export default function TournamentSettings() {
     });
   }, []);
 
+  // Division functions
   const createDivision = () => {
     const name = prompt("Enter division name");
 
@@ -44,6 +43,7 @@ export default function TournamentSettings() {
       }
     }
   };
+  // End Division functions
 
   return (
     <div>
@@ -51,43 +51,13 @@ export default function TournamentSettings() {
         <div className="flex flex-row gap-3">
           <h2>Configure your tournament!</h2>
         </div>
-        <div className="flex flex-row gap-3">
-          <Select
-            className="min-w-[300px]"
-            placeholder="Select division"
-            options={divisions.map((d) => ({ value: d.id, label: d.name }))}
-            onChange={(e) => setSelectedDivisionId(e?.value ?? -1)}
-            value={
-              selectedDivisionId >= 0
-                ? {
-                    value: divisions.find((d) => d.id === selectedDivisionId)
-                      ?.id,
-                    label: divisions.find((d) => d.id === selectedDivisionId)
-                      ?.name,
-                  }
-                : null
-            }
-          />
-          <button
-            onClick={createDivision}
-            className="text-green-700"
-            title="Create new division"
-          >
-            <FontAwesomeIcon icon={faPlus} />
-          </button>
-          <button
-            onClick={deleteDivision}
-            className="text-red-700 disabled:text-red-200"
-            disabled={selectedDivisionId === -1}
-            title={
-              selectedDivisionId === -1
-                ? "plz select division to delete"
-                : "Delete division"
-            }
-          >
-            <FontAwesomeIcon icon={faTrash} />
-          </button>
-        </div>
+        <DivisionList
+          divisions={divisions}
+          selectedDivisionId={selectedDivisionId}
+          onDivisionSelect={setSelectedDivisionId}
+          onDivisionDelete={deleteDivision}
+          onDivisionCreate={createDivision}
+        />
       </div>
     </div>
   );

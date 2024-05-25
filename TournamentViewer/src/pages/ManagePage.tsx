@@ -1,7 +1,7 @@
 import { Tab, TabGroup, TabList, TabPanels, TabPanel } from "@headlessui/react";
 import PlayersList from "../components/manage/players/PlayersList";
 import SongsList from "../components/manage/songs/SongsList";
-import TournamentSettings from "../components/manage/TournamentSettings";
+import TournamentSettings from "../components/manage/tournament/TournamentSettings";
 
 export default function ManagePage() {
   return (
