@@ -106,19 +106,25 @@ export default function PlayersList() {
               <div>Select a player from the list to view informations.</div>
             )}
             {selectedPlayerId >= 0 && (
-              <div>
-                <h3>Player Information</h3>
-                <div>
-                  <span>Name: </span>
-                  <span>{getSelectedPlayer()?.name}</span>
-                </div>
-                <h3 className="mt-3">Player Scores</h3>
-                <p>No scores on record for this player.</p>
-              </div>
+              <PlayerItem player={getSelectedPlayer() as Player} />
             )}
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function PlayerItem({ player }: { player: Player }) {
+  return (
+    <div>
+      <h3 className="text-2xl">Player Information</h3>
+      <div>
+        <span>Name: </span>
+        <span>{player.name}</span>
+      </div>
+      <h3 className="mt-3">Player Scores</h3>
+      <p>No scores on record for this player.</p>
     </div>
   );
 }

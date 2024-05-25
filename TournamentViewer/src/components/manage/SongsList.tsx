@@ -1,4 +1,8 @@
-import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faLayerGroup,
+  faPlus,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { Song } from "../../models/Song";
@@ -23,17 +27,78 @@ export default function SongsList() {
     });
   }, []);
 
+  const addNewSongInGroup = () => {
+    const title = prompt("Enter song title");
+
+    if (!title) return;
+
+    const difficulty = prompt("Enter song difficulty");
+
+    if (title && difficulty) {
+      axios
+        .post<Song>("songs", { title, difficulty, group: selectedGroupName })
+        .then((response) => {
+          setSongs([...songs, response.data]);
+        });
+    }
+  };
+
+  const addNewSongInNewGroup = () => {
+    const title = prompt("Enter song title");
+
+    if (!title) return;
+
+    const difficulty = prompt("Enter song difficulty");
+
+    if (!difficulty) return;
+
+    const group = prompt("Enter group name");
+
+    if (group && groups.includes(group)) return alert("Group already exists");
+
+    if (title && difficulty && group) {
+      axios
+        .post<Song>("songs", { title, difficulty, group })
+        .then((response) => {
+          setSongs([...songs, response.data]);
+          setGroups([...groups, group]);
+          setSelectedGroupName(group);
+        });
+    }
+  };
+
+  const deleteSong = (id: number) => {
+    if (window.confirm("Are you sure you want to delete this song?")) {
+      axios.delete(`songs/${id}`).then(() => {
+        setSongs(songs.filter((p) => p.id !== id));
+        setSelectedSongId(-1);
+      });
+    }
+  };
+
   return (
     <div>
       <div className="flex flex-col justify-start gap-3">
         <div className="flex flex-row gap-3">
           <h2>Songs List</h2>
           <button
-            title={!selectedGroupName ? "plz select group" : ""}
+            title={
+              !selectedGroupName
+                ? "plz select group"
+                : "Add song in selected group"
+            }
             disabled={!selectedGroupName}
+            onClick={addNewSongInGroup}
             className="disabled:opacity-50 w-4 text-green-700"
           >
             <FontAwesomeIcon icon={faPlus} />
+          </button>
+          <button
+            title={"Add song in new group"}
+            onClick={addNewSongInNewGroup}
+            className="disabled:opacity-50 w-4 text-green-700"
+          >
+            <FontAwesomeIcon icon={faLayerGroup} />
           </button>
         </div>
         <Select
@@ -73,6 +138,7 @@ export default function SongsList() {
 
                 return isInGroup && found;
               })
+              .sort((a, b) => a.title.localeCompare(b.title))
               .map((song) => {
                 return (
                   <div
@@ -89,7 +155,7 @@ export default function SongsList() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        // TODO deleteSong(player.id);
+                        deleteSong(song.id);
                       }}
                       className="text-sm"
                     >
@@ -107,9 +173,47 @@ export default function SongsList() {
                 </div>
               )}
           </div>
-          <div></div>
+          <div>
+            {selectedSongId < 0 && (
+              <div>Select a song from the list to view informations.</div>
+            )}
+            {selectedSongId >= 0 && (
+              <SongItem
+                song={songs.find((s) => s.id === selectedSongId) as Song}
+              />
+            )}
+          </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function SongItem({ song }: { song: Song }) {
+  return (
+    <div>
+      <h3 className="text-2xl">Song Information</h3>
+      <div className="mt-2">
+        <h3>Title: </h3>
+        <span>{song.title}</span>
+      </div>
+      <div className="mt-2">
+        <h3>Difficulty: </h3>
+        <div className="flex flex-row items-center ml-1 gap-1">
+          {[...Array(13)].map((_, i) => (
+            <span
+              key={i}
+              className={`${
+                i+1 <= song.difficulty ? "bg-blu" : "bg-gray-300"
+              } h-4 rounded-sm w-2 `}
+            ></span>
+          ))}
+
+          <span className="ml-2 font-bold">{song.difficulty}</span>
+        </div>
+      </div>
+      <h3 className="mt-3">Player Scores</h3>
+      <p>No scores on record for this song.</p>
     </div>
   );
 }
