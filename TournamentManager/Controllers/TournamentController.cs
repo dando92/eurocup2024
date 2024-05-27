@@ -159,7 +159,7 @@ namespace TournamentManager.Controllers
                 int[] levels = request.Levels.Split(",").Select(s => int.Parse(s)).ToArray();
 
                 foreach (var level in levels)
-                    songs.Add(RollSong(phase, request.Group, level)));
+                    songs.Add(RollSong(phase, request.Group, level));
             }
 
             CreateMatch(phase, request.MatchName, request.PlayerIds, songs);
