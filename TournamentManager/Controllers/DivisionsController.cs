@@ -22,6 +22,25 @@ namespace TournamentManager.Controllers
             return Ok(_divisionRepo.GetAll());
         }
 
+        [HttpGet("{id}")]
+        public IActionResult GetDivision(int id)
+        {
+            var division = _divisionRepo.GetById(id);
+
+            if (division == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(division);
+        }
+
+        [HttpGet("{id}/phases")]
+        public IActionResult ListPhases(int id)
+        {
+            return Ok(_divisionRepo.GetAll().Include(d => d.Phases).FirstOrDefault(d=>d.Id == id).Phases);
+        }
+
         [HttpPost]
         public IActionResult AddDivision([FromBody] PostDivisionRequest request)
         {
@@ -60,42 +79,5 @@ namespace TournamentManager.Controllers
             return Ok();
         }
 
-        [HttpGet("{id}/phases")]
-        public IActionResult ListPhases(int id)
-        {
-            return Ok(_divisionRepo.GetAll().Include(d => d.Phases).FirstOrDefault(d=>d.Id == id).Phases);
-        }
-
-        [HttpGet("{id}/phases/{phaseId}/matches")]
-        public IActionResult ListMatches(int id, int phaseId)
-        {
-            if(_divisionRepo.GetById(id) == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(_matchRepo.GetAll().Where(m => m.PhaseId  == phaseId));
-        }
-
-        [HttpGet("{id}/phases/{phaseId}/matches/{matchId}/rounds")]
-        public IActionResult ListRounds(int id, int phaseId, int matchId)
-        {
-            if(_divisionRepo.GetById(id) == null)
-            {
-                return NotFound();
-            }
-
-            if(_phaseRepo.GetById(phaseId) == null)
-            {
-                return NotFound();
-            }
-
-            if(_matchRepo.GetById(matchId) == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(_roundRepo.GetAll().Where(r => r.MatchId == matchId));
-        }
     }
 }
