@@ -20,8 +20,12 @@ export default function PhaseList({
   useEffect(() => {
     axios.get<Phase[]>(`divisions/${divisionId}/phases`).then((response) => {
       setPhases(response.data);
-      if (response.data.length > 0) setSelectedPhaseId(response.data[0].id);
+      if (response.data.length > 0) {setSelectedPhaseId(response.data[0].id);
+        onPhaseSelect(response.data[0]);
+      }
     });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [divisionId]);
 
   const createPhase = () => {
@@ -52,7 +56,7 @@ export default function PhaseList({
         placeholder="Select phase"
         options={phases.map((p) => ({ value: p.id, label: p.name }))}
         onChange={(e) => {
-          onPhaseSelect(phases.find((p) => p.id === selectedPhaseId) ?? null);
+          onPhaseSelect(phases.find((p) => p.id === e?.value) ?? null);
           setSelectedPhaseId(e?.value ?? -1);
         }}
         value={
