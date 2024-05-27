@@ -28,6 +28,7 @@ builder.Services
 
 builder.Services
     .AddSingleton<TorunamentCache>()
+    .AddSingleton<IMatchUpdate, NotificationHub>()
     .AddScoped<IStandingSubscriber, TournamentManager.Services.TournamentManager>()
     .AddScoped<IRawStandingSubscriber, RawStandingSubscriber>();
 
@@ -56,6 +57,8 @@ app.UseHttpsRedirection();
 app.UseCors();
 
 app.UseAuthorization();
+
+app.UseRouting();
 
 app.UseEndpoints(endpoints =>
 {
