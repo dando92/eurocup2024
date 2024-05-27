@@ -18,7 +18,7 @@ namespace TournamentManager.Tests
         {
             _mock = new Mock<IGenericRepository<Round>>();
             _cache = new TorunamentCache();
-            _tournamentManager = new Services.TournamentManager(_cache, _mock.Object);
+            _tournamentManager = new Services.TournamentManager(_cache, _mock.Object, null);
         }
 
         [TestCleanup]

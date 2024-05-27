@@ -7,11 +7,13 @@ namespace TournamentManager.Services
     {
         private TorunamentCache _cache;
         private readonly IGenericRepository<Round> _roundRepository;
+        private readonly IMatchUpdate _hub;
 
-        public TournamentManager(TorunamentCache cache, IGenericRepository<Round> roundRepository)
+        public TournamentManager(TorunamentCache cache, IGenericRepository<Round> roundRepository, IMatchUpdate hub)
         {
             _cache = cache;
             _roundRepository = roundRepository;
+            _hub = hub;
         }
 
         public void OnNewStanding(Standing standing)
@@ -40,7 +42,11 @@ namespace TournamentManager.Services
                     _cache.CurrentRound.Standings.Add(std);
 
                 _roundRepository.Update(_cache.CurrentRound);
+                
                 _cache.AdvanceRound();
+
+                _hub?.OnMatchUpdate(_cache.ActiveMatch);
+
                 _cache.Standings.Clear();
             }
         }

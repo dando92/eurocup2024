@@ -12,4 +12,9 @@ namespace TournamentManager.Services
     {
         void OnNewStanding(Standing standing);
     }
+
+    public interface IMatchUpdate
+    {
+        void OnMatchUpdate(Match match);
+    }
 }

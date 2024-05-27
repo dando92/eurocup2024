@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using TournamentManager.Contexts;
-using TournamentManager.DbModels;
 using TournamentManager.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +17,9 @@ builder.Services.AddDbContext<TournamentDbContext>(options =>
     var exeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
     options.UseSqlite($"Data Source={exeDir}/DB/db.db");
 });
+
+
+builder.Services.AddSignalR();
 
 //repos
 builder.Services
@@ -55,6 +57,10 @@ app.UseCors();
 
 app.UseAuthorization();
 
-app.MapControllers();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+    endpoints.MapHub<MatchUpdateHub>("/matchUpdateHub");
+});
 
 app.Run();
