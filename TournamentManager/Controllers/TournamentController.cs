@@ -44,6 +44,7 @@ namespace TournamentManager.Controllers
             var matchesDto = matches.Select(match => new MatchDto
             {
                 Id = match.Id,
+                Name = match.Name,
                 Players = match.PlayerInMatches.Select(p => p.Player).ToList(),
                 Songs = match.SongInMatches.Select(s => s.Song).ToList(),
                 Rounds = match.Rounds.ToList()

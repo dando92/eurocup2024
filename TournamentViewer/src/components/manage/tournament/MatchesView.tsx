@@ -6,10 +6,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHandFist } from "@fortawesome/free-solid-svg-icons";
 import CreateMatchModal from "./CreateMatchModal";
 import { Division } from "../../../models/Division";
+import MatchTable from "./MatchTable";
 
 type MatchesViewProps = {
   phaseId: number;
-  division: Division
+  division: Division;
 };
 
 export default function MatchesView({ phaseId, division }: MatchesViewProps) {
@@ -28,22 +29,41 @@ export default function MatchesView({ phaseId, division }: MatchesViewProps) {
     });
   }, [phaseId]);
 
-  const createMatch = () => {};
+  const createMatch = () => {
+    setCreateMatchModalOpened(false);
+
+    axios.get<Match[]>("tournament/expandphase/" + phaseId).then((response) => {
+      setMatches(response.data);
+    });
+  };
+
+  const deleteMatch = (matchId: number) => {
+    if (window.confirm("Are you sure you want to delete this match?")) {
+      axios.delete("matches/" + matchId).then(() => {
+        setMatches(matches.filter((m) => m.id !== matchId));
+      });
+    }
+  };
 
   return (
     <div className="mt-10">
-      {phase && <CreateMatchModal
-        phase={phase}
-        division={division}
-        open={createMatchModalOpened}
-        onClose={() => setCreateMatchModalOpened(false)}
-        onCreate={() => createMatch()}
-      />}
+      {phase && (
+        <CreateMatchModal
+          phase={phase}
+          division={division}
+          open={createMatchModalOpened}
+          onClose={() => setCreateMatchModalOpened(false)}
+          onCreate={() => createMatch()}
+        />
+      )}
       <h1 className="text-center text-3xl">
         Overall View of Phase &quot;{phase?.name}&quot;
       </h1>
       <div className="mt-2 w-full bg-gray-200 p-2 rounded-lg">
-        <button onClick={() => setCreateMatchModalOpened(true)} className="text-green-800 font-bold flex flex-row gap-2 items-center">
+        <button
+          onClick={() => setCreateMatchModalOpened(true)}
+          className="text-green-800 font-bold flex flex-row gap-2 items-center"
+        >
           <FontAwesomeIcon icon={faHandFist} />
           <span>New match</span>
         </button>
@@ -54,6 +74,14 @@ export default function MatchesView({ phaseId, division }: MatchesViewProps) {
             No matches found.
           </p>
         )}
+
+        {matches.map((match) => (
+          <MatchTable
+            onDeleteMatch={deleteMatch}
+            key={match.id}
+            match={match}
+          />
+        ))}
       </div>
     </div>
   );
