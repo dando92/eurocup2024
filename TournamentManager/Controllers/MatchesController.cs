@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TournamentManager.Contexts;
 using TournamentManager.DbModels;
 using TournamentManager.Requests;
@@ -15,6 +16,30 @@ namespace TournamentManager.Controllers
         public IActionResult ListMatches()
         {
             return Ok(_repo.GetAll());
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetMatch(int id)
+        {
+            var match = _repo.GetById(id);
+
+            if (match == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(match);
+        }
+
+        [HttpGet("{id}/rounds")]
+        public IActionResult ListRounds(int id)
+        {
+            var rounds = _repo.GetAll()
+                .Include(m => m.Rounds)
+                    .ThenInclude(r => r.Standings)
+                .FirstOrDefault(m => m.Id == id)?.Rounds;
+
+            return Ok(rounds);
         }
 
         [HttpPost]
