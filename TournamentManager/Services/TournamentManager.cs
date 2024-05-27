@@ -24,6 +24,8 @@ namespace TournamentManager.Services
             if (standing.Song == null || standing.Player == null)
                 return;
 
+            //TODO: check player in matches and song in matches
+
             _cache.Standings.Add(standing);
 
             if (_cache.Standings.Count >= _cache.ActiveMatch.PlayerInMatches.Count)
@@ -37,10 +39,6 @@ namespace TournamentManager.Services
                 _cache.AdvanceRound();
                 _cache.Standings.Clear();
             }
-
-            //Match ended since all the rounds have been played
-            if (_cache.CurrentRound == null)
-                _cache.SetActiveMatch(null);
         }
     }
 }

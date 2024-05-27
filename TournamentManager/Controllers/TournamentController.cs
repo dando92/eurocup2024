@@ -53,6 +53,87 @@ namespace TournamentManager.Controllers
             return Ok(matchesDto);
         }
 
+        private int RollSong(Phase phase, string group, int level)
+        {
+            return _songRepo.GetAvailableSong(phase, level, group).RandomElement();
+        }
+
+        private void AddRound(Match match, int songId)
+        {
+            var round = new Round()
+            {
+                Match = match,
+                MatchId = match.Id,
+                Standings = new List<Standing>()
+            };
+
+            match.SongInMatches.Add(new SongInMatch() { SongId = songId, MatchId = match.Id });
+
+            match.Rounds.Add(round);
+        }
+
+        [HttpPost("editMatchSong")]
+        public IActionResult EditMatchSong(PostEditSongToMatch request)
+        {
+            var division = _divisionRepo.GetById(request.DivisionId);
+
+            if (division == null)
+                return NotFound();
+
+            var phase = _phaseRepo.GetById(request.PhaseId);
+
+            if (phase == null)
+                return NotFound();
+
+            Match match = phase.Matches.Where(m => m.Id == request.MatchId).FirstOrDefault();
+
+            if (match == null)
+                return NotFound();
+            var sim = match.SongInMatches.Where(sim => sim.SongId == request.EditSongId).FirstOrDefault();
+            
+            if (sim == null)
+                return NotFound();
+
+            if (request.SongId != null)
+                sim.SongId = request.SongId;
+            else if (request.Level != null)
+            {
+                int level = int.Parse(request.Level);
+                sim.SongId = RollSong(phase, request.Group, level);
+            }
+
+            return Ok();
+        }
+
+        [HttpPost("addSongToMatch")]
+        public IActionResult AddSongToMatch(PostAddSongToMatch request)
+        {
+            var division = _divisionRepo.GetById(request.DivisionId);
+
+            if (division == null)
+                return NotFound();
+
+            var phase = _phaseRepo.GetById(request.PhaseId);
+
+            if (phase == null)
+                return NotFound();
+
+            Match match = phase.Matches.Where(m => m.Id == request.MatchId).FirstOrDefault();
+
+            if (match == null)
+                return NotFound();
+
+            if (request.SongId != null)
+                AddRound(match, request.SongId);
+            else if (request.Level != null)
+            {
+                int level = int.Parse(request.Level);
+                AddRound(match, RollSong(phase, request.Group, level));
+            }
+
+            return Ok();
+        }
+
         [HttpPost("addMatch")]
         public IActionResult AddMatch(PostAddMatch request)
         {
@@ -68,47 +149,48 @@ namespace TournamentManager.Controllers
 
             if (phase == null)
                 return NotFound();
-
-            int[] levels = request.Levels.Split(",").Select(s => int.Parse(s)).ToArray();
             
-            var match = new Match()
+            List<int> songs = null;
+
+            if (request.SongIds != null)
+                songs = request.SongIds;
+            else if (request.Levels != null)
             {
-                Name = request.MatchName,
-                Phase = phase,
-                PhaseId = phase.Id,
-                PlayerInMatches = new List<PlayerInMatch>(request.PlayerIds.Length),
-                SongInMatches = new List<SongInMatch>(levels.Length),
-                Rounds = new List<Round>(levels.Length),
-            };
+                int[] levels = request.Levels.Split(",").Select(s => int.Parse(s)).ToArray();
 
-            foreach (int player in request.PlayerIds)
-                match.PlayerInMatches.Add(new PlayerInMatch() { PlayerId = player, MatchId = match.Id, Match = match });
-
-            foreach (var level in levels)
-            {
-                List<int> availableSongs = _songRepo.GetAvailableSong(phase, level, request.Group);
-
-                var round = new Round()
-                {
-                    Match = match,
-                    MatchId = match.Id,
-                    Standings = new List<Standing>()
-                };
-
-                int randomSong = availableSongs.RandomElement();
-                
-                availableSongs.Remove(randomSong);
-
-                match.SongInMatches.Add(new SongInMatch() { SongId = randomSong, MatchId = match.Id });
-
-                match.Rounds.Add(round);
+                foreach (var level in levels)
+                    songs.Add(RollSong(phase, request.Group, level)));
             }
 
-            phase.Matches.Add(match);
+            CreateMatch(phase, request.MatchName, request.PlayerIds, songs);
 
             _divisionRepo.Update(division);
 
             return Ok();
+        }
+
+        private void CreateMatch(Phase phase, string matchName, int[] players, List<int> songs)
+        {
+            var match = new Match()
+            {
+                Name = matchName,
+                Phase = phase,
+                PhaseId = phase.Id,
+                PlayerInMatches = new List<PlayerInMatch>(players.Length),
+                SongInMatches = new List<SongInMatch>(),
+                Rounds = new List<Round>(),
+            };
+            
+            phase.Matches.Add(match);
+
+            foreach (int player in players)
+                match.PlayerInMatches.Add(new PlayerInMatch() { PlayerId = player, MatchId = match.Id, Match = match });
+
+            if (songs != null)
+            {
+                foreach (var song in songs)
+                    AddRound(match, song);
+            }
         }
 
         [HttpPost]
