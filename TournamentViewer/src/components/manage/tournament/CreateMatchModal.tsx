@@ -6,22 +6,25 @@ import Select from "react-select";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMinusCircle, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { Song } from "../../../models/Song";
+import { Division } from "../../../models/Division";
+import { Phase } from "../../../models/Phase";
 
 type CreateMatchModal = {
   open: boolean;
   onClose: () => void;
   onCreate: () => void;
-  phaseId: number;
+  phase: Phase;
+  division: Division;
 };
 
 export default function CreateMatchModal({
   open,
   onClose,
   onCreate,
-  phaseId,
+  phase,
+  division,
 }: CreateMatchModal) {
   const [players, setPlayers] = useState<Player[]>([]);
-  const [songs, setSongs] = useState<Song[]>([]);
 
   const [matchName, setMatchName] = useState<string>("");
 
@@ -33,6 +36,9 @@ export default function CreateMatchModal({
     string[]
   >([]);
   const [difficultyInput, setDifficultyInput] = useState<string>("");
+  const [songs, setSongs] = useState<Song[]>([]);
+  const [songGroups, setSongGroups] = useState<string[]>([]);
+  const [selectedGroupName, setSelectedGroupName] = useState<string>("");
 
   // if by title
   const [selectedSongs, setSelectedSongs] = useState<Song[]>([]);
@@ -46,8 +52,52 @@ export default function CreateMatchModal({
     open &&
       axios.get<Song[]>(`songs`).then((response) => {
         setSongs(response.data);
+        setSongGroups([...new Set(response.data.map((s) => s.group))]);
+        if (response.data.length > 0)
+          setSelectedGroupName(response.data[0].group);
       });
   }, [open]);
+
+  const onSubmit = () => {
+    switch (songAddType) {
+      case "roll":
+        createMatchByRoll();
+        break;
+      case "title":
+        createMatchByTitle();
+        break;
+    }
+  };
+
+  const createMatchByTitle = () => {
+    const request = {
+      divisionId: division.id,
+      phaseId: phase.id,
+      matchName: matchName,
+      group: selectedGroupName,
+      songIds: selectedSongs.map((s) => s.id),
+      playerIds: selectedPlayers.map((p) => p.id),
+    };
+
+    axios.post("tournament/addMatch", request).then(() => {
+      onCreate();
+    });
+  };
+
+  const createMatchByRoll = () => {
+    const request = {
+      divisionId: division.id,
+      phaseId: phase.id,
+      matchName: matchName,
+      group: selectedGroupName,
+      levels: selectedSongDifficulties.join(","),
+      playerIds: selectedPlayers.map((p) => p.id),
+    };
+
+    axios.post("tournament/addMatch", request).then(() => {
+      onCreate();
+    });
+  };
 
   return (
     <OkModal
@@ -55,7 +105,7 @@ export default function CreateMatchModal({
       title="Create Match"
       open={open}
       onClose={onClose}
-      onOk={onCreate}
+      onOk={onSubmit}
     >
       <div className="flex flex-col w-full gap-3">
         <div className="w-full">
@@ -111,6 +161,28 @@ export default function CreateMatchModal({
           </div>
           {songAddType === "roll" && (
             <div>
+              <div className="w-full py-2">
+                <h3>Select song pack to roll</h3>
+                <Select
+                  options={songGroups.map((g) => ({ value: g, label: g }))}
+                  placeholder="Select group..."
+                  className="w-[300px]"
+                  value={
+                    selectedGroupName
+                      ? { value: selectedGroupName, label: selectedGroupName }
+                      : null
+                  }
+                  onChange={(selected) =>
+                    selected
+                      ? setSelectedGroupName(selected.value)
+                      : setSelectedGroupName("")
+                  }
+                  menuPortalTarget={document.body}
+                  styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+                ></Select>
+              </div>
+
+              <h3 className="mt-2">Type song difficulties to roll</h3>
               {selectedSongDifficulties.length > 0 && (
                 <div className="flex my-2 flex-col gap-2 w-96">
                   {selectedSongDifficulties.map((d, i) => (

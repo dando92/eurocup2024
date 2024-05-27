@@ -5,12 +5,14 @@ import { Phase } from "../../../models/Phase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHandFist } from "@fortawesome/free-solid-svg-icons";
 import CreateMatchModal from "./CreateMatchModal";
+import { Division } from "../../../models/Division";
 
 type MatchesViewProps = {
   phaseId: number;
+  division: Division
 };
 
-export default function MatchesView({ phaseId }: MatchesViewProps) {
+export default function MatchesView({ phaseId, division }: MatchesViewProps) {
   const [phase, setPhase] = useState<Phase | null>(null); // [1
   const [matches, setMatches] = useState<Match[]>([]);
 
@@ -30,12 +32,13 @@ export default function MatchesView({ phaseId }: MatchesViewProps) {
 
   return (
     <div className="mt-10">
-      <CreateMatchModal
-        phaseId={phaseId}
+      {phase && <CreateMatchModal
+        phase={phase}
+        division={division}
         open={createMatchModalOpened}
         onClose={() => setCreateMatchModalOpened(false)}
         onCreate={() => createMatch()}
-      />
+      />}
       <h1 className="text-center text-3xl">
         Overall View of Phase &quot;{phase?.name}&quot;
       </h1>

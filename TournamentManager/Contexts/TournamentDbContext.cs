@@ -17,8 +17,8 @@ namespace TournamentManager.Contexts
             modelBuilder.Entity<Division>().ToTable("Divisions");
             modelBuilder.Entity<Phase>().ToTable("Phases");
             modelBuilder.Entity<Song>().ToTable("Songs");
-            modelBuilder.Entity<PlayerInMatch>().ToTable("PlayerInMatches");
-            modelBuilder.Entity<SongInMatch>().ToTable("SongInMatches");
+            modelBuilder.Entity<PlayerInMatch>().ToTable("PlayersInMatches");
+            modelBuilder.Entity<SongInMatch>().ToTable("SongsInMatches");
             modelBuilder.Entity<Round>().ToTable("Rounds");
             modelBuilder.Entity<Standing>().ToTable("Standings");
 

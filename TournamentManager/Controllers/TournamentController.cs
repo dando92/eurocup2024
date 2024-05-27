@@ -14,6 +14,7 @@ namespace TournamentManager.Controllers
     public class TournamentController : ControllerBase
     {
         private readonly IGenericRepository<Division> _divisionRepo;
+        private readonly IGenericRepository<Phase> _phaseRepo;
         private readonly IGenericRepository<Match> _matchRepo;
         private readonly IGenericRepository<Song> _songRepo;
         private readonly TorunamentCache _cache;
@@ -22,12 +23,17 @@ namespace TournamentManager.Controllers
         public TournamentController(TorunamentCache cache,
             IGenericRepository<Division> divisionRepo,
             IRawStandingSubscriber subscriber,
-            IGenericRepository<Match> matchRepo)
+            IGenericRepository<Match> matchRepo,
+            IGenericRepository<Phase> phaseRepo,
+            IGenericRepository<Song> songRepo
+            )
         {
             _subscriber = subscriber;
             _divisionRepo = divisionRepo;
             _cache = cache;
             _matchRepo = matchRepo;
+            _phaseRepo = phaseRepo;
+            _songRepo = songRepo;
         }
 
         [HttpGet("expandPhase/{id}")]
@@ -62,9 +68,7 @@ namespace TournamentManager.Controllers
             if (division == null)
                 return NotFound();
 
-            var phase = division
-                .Phases
-                .Where(p => p.Id == request.PhaseId).FirstOrDefault();
+            var phase = _phaseRepo.GetById(request.PhaseId);
 
             if (phase == null)
                 return NotFound();
