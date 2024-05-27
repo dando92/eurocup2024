@@ -20,7 +20,7 @@ namespace TournamentManager.Controllers
         [HttpGet("groups")]
         public IActionResult ListAllGroups()
         {
-            return Ok(_repo.GetAll().ListGroups());
+            return Ok(_repo.GetAll().ToList().ListGroups());
         }
 
         [HttpPost("AddBatchSongs")]

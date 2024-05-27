@@ -1,4 +1,6 @@
-﻿namespace TournamentManager.DbModels
+﻿using System.Text.Json.Serialization;
+
+namespace TournamentManager.DbModels
 {
     public class Match
     {
@@ -6,6 +8,7 @@
         public string Name { get; set; }
         public int PhaseId { get; set; }
 
+        [JsonIgnore]
         public Phase Phase { get; set; }
         public ICollection<Round> Rounds { get; set; }
         public ICollection<PlayerInMatch> PlayerInMatches { get; set; }

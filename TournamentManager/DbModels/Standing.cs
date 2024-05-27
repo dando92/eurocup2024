@@ -1,4 +1,6 @@
-﻿namespace TournamentManager.DbModels
+﻿using System.Text.Json.Serialization;
+
+namespace TournamentManager.DbModels
 {
     public class Standing
     {
@@ -11,6 +13,8 @@
 
         public Song Song { get; set; }
         public Player Player { get; set; }
+
+        [JsonIgnore]
         public Round Round { get; set; }
     }
 }
