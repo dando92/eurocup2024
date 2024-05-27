@@ -1,5 +1,6 @@
 ﻿using Moq;
 using TournamentManager.Contexts;
+using TournamentManager.Controllers;
 using TournamentManager.DbModels;
 
 namespace TournamentManager.Tests
@@ -44,7 +45,7 @@ namespace TournamentManager.Tests
 
             _mock
                 .Setup(s => s.GetAll(true))
-                .Returns(TestUtils.SongsInMatch);
+                .Returns(TestUtils.SongsInMatch.AsQueryable());
 
             var banned = phase.GetBannedSongs();
 
@@ -53,11 +54,12 @@ namespace TournamentManager.Tests
             Assert.IsTrue(banned.Contains(1));
             Assert.IsTrue(banned.Contains(2));
 
-            var availble = _mock.Object.GetAvailableSong(phase, null);
+            var availble = _mock.Object.GetAvailableSong(phase, 9, null);
 
-            Assert.IsTrue(availble.Count == 2);
+            Assert.IsTrue(availble.Count == 3);
             Assert.IsTrue(availble.Contains(3));
             Assert.IsTrue(availble.Contains(4));
+            Assert.IsTrue(availble.Contains(5));
         }
 
         [TestMethod]
@@ -82,23 +84,23 @@ namespace TournamentManager.Tests
 
             phase
                 .AddMatch(0, [0])
-                .AddMatch(1, [2]);
+                .AddMatch(1, [3]);
 
             _mock
                 .Setup(s => s.GetAll(true))
-                .Returns(TestUtils.SongsInMatch);
+                .Returns(TestUtils.SongsInMatch.AsQueryable());
 
             var banned = phase.GetBannedSongs();
 
             Assert.IsTrue(banned.Count == 2);
             Assert.IsTrue(banned.Contains(0));
-            Assert.IsTrue(banned.Contains(2));
+            Assert.IsTrue(banned.Contains(3));
 
-            var availble = _mock.Object.GetAvailableSong(phase, "g2");
+            var available = _mock.Object.GetAvailableSong(phase, 9, "g2");
 
-            Assert.IsTrue(availble.Count == 2);
-            Assert.IsTrue(availble.Contains(3));
-            Assert.IsTrue(availble.Contains(4));
+            Assert.IsTrue(available.Count == 2);
+            Assert.IsTrue(available.Contains(4));
+            Assert.IsTrue(available.Contains(5));
         }
     }
 }

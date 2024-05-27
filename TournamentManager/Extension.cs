@@ -22,10 +22,10 @@ namespace TournamentManager
             return bannedSongs;
         }
 
-        public static List<int> GetAvailableSong(this IGenericRepository<Song> songRepository, Phase phase, string group)
+        public static List<int> GetAvailableSong(this IGenericRepository<Song> songRepository, Phase phase, int level, string group)
         {
             List<int> availableSongs = new List<int>();
-            List<int> allSongs = songRepository.GetAll().Where(s => group == null || (group!=null && s.Group == group)).Select(s => s.Id).ToList();
+            List<int> allSongs = songRepository.GetAll().Where(s => (group == null || (group!=null && s.Group == group)) && s.Difficulty == level).Select(s => s.Id).ToList();
             List<int> bannedSongs = phase.GetBannedSongs();
 
             foreach (int s in allSongs)
