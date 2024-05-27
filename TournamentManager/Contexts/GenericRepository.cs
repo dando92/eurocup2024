@@ -41,16 +41,12 @@ namespace TournamentManager.Contexts
             return _dbSet.Find(id);
         }
 
-        public List<T> GetAll(bool tracked = true)
+        public IQueryable<T> GetAll(bool tracked = true)
         {
-            IQueryable<T> query = _dbSet;
-
             if (!tracked)
-            {
-                query = query.AsNoTracking();
-            }
-
-            return query.ToList();
+                return _dbSet.AsNoTracking();
+            else
+                return _dbSet;
         }
 
         public void Update(T entity)

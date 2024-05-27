@@ -5,7 +5,7 @@
         void Add(T entity);
         void AddRange(ICollection<T> entities);
         T GetById(int id);
-        List<T> GetAll(bool tracked = true);
+        IQueryable<T> GetAll(bool tracked = true);
         void Update(T entity);
         void DeleteById(int id);
         void Save();
