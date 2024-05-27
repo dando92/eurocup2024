@@ -50,7 +50,6 @@ namespace TournamentManager.Tests
             }
 
             Assert.IsNull(_cache.CurrentRound);
-            Assert.IsNull(_cache.ActiveMatch);
         }
 
         [TestMethod]

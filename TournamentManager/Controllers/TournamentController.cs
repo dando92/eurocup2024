@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
 using TournamentManager.Contexts;
 using TournamentManager.DbModels;
 using TournamentManager.DTOs;
@@ -53,11 +52,6 @@ namespace TournamentManager.Controllers
             return Ok(matchesDto);
         }
 
-        private int RollSong(Phase phase, string group, int level)
-        {
-            return _songRepo.GetAvailableSong(phase, level, group).RandomElement();
-        }
-
         private void AddRound(Match match, int songId)
         {
             var round = new Round()
@@ -99,7 +93,7 @@ namespace TournamentManager.Controllers
             else if (request.Level != null)
             {
                 int level = int.Parse(request.Level);
-                sim.SongId = RollSong(phase, request.Group, level);
+                sim.SongId = _songRepo.RollSong(phase, request.Group, level);
             }
 
             return Ok();
@@ -128,7 +122,7 @@ namespace TournamentManager.Controllers
             else if (request.Level != null)
             {
                 int level = int.Parse(request.Level);
-                AddRound(match, RollSong(phase, request.Group, level));
+                AddRound(match, _songRepo.RollSong(phase, request.Group, level));
             }
 
             return Ok();
@@ -150,7 +144,7 @@ namespace TournamentManager.Controllers
             if (phase == null)
                 return NotFound();
             
-            List<int> songs = null;
+            List<int> songs = new List<int>();
 
             if (request.SongIds != null)
                 songs = request.SongIds;
@@ -159,7 +153,7 @@ namespace TournamentManager.Controllers
                 int[] levels = request.Levels.Split(",").Select(s => int.Parse(s)).ToArray();
 
                 foreach (var level in levels)
-                    songs.Add(RollSong(phase, request.Group, level));
+                    songs.Add(_songRepo.RollSong(phase, request.Group, level));
             }
 
             CreateMatch(phase, request.MatchName, request.PlayerIds, songs);

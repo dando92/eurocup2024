@@ -39,6 +39,13 @@ namespace TournamentManager.Tests
                 new PlayerInMatch(){ MatchId = 0, PlayerId = PlayersInMatch[1].Id },
                 new PlayerInMatch(){ MatchId = 0, PlayerId = PlayersInMatch[2].Id },
                 new PlayerInMatch(){ MatchId = 0, PlayerId = PlayersInMatch[3].Id }
+            },
+            SongInMatches = new List<SongInMatch>()
+            {
+                new SongInMatch(){ SongId = 0, MatchId = 0},
+                new SongInMatch(){ SongId = 3, MatchId = 0},
+                new SongInMatch(){ SongId = 2, MatchId = 0},
+                new SongInMatch(){ SongId = 1, MatchId = 0}
             }
         };
     }

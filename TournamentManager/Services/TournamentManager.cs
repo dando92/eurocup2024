@@ -24,7 +24,11 @@ namespace TournamentManager.Services
             if (standing.Song == null || standing.Player == null)
                 return;
 
-            //TODO: check player in matches and song in matches
+            var playerInActiveMatch = _cache.ActiveMatch.PlayerInMatches.Where(pim => pim.PlayerId == standing.PlayerId).FirstOrDefault();
+            var songInActiveMatch = _cache.ActiveMatch.SongInMatches.Where(pim => pim.SongId == standing.SongId).FirstOrDefault();
+            
+            if (playerInActiveMatch == null || songInActiveMatch == null)
+                return;
 
             _cache.Standings.Add(standing);
 

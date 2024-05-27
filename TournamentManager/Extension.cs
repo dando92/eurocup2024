@@ -37,6 +37,11 @@ namespace TournamentManager
             return availableSongs;
         }
 
+        public static int RollSong(this IGenericRepository<Song> songRepository, Phase phase, string group, int level)
+        {
+            return songRepository.GetAvailableSong(phase, level, group).RandomElement();
+        }
+
         public static T RandomElement<T>(this IEnumerable<T> enumerable)
         {
             return enumerable.RandomElementUsing<T>(new Random());
