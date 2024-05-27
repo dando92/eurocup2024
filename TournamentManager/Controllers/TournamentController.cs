@@ -39,14 +39,7 @@ namespace TournamentManager.Controllers
         [HttpGet("expandPhase/{id}")]
         public IActionResult GetPhaseExpanded(int id)
         {
-            var matches = _matchRepo.GetAll()
-                .Include(m => m.Rounds)
-                    .ThenInclude(m => m.Standings)
-                .Include(m => m.PlayerInMatches)
-                    .ThenInclude(p => p.Player)
-                .Include(m => m.SongInMatches)
-                    .ThenInclude(s => s.Song)
-                .Where(m => m.PhaseId == id);
+            var matches = GetMatchesFromPhaseId(id);
 
             var matchesDto = matches.Select(match => new MatchDto
             {
@@ -69,6 +62,8 @@ namespace TournamentManager.Controllers
                 return NotFound();
 
             var phase = _phaseRepo.GetById(request.PhaseId);
+
+            phase.Matches = GetMatchesFromPhaseId(phase.Id).ToList();
 
             if (phase == null)
                 return NotFound();
@@ -144,6 +139,20 @@ namespace TournamentManager.Controllers
             _subscriber.OnNewStanding(request);
 
             return Ok();
+        }
+
+        private IQueryable<Match> GetMatchesFromPhaseId(int phaseId)
+        {
+            var matches = _matchRepo.GetAll()
+                .Include(m => m.Rounds)
+                    .ThenInclude(m => m.Standings)
+                .Include(m => m.PlayerInMatches)
+                    .ThenInclude(p => p.Player)
+                .Include(m => m.SongInMatches)
+                    .ThenInclude(s => s.Song)
+                .Where(m => m.PhaseId == phaseId);
+
+            return matches;
         }
 
     }
