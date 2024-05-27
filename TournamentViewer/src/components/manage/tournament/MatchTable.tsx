@@ -85,14 +85,23 @@ export default function MatchTable({ match, onDeleteMatch }: MatchTableProps) {
                   <div className="text-center text-gray-600">
                     {scoreData
                       ? `${scoreData.score} (${scoreData.percentage}%)`
-                      : "N/A"}
+                      : "-"}
                   </div>
                 </div>
               );
             })}
             <div className="border border-gray-300 p-2">
               <div className="text-center text-gray-600">
-                Total Points for Player {i + 1}
+                {match.rounds
+                  .map((round) =>
+                    round.standings.find((s) => s.playerId === player.id)
+                  )
+                  .reduce((acc, standing) => {
+                    if (standing) {
+                      return acc + standing.score;
+                    }
+                    return acc;
+                  }, 0)}
               </div>
             </div>
           </div>
