@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using TournamentManager.Contexts;
 using TournamentManager.DbModels;
+using TournamentManager.DTOs;
 using TournamentManager.Requests;
 using TournamentManager.Services;
 
@@ -12,17 +14,43 @@ namespace TournamentManager.Controllers
     public class TournamentController : ControllerBase
     {
         private readonly IGenericRepository<Division> _divisionRepo;
+        private readonly IGenericRepository<Match> _matchRepo;
         private readonly IGenericRepository<Song> _songRepo;
         private readonly TorunamentCache _cache;
         private IRawStandingSubscriber _subscriber;
 
         public TournamentController(TorunamentCache cache,
             IGenericRepository<Division> divisionRepo,
-            IRawStandingSubscriber subscriber)
+            IRawStandingSubscriber subscriber,
+            IGenericRepository<Match> matchRepo)
         {
             _subscriber = subscriber;
             _divisionRepo = divisionRepo;
             _cache = cache;
+            _matchRepo = matchRepo;
+        }
+
+        [HttpGet("expandPhase/{id}")]
+        public IActionResult GetPhaseExpanded(int id)
+        {
+            var matches = _matchRepo.GetAll()
+                .Include(m => m.Rounds)
+                    .ThenInclude(m => m.Standings)
+                .Include(m => m.PlayerInMatches)
+                    .ThenInclude(p => p.Player)
+                .Include(m => m.SongInMatches)
+                    .ThenInclude(s => s.Song)
+                .Where(m => m.PhaseId == id);
+
+            var matchesDto = matches.Select(match => new MatchDto
+            {
+                Id = match.Id,
+                Players = match.PlayerInMatches.Select(p => p.Player).ToList(),
+                Songs = match.SongInMatches.Select(s => s.Song).ToList(),
+                Rounds = match.Rounds.ToList()
+            });
+
+            return Ok(matchesDto);
         }
 
         [HttpPost("addMatch")]

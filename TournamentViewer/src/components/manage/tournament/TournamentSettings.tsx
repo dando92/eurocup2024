@@ -3,6 +3,7 @@ import { Division } from "../../../models/Division";
 import DivisionList from "./DivisionList";
 import PhaseList from "./PhaseList";
 import { Phase } from "../../../models/Phase";
+import MatchesView from "./MatchesView";
 
 export default function TournamentSettings() {
   const [selectedDivision, setSelectedDivision] = useState<Division | null>(
@@ -25,6 +26,7 @@ export default function TournamentSettings() {
             divisionId={selectedDivision.id}
           />
         )}
+        {selectedPhase && <MatchesView phaseId={selectedPhase.id} />}
       </div>
     </div>
   );
