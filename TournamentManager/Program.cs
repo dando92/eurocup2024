@@ -18,19 +18,18 @@ builder.Services.AddDbContext<TournamentDbContext>(options =>
     options.UseSqlite($"Data Source={exeDir}/DB/db.db");
 });
 
+builder.Configuration.AddJsonFile("appsettings.json");
+builder.Services.Configure<StandingServiceConfiguration>(builder.Configuration.GetSection(nameof(StandingServiceConfiguration)));
 
 builder.Services.AddSignalR();
 
-//repos
 builder.Services
-                //TODO: me li aggiunge tutti in automatico?
-                .AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
-builder.Services
-    .AddSingleton<TorunamentCache>()
+    .AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>))
     .AddSingleton<IMatchUpdate, NotificationHub>()
+    .AddSingleton<TorunamentCache>()
     .AddScoped<IStandingSubscriber, TournamentManager.Services.TournamentManager>()
-    .AddScoped<IRawStandingSubscriber, RawStandingSubscriber>();
+    .AddScoped<IRawStandingSubscriber, RawStandingSubscriber>()
+    .AddSingleton<IHostedService, StandingService>();
 
 // cors
 builder.Services.AddCors(options =>
@@ -65,5 +64,6 @@ app.UseEndpoints(endpoints =>
     endpoints.MapControllers();
     endpoints.MapHub<MatchUpdateHub>("/matchUpdateHub");
 });
+
 
 app.Run();
