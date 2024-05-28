@@ -1,6 +1,12 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Match } from "../../../models/Match";
-import { faCircle, faPlay, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCircle,
+  faPlay,
+  faPlus,
+  faShuffle,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import { Division } from "../../../models/Division";
 import { Phase } from "../../../models/Phase";
 
@@ -51,22 +57,43 @@ export default function MatchTable({
         <h2 className="text-center text-4xl font-bold text-blue-600">
           &nbsp;{match.name}
         </h2>
-        <button
-          onClick={() => onDeleteMatch(match.id)}
-          className="ml-3 text-red-800 font-bold flex flex-row gap-2"
-        >
-          <FontAwesomeIcon icon={faTrash} />
-        </button>
 
-        {!isActive && (
+        <div className="ml-3 bg-gray-300 rounded-xl p-3 flex flex-row gap-3">
+          {!isActive && (
+            <button
+              onClick={() => onSetActiveMatch(division.id, phase.id, match.id)}
+              title="Set as active match"
+              className="text-green-800 font-bold flex flex-row gap-2"
+            >
+              <FontAwesomeIcon icon={faPlay} />
+            </button>
+          )}
           <button
-            onClick={() => onSetActiveMatch(division.id, phase.id, match.id)}
-            title="Set as active match"
-            className="ml-3 text-green-800 font-bold flex flex-row gap-2"
+            title="Add a new round/song to the match"
+            onClick={() => {
+              /* Add a new song to the match */
+            }}
+            className=" text-green-800 font-bold flex flex-row gap-2"
           >
-            <FontAwesomeIcon icon={faPlay} />
+            <FontAwesomeIcon icon={faPlus} />
           </button>
-        )}
+
+          <button
+            title="Add a new round/song to the match by roll"
+            onClick={() => {
+              /* Add a new song to the match */
+            }}
+            className=" text-green-800 font-bold flex flex-row gap-2"
+          >
+            <FontAwesomeIcon icon={faShuffle} />
+          </button>
+          <button
+            onClick={() => onDeleteMatch(match.id)}
+            className="ml-3 text-red-800 font-bold flex flex-row gap-2"
+          >
+            <FontAwesomeIcon icon={faTrash} />
+          </button>
+        </div>
       </div>
 
       <div>
