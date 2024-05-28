@@ -35,6 +35,50 @@ namespace TournamentManager.Controllers
             _songRepo = songRepo;
         }
 
+        [HttpGet("deleteStanding/{songId}")]
+        public IActionResult DeleteStanding(int songId)
+        {
+            if (_cache.ActiveMatch == null)
+                return NotFound();
+
+            var match = _matchRepo.GetById(_cache.ActiveMatch.Id);
+
+            foreach (var round in match.Rounds)
+            {
+                foreach (var standing in round.Standings)
+                {
+                    if (standing.SongId == songId)
+                        round.Standings.Remove(standing);
+                }
+            }
+
+            _matchRepo.Update(match);
+
+            return Ok();
+        }
+
+        [HttpGet("deleteStandingForPlayer/{songId}")]
+        public IActionResult DeleteStandingForPlayer(PostDeleteStandingByPlayer request)
+        {
+            if (_cache.ActiveMatch == null)
+                return NotFound();
+
+            var match = _matchRepo.GetById(_cache.ActiveMatch.Id);
+
+            foreach (var round in match.Rounds)
+            {
+                foreach (var standing in round.Standings)
+                {
+                    if ((standing.SongId == request.SongId) && (standing.PlayerId == request.PlayerId))
+                        round.Standings.Remove(standing);
+                }
+            }
+
+            _matchRepo.Update(match);
+
+            return Ok();
+        }
+
         [HttpGet("expandPhase/{id}")]
         public IActionResult GetPhaseExpanded(int id)
         {
