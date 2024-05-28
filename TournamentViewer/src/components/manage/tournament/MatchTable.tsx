@@ -4,6 +4,7 @@ import {
   faCircle,
   faPlay,
   faPlus,
+  faRefresh,
   faShuffle,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
@@ -111,7 +112,13 @@ export default function MatchTable({
           {match.songs.map((song, i) => (
             <div key={i} className="border border-blue-400 p-2">
               <div className="text-center font-bold text-blue-800">
-                {song.title}
+                {song.title}{" "}
+                <button className="ml-3">
+                  <FontAwesomeIcon icon={faRefresh} />
+                </button>
+                <button className="ml-3">
+                  <FontAwesomeIcon icon={faShuffle} />
+                </button>
               </div>
             </div>
           ))}
