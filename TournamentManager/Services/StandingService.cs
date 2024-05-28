@@ -2,6 +2,7 @@
 using TournamentManager.Requests;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
+using System;
 
 namespace TournamentManager.Services
 {
@@ -41,22 +42,32 @@ namespace TournamentManager.Services
 
         private async void Receive(CancellationToken stoppingToken)
         {
-            await _socket.ConnectAsync(new Uri($"ws://{Address}:{Port}/"), stoppingToken);
-
-            var buffer = new byte[1024];
-
             while (!stoppingToken.IsCancellationRequested)
             {
-                var res = await _socket.ReceiveAsync(buffer, stoppingToken);
-                string json = System.Text.Encoding.ASCII.GetString(buffer);
-
-                using (IServiceScope scope = _serviceScopeFactory.CreateScope())
+                try
                 {
-                    IRawStandingSubscriber scopedProcessingService =
-                        scope.ServiceProvider.GetRequiredService<IRawStandingSubscriber>();
+                    await _socket.ConnectAsync(new Uri($"ws://{Address}:{Port}/"), stoppingToken);
 
-                    scopedProcessingService.OnNewStanding(JsonSerializer.Deserialize<PostStandingRequest>(json));
-                }                
+                    var buffer = new byte[1024];
+
+                    while (!stoppingToken.IsCancellationRequested)
+                    {
+                        var res = await _socket.ReceiveAsync(buffer, stoppingToken);
+                        string json = System.Text.Encoding.ASCII.GetString(buffer);
+
+                        using (IServiceScope scope = _serviceScopeFactory.CreateScope())
+                        {
+                            IRawStandingSubscriber scopedProcessingService =
+                                scope.ServiceProvider.GetRequiredService<IRawStandingSubscriber>();
+
+                            scopedProcessingService.OnNewStanding(JsonSerializer.Deserialize<PostStandingRequest>(json));
+                        }
+                    }
+                }
+                catch
+                {
+                    await Task.Delay(5000);
+                }
             }
         }
     }
