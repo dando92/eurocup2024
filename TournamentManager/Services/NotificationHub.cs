@@ -7,12 +7,12 @@ namespace TournamentManager.Services
     { }
 
     public class NotificationHub(IHubContext<MatchUpdateHub, IMatchUpdate> context) : IMatchUpdate
-    { 
+    {
         IHubContext<MatchUpdateHub, IMatchUpdate> _context = context;
 
-        public void OnMatchUpdate(Match match)
+        public async Task OnMatchUpdate(Match match)
         {
-            _context.Clients.All.OnMatchUpdate(match);
+            await _context.Clients.All.OnMatchUpdate(match);
         }
     }
 }
