@@ -5,7 +5,7 @@ namespace TournamentManager.Services
 {
     public interface IRawStandingSubscriber
     {
-        void OnNewStanding(PostStandingRequest standing);
+        void OnNewStanding(RawStanding standing);
     }
 
     public interface IStandingSubscriber

@@ -10,7 +10,7 @@ namespace TournamentManager.DbModels
         public double Percentage { get; set; }
         public int RoundId { get; set; }
         public int Score { get; set; }
-
+        public bool IsFailed { get; set; }
         public Song Song { get; set; }
         public Player Player { get; set; }
 

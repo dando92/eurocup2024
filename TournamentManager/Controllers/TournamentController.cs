@@ -293,7 +293,7 @@ namespace TournamentManager.Controllers
         }
 
         [HttpPost("updateScore")]
-        public IActionResult UpdateScore(PostStandingRequest request)
+        public IActionResult UpdateScore(RawStanding request)
         {
             _subscriber.OnNewStanding(request);
 

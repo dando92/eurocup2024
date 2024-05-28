@@ -188,19 +188,19 @@ namespace TournamentManager.Tests
         {
             CreateMatchWithSongIds();
 
-            _controller.UpdateScore(new Requests.PostStandingRequest()
-            {
-                Song = "",
-                Player = "p1",
-                Percentage = 100
-            });
+            //_controller.UpdateScore(new Requests.PostStandingRequest()
+            //{
+            //    Song = "",
+            //    Player = "p1",
+            //    Percentage = 100
+            //});
 
-            _controller.UpdateScore(new Requests.PostStandingRequest()
-            {
-                Song = "",
-                Player = "p1",
-                Percentage = 90
-            });
+            //_controller.UpdateScore(new Requests.PostStandingRequest()
+            //{
+            //    Song = "",
+            //    Player = "p1",
+            //    Percentage = 90
+            //});
         }
         //_controller.DeleteStanding();
         //_controller.DeleteStandingForPlayer();

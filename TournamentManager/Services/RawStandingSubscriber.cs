@@ -23,34 +23,39 @@ namespace TournamentManager.Services
             _standingRepo = standingRepo;
         }
 
-        public void OnNewStanding(PostStandingRequest request)
+        public void OnNewStanding(RawStanding request)
         {
-            Song song = _songRepo
-                .GetAll()
-                .Where(s => s.Title == request.Song)
-                .FirstOrDefault();
-
-            Player player = _playerRepo
-                .GetAll()
-                .Where(s => s.Name == request.Player)
-                .FirstOrDefault();
-
-            //Player or song not registered, do nothing
-            if (song == null || player == null)
-                return;
-
-            Standing standing = new Standing()
+            foreach (Score score in request.Scores)
             {
-                Percentage = request.Percentage,
-                PlayerId = player.Id,
-                SongId = song.Id,
-                Song = song,
-                Player = player
-            };
+                Song song = _songRepo
+                    .GetAll()
+                    .Where(s => s.Title == Path.GetFileName(score.Song) && s.Group == Path.GetDirectoryName(score.Song))
+                    .FirstOrDefault();
 
-            NotifyNewStanding(standing);
+                Player player = _playerRepo
+                    .GetAll()
+                    .Where(s => s.Name == score.PlayerName)
+                    .FirstOrDefault();
 
-            _standingRepo.Add(standing);
+                //Player or song not registered, do nothing
+                if (song == null || player == null)
+                    return;
+
+                Standing standing = new Standing()
+                {
+                    Percentage = double.Parse(score.FormattedScore),
+                    PlayerId = player.Id,
+                    SongId = song.Id,
+                    Song = song,
+                    Player = player,
+                    IsFailed = score.IsFailed
+                };
+
+                NotifyNewStanding(standing);
+
+                if(standing.RoundId == null)
+                    _standingRepo.Add(standing);
+            }
         }
 
         private void NotifyNewStanding(Standing standing)
