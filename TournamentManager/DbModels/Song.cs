@@ -11,6 +11,7 @@ namespace TournamentManager.DbModels
 
         [JsonIgnore]
         public ICollection<SongInMatch> SongInMatches { get; set; }
+        [JsonIgnore]
         public ICollection<Standing> Standings { get; set; }
         public string GetTitleWithFolder() => Path.Combine(Group, Title);
     }

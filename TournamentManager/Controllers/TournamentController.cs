@@ -79,12 +79,12 @@ namespace TournamentManager.Controllers
             if (phase == null)
                 return NotFound();
 
-            Match match = phase.Matches.Where(m => m.Id == request.MatchId).FirstOrDefault();
+            var match = phase.Matches.Where(m => m.Id == request.MatchId).FirstOrDefault();
 
             if (match == null)
                 return NotFound();
             var sim = match.SongInMatches.Where(sim => sim.SongId == request.EditSongId).FirstOrDefault();
-            
+
             if (sim == null)
                 return NotFound();
 
@@ -92,7 +92,7 @@ namespace TournamentManager.Controllers
                 sim.SongId = request.SongId;
             else if (request.Level != null)
             {
-                int level = int.Parse(request.Level);
+                var level = int.Parse(request.Level);
                 sim.SongId = _songRepo.RollSong(phase, request.Group, level);
             }
 
@@ -112,7 +112,7 @@ namespace TournamentManager.Controllers
             if (phase == null)
                 return NotFound();
 
-            Match match = phase.Matches.Where(m => m.Id == request.MatchId).FirstOrDefault();
+            var match = phase.Matches.Where(m => m.Id == request.MatchId).FirstOrDefault();
 
             if (match == null)
                 return NotFound();
@@ -121,7 +121,7 @@ namespace TournamentManager.Controllers
                 AddRound(match, request.SongId);
             else if (request.Level != null)
             {
-                int level = int.Parse(request.Level);
+                var level = int.Parse(request.Level);
                 AddRound(match, _songRepo.RollSong(phase, request.Group, level));
             }
 
@@ -133,7 +133,7 @@ namespace TournamentManager.Controllers
         {
             var division = _divisionRepo
                 .GetById(request.DivisionId);
-            
+
             if (division == null)
                 return NotFound();
 
@@ -143,14 +143,14 @@ namespace TournamentManager.Controllers
 
             if (phase == null)
                 return NotFound();
-            
-            List<int> songs = new List<int>();
+
+            var songs = new List<int>();
 
             if (request.SongIds != null)
                 songs = request.SongIds;
             else if (request.Levels != null)
             {
-                int[] levels = request.Levels.Split(",").Select(s => int.Parse(s)).ToArray();
+                var levels = request.Levels.Split(",").Select(s => int.Parse(s)).ToArray();
 
                 foreach (var level in levels)
                     songs.Add(_songRepo.RollSong(phase, request.Group, level));
@@ -174,10 +174,10 @@ namespace TournamentManager.Controllers
                 SongInMatches = new List<SongInMatch>(),
                 Rounds = new List<Round>(),
             };
-            
+
             phase.Matches.Add(match);
 
-            foreach (int player in players)
+            foreach (var player in players)
                 match.PlayerInMatches.Add(new PlayerInMatch() { PlayerId = player, MatchId = match.Id, Match = match });
 
             if (songs != null)
@@ -187,10 +187,23 @@ namespace TournamentManager.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost("setActiveMatch")]
         public IActionResult SetActiveMatch([FromBody] PostActiveMatchRequest request)
         {
-            var activeDivision = _divisionRepo.GetById(request.DivisionId);
+            var activeDivision = _divisionRepo.GetAll()
+                .Include(d => d.Phases)
+                    .ThenInclude(p => p.Matches)
+                        .ThenInclude(m => m.Rounds)
+                            .ThenInclude(r => r.Standings)
+                .Include(d => d.Phases)
+                    .ThenInclude(p => p.Matches)
+                        .ThenInclude(m => m.PlayerInMatches)
+                            .ThenInclude(pim => pim.Player)
+                .Include(d => d.Phases)
+                    .ThenInclude(p => p.Matches)
+                        .ThenInclude(m => m.SongInMatches)
+                            .ThenInclude(sim => sim.Song)
+                .FirstOrDefault(d => d.Id == request.DivisionId);
 
             if (activeDivision == null)
                 return NotFound();
@@ -208,6 +221,17 @@ namespace TournamentManager.Controllers
             _cache.SetActiveMatch(activeMatch);
 
             return Ok();
+        }
+
+        [HttpGet("activeMatch")]
+        public IActionResult GetActiveMatch()
+        {
+            var activeMatch = _cache.ActiveMatch;
+
+            if (activeMatch == null)
+                return NotFound();
+
+            return Ok(activeMatch);
         }
 
         [HttpPost("updateScore")]

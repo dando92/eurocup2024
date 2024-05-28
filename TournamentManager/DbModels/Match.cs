@@ -11,7 +11,9 @@ namespace TournamentManager.DbModels
         [JsonIgnore]
         public Phase Phase { get; set; }
         public ICollection<Round> Rounds { get; set; }
+        [JsonIgnore]
         public ICollection<PlayerInMatch> PlayerInMatches { get; set; }
+        [JsonIgnore]
         public ICollection<SongInMatch> SongInMatches { get; set; }
     }
 }

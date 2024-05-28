@@ -14,8 +14,10 @@ type MatchesViewProps = {
 };
 
 export default function MatchesView({ phaseId, division }: MatchesViewProps) {
-  const [phase, setPhase] = useState<Phase | null>(null); // [1
+  const [phase, setPhase] = useState<Phase | null>(null);
   const [matches, setMatches] = useState<Match[]>([]);
+
+  const [activeMatch, setActiveMatch] = useState<Match | null>(null);
 
   const [createMatchModalOpened, setCreateMatchModalOpened] = useState(false);
 
@@ -26,6 +28,10 @@ export default function MatchesView({ phaseId, division }: MatchesViewProps) {
 
     axios.get<Match[]>("tournament/expandphase/" + phaseId).then((response) => {
       setMatches(response.data);
+    });
+
+    axios.get<Match>("tournament/activematch").then((response) => {
+      setActiveMatch(response.data);
     });
   }, [phaseId]);
 
@@ -43,6 +49,18 @@ export default function MatchesView({ phaseId, division }: MatchesViewProps) {
         setMatches(matches.filter((m) => m.id !== matchId));
       });
     }
+  };
+
+  const setActiveMatchAction = (
+    divisionId: number,
+    phaseId: number,
+    matchId: number
+  ) => {
+    axios
+      .post("tournament/setactivematch", { divisionId, phaseId, matchId })
+      .then(() => {
+        setActiveMatch(matches.find((m) => m.id === matchId) || null);
+      });
   };
 
   return (
@@ -75,13 +93,18 @@ export default function MatchesView({ phaseId, division }: MatchesViewProps) {
           </p>
         )}
 
-        {matches.map((match) => (
-          <MatchTable
-            onDeleteMatch={deleteMatch}
-            key={match.id}
-            match={match}
-          />
-        ))}
+        {phase &&
+          matches.map((match) => (
+            <MatchTable
+              division={division}
+              phase={phase}
+              isActive={activeMatch?.id === match.id}
+              onSetActiveMatch={setActiveMatchAction}
+              onDeleteMatch={deleteMatch}
+              key={match.id}
+              match={match}
+            />
+          ))}
       </div>
     </div>
   );

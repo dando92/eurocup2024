@@ -26,9 +26,9 @@ namespace TournamentManager.Controllers
         [HttpPost("AddBatchSongs")]
         public IActionResult AddBatchSongs([FromBody] PostBatchSongRequest request)
         {
-            List<Song> _players = new List<Song>();
+            var _players = new List<Song>();
 
-            foreach (PostSongRequest song in request.Songs)
+            foreach (var song in request.Songs)
                 _players.Add(new Song
                 {
                     Title = song.Title,

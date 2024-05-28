@@ -9,6 +9,7 @@ namespace TournamentManager.DbModels
 
         [JsonIgnore]
         public ICollection<PlayerInMatch> PlayerInMatches { get; set; }
+        [JsonIgnore]
         public ICollection<Standing> Standings { get; set; }
     }
 

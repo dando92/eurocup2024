@@ -1,13 +1,30 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Match } from "../../../models/Match";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faCircle, faPlay, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { Division } from "../../../models/Division";
+import { Phase } from "../../../models/Phase";
 
 type MatchTableProps = {
+  division: Division;
+  phase: Phase;
   match: Match;
+  isActive: boolean;
+  onSetActiveMatch: (
+    divisionId: number,
+    phaseId: number,
+    matchId: number
+  ) => void;
   onDeleteMatch: (matchId: number) => void;
 };
 
-export default function MatchTable({ match, onDeleteMatch }: MatchTableProps) {
+export default function MatchTable({
+  division,
+  phase,
+  match,
+  isActive,
+  onDeleteMatch,
+  onSetActiveMatch,
+}: MatchTableProps) {
   // Create a lookup table for scores and percentages
   const scoreTable: { [key: string]: { score: number; percentage: number } } =
     {};
@@ -24,9 +41,15 @@ export default function MatchTable({ match, onDeleteMatch }: MatchTableProps) {
 
   return (
     <div className="flex flex-col w-full p-4 bg-gray-100 rounded-lg shadow-md">
-      <div className="flex flex-row justify-center items-center">
-        <h2 className="text-center text-4xl font-bold mb-6 text-blue-600">
-          {match.name}
+      <div className="flex flex-row mb-6 justify-center items-center">
+        {isActive && (
+          <FontAwesomeIcon
+            icon={faCircle}
+            className="text-green-800 text-xs animate-pulse"
+          />
+        )}
+        <h2 className="text-center text-4xl font-bold text-blue-600">
+          &nbsp;{match.name}
         </h2>
         <button
           onClick={() => onDeleteMatch(match.id)}
@@ -34,6 +57,16 @@ export default function MatchTable({ match, onDeleteMatch }: MatchTableProps) {
         >
           <FontAwesomeIcon icon={faTrash} />
         </button>
+
+        {!isActive && (
+          <button
+            onClick={() => onSetActiveMatch(division.id, phase.id, match.id)}
+            title="Set as active match"
+            className="ml-3 text-green-800 font-bold flex flex-row gap-2"
+          >
+            <FontAwesomeIcon icon={faPlay} />
+          </button>
+        )}
       </div>
 
       <div>
