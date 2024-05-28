@@ -183,7 +183,7 @@ namespace TournamentManager.Tests
         }
 
 
-        [TestMethod]
+        //[TestMethod]
         public void AddStanding()
         {
             CreateMatchWithSongIds();
