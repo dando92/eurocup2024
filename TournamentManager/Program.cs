@@ -26,7 +26,7 @@ builder.Services.AddSignalR();
 builder.Services
     .AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>))
     .AddScoped<IMatchUpdate, NotificationHub>()
-    .AddSingleton<TorunamentCache>()
+    .AddSingleton<TournamentCache>()
     .AddScoped<IStandingSubscriber, TournamentManager.Services.TournamentManager>()
     .AddScoped<IRawStandingSubscriber, RawStandingSubscriber>()
     .AddSingleton<IHostedService, StandingService>();

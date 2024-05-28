@@ -16,10 +16,10 @@ namespace TournamentManager.Controllers
         private readonly IGenericRepository<Phase> _phaseRepo;
         private readonly IGenericRepository<Match> _matchRepo;
         private readonly IGenericRepository<Song> _songRepo;
-        private readonly TorunamentCache _cache;
+        private readonly TournamentCache _cache;
         private IRawStandingSubscriber _subscriber;
 
-        public TournamentController(TorunamentCache cache,
+        public TournamentController(TournamentCache cache,
             IGenericRepository<Division> divisionRepo,
             IRawStandingSubscriber subscriber,
             IGenericRepository<Match> matchRepo,
@@ -57,22 +57,34 @@ namespace TournamentManager.Controllers
             return Ok();
         }
 
-        [HttpGet("deleteStandingForPlayer/{songId}")]
+        [HttpGet("deleteStandingForPlayer")]
         public IActionResult DeleteStandingForPlayer(PostDeleteStandingByPlayer request)
         {
             if (_cache.ActiveMatch == null)
                 return NotFound();
 
             var match = _matchRepo.GetById(_cache.ActiveMatch.Id);
+            
+            Round foundRound = null;
 
             foreach (var round in match.Rounds)
             {
                 foreach (var standing in round.Standings)
                 {
                     if ((standing.SongId == request.SongId) && (standing.PlayerId == request.PlayerId))
+                    {
                         round.Standings.Remove(standing);
+                        foundRound = round;
+                        break;
+                    }
                 }
+                if (foundRound != null)
+                    break;
             }
+
+            _cache.Standings.AddRange(foundRound.Standings);
+            
+            foundRound.Standings.Clear();
 
             _matchRepo.Update(match);
 
@@ -133,12 +145,14 @@ namespace TournamentManager.Controllers
                 return NotFound();
 
             if (request.SongId != null)
-                sim.SongId = request.SongId;
+                sim.SongId = (int)request.SongId;
             else if (request.Level != null)
             {
                 var level = int.Parse(request.Level);
                 sim.SongId = _songRepo.RollSong(phase, request.Group, level);
             }
+
+            _matchRepo.Update(match);
 
             return Ok();
         }
@@ -162,7 +176,7 @@ namespace TournamentManager.Controllers
                 return NotFound();
 
             if (request.SongId != null)
-                AddRound(match, request.SongId);
+                AddRound(match, (int)request.SongId);
             else if (request.Level != null)
             {
                 var level = int.Parse(request.Level);

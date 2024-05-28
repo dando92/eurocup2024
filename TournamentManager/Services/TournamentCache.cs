@@ -11,7 +11,7 @@ namespace TournamentManager.Services
         void SetActiveMatch(Match match);
     }
 
-    public class TorunamentCache : ITournamentCache
+    public class TournamentCache : ITournamentCache
     {
         private IEnumerator<Round> _iterator;
         private Round _currentRound = null;
@@ -21,7 +21,7 @@ namespace TournamentManager.Services
         public Match ActiveMatch { get => _activeMatch; }
         public List<Standing> Standings { get; set; }
 
-        public TorunamentCache()
+        public TournamentCache()
         {
             Standings = new List<Standing>();
         }

@@ -5,11 +5,11 @@ namespace TournamentManager.Services
 {
     public class TournamentManager : IStandingSubscriber
     {
-        private TorunamentCache _cache;
+        private TournamentCache _cache;
         private readonly IGenericRepository<Round> _roundRepository;
         private readonly IMatchUpdate _hub;
 
-        public TournamentManager(TorunamentCache cache, IGenericRepository<Round> roundRepository, IMatchUpdate hub)
+        public TournamentManager(TournamentCache cache, IGenericRepository<Round> roundRepository, IMatchUpdate hub)
         {
             _cache = cache;
             _roundRepository = roundRepository;

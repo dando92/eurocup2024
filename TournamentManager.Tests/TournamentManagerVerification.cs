@@ -10,14 +10,14 @@ namespace TournamentManager.Tests
     public class TournamentManagerVerification
     {
         Services.TournamentManager _tournamentManager;
-        TorunamentCache _cache;
+        TournamentCache _cache;
         Mock<IGenericRepository<Round>> _mock;
 
         [TestInitialize]
         public void Initialize()
         {
             _mock = new Mock<IGenericRepository<Round>>();
-            _cache = new TorunamentCache();
+            _cache = new TournamentCache();
             _tournamentManager = new Services.TournamentManager(_cache, _mock.Object, null);
         }
 

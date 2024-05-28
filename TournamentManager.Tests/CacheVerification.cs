@@ -2,15 +2,16 @@
 
 namespace TournamentManager.Tests
 {
+
     [TestClass]
     public class CacheVerification
     {
-        TorunamentCache _cache;
+        TournamentCache _cache;
 
         [TestInitialize]
         public void Initialize()
         {
-            _cache = new TorunamentCache();
+            _cache = new TournamentCache();
         }
 
         [TestMethod]
