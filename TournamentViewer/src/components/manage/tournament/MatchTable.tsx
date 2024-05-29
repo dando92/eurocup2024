@@ -149,10 +149,19 @@ export default function MatchTable({
               const scoreData = scoreTable[key];
               return (
                 <div key={j} className="border border-gray-300 p-2">
-                  <div className="text-center text-gray-600">
+                  <div className="text-center  justify-center flex flex-row gap-3 items-center text-gray-600">
                     {scoreData
                       ? `${scoreData.score} (${scoreData.percentage}%)`
                       : "-"}
+
+                    {!scoreData && (
+                      <button
+                        title="Manually add score"
+                        className="text-green-700"
+                      >
+                        <FontAwesomeIcon icon={faPlus} />
+                      </button>
+                    )}
                   </div>
                 </div>
               );
