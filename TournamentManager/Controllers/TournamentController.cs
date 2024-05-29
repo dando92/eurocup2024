@@ -108,7 +108,7 @@ namespace TournamentManager.Controllers
 
             _matchRepo.Update(match);
 
-            return Ok(GetPhaseExpanded(request.PhaseId));
+            return Ok(GetMatchDtoFromId(request.MatchId));
         }
 
         [HttpPost("addSongToMatch")]
@@ -135,10 +135,10 @@ namespace TournamentManager.Controllers
                 var level = int.Parse(request.Level);
                 AddRound(match, _songRepo.RollSong(division, request.Group, level));
             }
-            
+
             _matchRepo.Save();
 
-            return Ok(GetPhaseExpanded(request.PhaseId));
+            return Ok(GetMatchDtoFromId(request.MatchId));
         }
 
         [HttpPost("addMatch")]
@@ -168,10 +168,10 @@ namespace TournamentManager.Controllers
             var newMatch = CreateMatch(request.MatchName, request.PlayerIds, songs);
 
             newMatch.PhaseId = request.PhaseId;
-            
+
             _matchRepo.Add(newMatch);
 
-            return Ok(GetPhaseExpanded(request.PhaseId));
+            return Ok(GetMatchDtoFromId(newMatch.Id));
         }
 
         [HttpPost("setActiveMatch")]
@@ -184,7 +184,7 @@ namespace TournamentManager.Controllers
 
             _cache.SetActiveMatch(activeMatch);
 
-            return Ok();
+            return Ok(GetMatchDtoFromId(activeMatch.Id));
         }
 
         [HttpGet("activeMatch")]
@@ -195,22 +195,21 @@ namespace TournamentManager.Controllers
             if (activeMatch == null)
                 return NotFound();
 
-            return Ok(activeMatch);
+            return Ok(GetMatchDtoFromId(activeMatch.Id));
         }
 
         [HttpPost("addStanding")]
         public IActionResult AddStanding(Standing request)
         {
             _subscriber.OnNewStanding(request);
-            
+
             _matchRepo.Save();
 
             return Ok();
         }
-            
+
         private Match CreateMatch(string matchName, int[] players, List<int> songs)
         {
-            
             var match = new Match()
             {
                 Name = matchName,
@@ -227,7 +226,7 @@ namespace TournamentManager.Controllers
                 foreach (var song in songs)
                     AddRound(match, song);
             }
-            
+
             return match;
         }
 
@@ -247,14 +246,14 @@ namespace TournamentManager.Controllers
 
         private IActionResult DeleteStanding(Func<Standing, bool> shallDelete)
         {
-            bool removed = _subscriber.DeleteStanding(shallDelete);
+            var removed = _subscriber.DeleteStanding(shallDelete);
 
             if (!removed)
                 return NotFound();
 
             _matchRepo.Save();
 
-            return Ok(GetPhaseExpanded(_cache.ActiveMatch.PhaseId));
+            return Ok(GetMatchDtoFromId(_cache.ActiveMatch.Id));
         }
 
         private IQueryable<Match> GetMatchesFromPhaseId(int phaseId)
@@ -282,6 +281,42 @@ namespace TournamentManager.Controllers
                 .Include(m => m.SongInMatches)
                     .ThenInclude(s => s.Song)
                 .Where(m => m.Id == matchId);
+        }
+
+        private List<MatchDto> GetMatchesDtoFromPhaseId(int phaseId)
+        {
+            var matches = GetMatchesFromPhaseId(phaseId);
+
+            var matchesDto = matches.Select(match => new MatchDto
+            {
+                Id = match.Id,
+                Name = match.Name,
+                Players = match.PlayerInMatches.Select(p => p.Player).ToList(),
+                Songs = match.SongInMatches.Select(s => s.Song).ToList(),
+                Rounds = match.Rounds.ToList()
+            }).ToList();
+
+            return matchesDto;
+        }
+
+        private MatchDto GetMatchDtoFromId(int matchId)
+        {
+            var match = GetMatchFromId(matchId).FirstOrDefault();
+
+            if (match == null)
+                return null;
+
+            var matchDto = new MatchDto
+            {
+                Id = match.Id,
+                Name = match.Name,
+                Players = match.PlayerInMatches.Select(p => p.Player).ToList(),
+                Songs = match.SongInMatches.Select(s => s.Song).ToList(),
+                Rounds = match.Rounds.ToList()
+            };
+
+            return matchDto;
+
         }
     }
 }
