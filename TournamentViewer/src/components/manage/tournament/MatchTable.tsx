@@ -9,6 +9,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Division } from "../../../models/Division";
 import { Phase } from "../../../models/Phase";
+import AddSongToMatchModal from "./modals/AddSongToMatchModal";
+import { useState } from "react";
 
 type MatchTableProps = {
   division: Division;
@@ -22,6 +24,19 @@ type MatchTableProps = {
     matchId: number
   ) => void;
   onDeleteMatch: (matchId: number) => void;
+  onAddSongToMatchByRoll: (
+    divisionId: number,
+    phaseId: number,
+    matchId: number,
+    group: string,
+    level: string
+  ) => void;
+  onAddSongToMatchBySongId: (
+    divisionId: number,
+    phaseId: number,
+    matchId: number,
+    songId: number
+  ) => void;
 };
 
 export default function MatchTable({
@@ -32,10 +47,14 @@ export default function MatchTable({
   controls = false,
   onDeleteMatch,
   onSetActiveMatch,
+  onAddSongToMatchByRoll,
+  onAddSongToMatchBySongId,
 }: MatchTableProps) {
   // Create a lookup table for scores and percentages
   const scoreTable: { [key: string]: { score: number; percentage: number } } =
     {};
+
+  const [addSongToMatchModalOpen, setAddSongToMatchModalOpen] = useState(false);
 
   match.rounds.forEach((round) => {
     round.standings.forEach((standing) => {
@@ -53,7 +72,15 @@ export default function MatchTable({
         <h2 className="text-center text-4xl font-bold text-blue-600">
           &nbsp;{match.name}
         </h2>
-
+        <AddSongToMatchModal
+          phaseId={phase.id}
+          matchId={match.id}
+          divisionId={division.id}
+          open={addSongToMatchModalOpen}
+          onAddSongToMatchByRoll={onAddSongToMatchByRoll}
+          onAddSongToMatchBySongId={onAddSongToMatchBySongId}
+          onClose={() => setAddSongToMatchModalOpen(false)}
+        />
         {controls && (
           <div className="ml-3 bg-gray-300 rounded-xl p-3 flex flex-row gap-3">
             {!isActive && (
@@ -67,25 +94,17 @@ export default function MatchTable({
                 <FontAwesomeIcon icon={faPlay} />
               </button>
             )}
-            <button
-              title="Add a new round/song to the match"
-              onClick={() => {
-                /* Add a new song to the match */
-              }}
-              className=" text-green-800 font-bold flex flex-row gap-2"
-            >
-              <FontAwesomeIcon icon={faPlus} />
-            </button>
-
-            <button
-              title="Add a new round/song to the match by roll"
-              onClick={() => {
-                /* Add a new song to the match */
-              }}
-              className=" text-green-800 font-bold flex flex-row gap-2"
-            >
-              <FontAwesomeIcon icon={faShuffle} />
-            </button>
+            {isActive && (
+              <button
+                title="Add a new round/song to the match"
+                onClick={() => {
+                  setAddSongToMatchModalOpen(true);
+                }}
+                className=" text-green-800 font-bold flex flex-row gap-2"
+              >
+                <FontAwesomeIcon icon={faPlus} />
+              </button>
+            )}
             <button
               onClick={() => onDeleteMatch(match.id)}
               className="ml-3 text-red-800 font-bold flex flex-row gap-2"
@@ -112,7 +131,7 @@ export default function MatchTable({
             <div key={i} className="border border-blue-400 p-2">
               <div className="text-center font-bold text-blue-800">
                 {song.title}{" "}
-                {controls && (
+                {controls && isActive && (
                   <>
                     <button className="ml-3">
                       <FontAwesomeIcon icon={faRefresh} />
@@ -157,7 +176,7 @@ export default function MatchTable({
                       ? `${scoreData.score} (${scoreData.percentage}%)`
                       : "-"}
 
-                    {!scoreData && controls && (
+                    {!scoreData && controls && isActive && (
                       <button
                         title="Manually add score"
                         className="text-green-700"

@@ -3,7 +3,7 @@ import axios from "axios";
 import { Phase } from "../../../models/Phase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircle, faHandFist } from "@fortawesome/free-solid-svg-icons";
-import CreateMatchModal from "./CreateMatchModal";
+import CreateMatchModal from "./modals/CreateMatchModal";
 import { Division } from "../../../models/Division";
 import MatchTable from "./MatchTable";
 import { useMatches } from "../../../services/matches/useMatches";
@@ -76,6 +76,8 @@ export default function MatchesView({ phaseId, division }: MatchesViewProps) {
               isActive={true}
               onSetActiveMatch={actions.setActiveMatch}
               onDeleteMatch={actions.deleteMatch}
+              onAddSongToMatchByRoll={actions.addSongToMatchByRoll}
+              onAddSongToMatchBySongId={actions.addSongToMatchBySongId}
               match={state.activeMatch}
             />
           </div>
@@ -93,6 +95,8 @@ export default function MatchesView({ phaseId, division }: MatchesViewProps) {
                 isActive={state.activeMatch?.id === match.id}
                 onSetActiveMatch={actions.setActiveMatch}
                 onDeleteMatch={actions.deleteMatch}
+                onAddSongToMatchByRoll={actions.addSongToMatchByRoll}
+                onAddSongToMatchBySongId={actions.addSongToMatchBySongId}
                 key={match.id}
                 match={match}
               />

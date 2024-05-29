@@ -66,7 +66,7 @@ export async function addSongToActiveMatch(
   request: AddSongToMatchRequest
 ): Promise<Match> {
   try {
-    const response = await axios.post("tournament/addround", request);
+    const response = await axios.post("tournament/addsongtomatch", request);
     return response.data;
   } catch (error) {
     console.error("Error adding song to active match:", error);
