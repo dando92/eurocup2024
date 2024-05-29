@@ -10,6 +10,7 @@ import { Division } from "../../../models/Division";
 import { Phase } from "../../../models/Phase";
 import AddEditSongToMatchModal from "./modals/AddEditSongToMatchModal";
 import { useState } from "react";
+import AddStandingToMatchModal from "./modals/AddStandingToMatchModal";
 
 type MatchTableProps = {
   division: Division;
@@ -51,6 +52,12 @@ type MatchTableProps = {
     songId: number,
     editSongId: number
   ) => void;
+  onAddStandingToMatch: (
+    playerId: number,
+    songId: number,
+    percentage: number,
+    isFailed: boolean
+  ) => void;
 };
 
 export default function MatchTable({
@@ -65,6 +72,7 @@ export default function MatchTable({
   onAddSongToMatchBySongId,
   onEditSongToMatchByRoll,
   onEditSongToMatchBySongId,
+  onAddStandingToMatch,
 }: MatchTableProps) {
   // Create a lookup table for scores and percentages
   const scoreTable: { [key: string]: { score: number; percentage: number } } =
@@ -72,6 +80,16 @@ export default function MatchTable({
 
   const [addSongToMatchModalOpen, setAddSongToMatchModalOpen] = useState(false);
   const [editSongId, setEditSongId] = useState<number | null>(null);
+
+  const [addStandingToMatchModalOpen, setAddStandingToMatchModalOpen] =
+    useState(false);
+
+  const [songIdPlayerId, setSongIdPlayerId] = useState<{
+    playerId: number;
+    playerName: string;
+    songId: number;
+    songTitle: string;
+  }>({ songId: 0, playerId: 0, playerName: "", songTitle: "" });
 
   match.rounds.forEach((round) => {
     round.standings.forEach((standing) => {
@@ -103,6 +121,23 @@ export default function MatchTable({
             setAddSongToMatchModalOpen(false);
             setEditSongId(null);
           }}
+        />
+        <AddStandingToMatchModal
+          open={addStandingToMatchModalOpen}
+          playerId={songIdPlayerId.playerId}
+          songId={songIdPlayerId.songId}
+          playerName={songIdPlayerId.playerName}
+          songTitle={songIdPlayerId.songTitle}
+          onClose={() => {
+            setAddStandingToMatchModalOpen(false);
+            setSongIdPlayerId({
+              playerId: 0,
+              songId: 0,
+              playerName: "",
+              songTitle: "",
+            });
+          }}
+          onAddStandingToMatch={onAddStandingToMatch}
         />
         {controls && (
           <div className="ml-3 bg-gray-300 rounded-xl p-3 flex flex-row gap-3">
@@ -207,6 +242,15 @@ export default function MatchTable({
                       <button
                         title="Manually add score"
                         className="text-green-700"
+                        onClick={() => {
+                          setAddStandingToMatchModalOpen(true);
+                          setSongIdPlayerId({
+                            playerId: player.id,
+                            songId: song.id,
+                            playerName: player.name,
+                            songTitle: song.title,
+                          });
+                        }}
                       >
                         <FontAwesomeIcon icon={faPlus} />
                       </button>

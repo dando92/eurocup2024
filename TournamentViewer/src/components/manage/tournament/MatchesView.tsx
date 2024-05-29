@@ -80,6 +80,7 @@ export default function MatchesView({ phaseId, division }: MatchesViewProps) {
               onAddSongToMatchBySongId={actions.addSongToMatchBySongId}
               onEditSongToMatchByRoll={actions.editSongToMatchByRoll}
               onEditSongToMatchBySongId={actions.editSongToMatchBySongId}
+              onAddStandingToMatch={actions.addStandingToMatch}
               match={state.activeMatch}
             />
           </div>
@@ -101,6 +102,7 @@ export default function MatchesView({ phaseId, division }: MatchesViewProps) {
                 onAddSongToMatchBySongId={actions.addSongToMatchBySongId}
                 onEditSongToMatchByRoll={actions.editSongToMatchByRoll}
                 onEditSongToMatchBySongId={actions.editSongToMatchBySongId}
+                onAddStandingToMatch={actions.addStandingToMatch}
                 key={match.id}
                 match={match}
               />
