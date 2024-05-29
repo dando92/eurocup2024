@@ -30,18 +30,15 @@ namespace TournamentManager.Services
         {
             if (match == _activeMatch)
                 return;
-
-            if (_activeMatch != null && match == null)
+            
+            if (_activeMatch != null)
             {
                 _iterator = null;
                 _currentRound = null;
-                _activeMatch = match;
             }
-            else if (_activeMatch == null && match != null)
-            {
-                _activeMatch = match;
-                AdvanceRound();
-            }
+
+            _activeMatch = match;
+            AdvanceRound();
         }
 
         public Round AdvanceRound()
@@ -65,7 +62,13 @@ namespace TournamentManager.Services
         private IEnumerator<Round> GetIterator()
         {
             foreach (var round in _activeMatch.Rounds)
+            {
+                //If round is already populated.
+                if (round.Standings.Count == _activeMatch.PlayerInMatches.Count)
+                    continue;
+             
                 yield return round;
+            }
         }
     }
 }
