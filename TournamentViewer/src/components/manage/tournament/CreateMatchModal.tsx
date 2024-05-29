@@ -8,11 +8,12 @@ import { faMinusCircle, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { Song } from "../../../models/Song";
 import { Division } from "../../../models/Division";
 import { Phase } from "../../../models/Phase";
+import { CreateMatchRequest } from "../../../models/requests/match-requests";
 
 type CreateMatchModal = {
   open: boolean;
   onClose: () => void;
-  onCreate: () => void;
+  onCreate: (request: CreateMatchRequest) => void;
   phase: Phase;
   division: Division;
 };
@@ -77,11 +78,10 @@ export default function CreateMatchModal({
       group: selectedGroupName,
       songIds: selectedSongs.map((s) => s.id),
       playerIds: selectedPlayers.map((p) => p.id),
-    };
+    } as CreateMatchRequest;
 
-    axios.post("tournament/addMatch", request).then(() => {
-      onCreate();
-    });
+    onCreate(request);
+    onClose();
   };
 
   const createMatchByRoll = () => {
@@ -92,11 +92,10 @@ export default function CreateMatchModal({
       group: selectedGroupName,
       levels: selectedSongDifficulties.join(","),
       playerIds: selectedPlayers.map((p) => p.id),
-    };
+    } as CreateMatchRequest;
 
-    axios.post("tournament/addMatch", request).then(() => {
-      onCreate();
-    });
+    onCreate(request);
+    onClose();
   };
 
   return (

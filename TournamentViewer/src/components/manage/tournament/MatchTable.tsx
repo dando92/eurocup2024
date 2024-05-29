@@ -1,7 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Match } from "../../../models/Match";
 import {
-  faCircle,
   faPlay,
   faPlus,
   faRefresh,
@@ -16,6 +15,7 @@ type MatchTableProps = {
   phase: Phase;
   match: Match;
   isActive: boolean;
+  controls?: boolean;
   onSetActiveMatch: (
     divisionId: number,
     phaseId: number,
@@ -29,6 +29,7 @@ export default function MatchTable({
   phase,
   match,
   isActive,
+  controls = false,
   onDeleteMatch,
   onSetActiveMatch,
 }: MatchTableProps) {
@@ -47,54 +48,52 @@ export default function MatchTable({
   });
 
   return (
-    <div className="flex flex-col w-full p-4 bg-gray-100 rounded-lg shadow-md">
+    <div className="flex flex-col w-full p-4 my-3 bg-gray-200 rounded-lg shadow-md">
       <div className="flex flex-row mb-6 justify-center items-center">
-        {isActive && (
-          <FontAwesomeIcon
-            icon={faCircle}
-            className="text-green-800 text-xs animate-pulse"
-          />
-        )}
         <h2 className="text-center text-4xl font-bold text-blue-600">
           &nbsp;{match.name}
         </h2>
 
-        <div className="ml-3 bg-gray-300 rounded-xl p-3 flex flex-row gap-3">
-          {!isActive && (
+        {controls && (
+          <div className="ml-3 bg-gray-300 rounded-xl p-3 flex flex-row gap-3">
+            {!isActive && (
+              <button
+                onClick={() =>
+                  onSetActiveMatch(division.id, phase.id, match.id)
+                }
+                title="Set as active match"
+                className="text-green-800 font-bold flex flex-row gap-2"
+              >
+                <FontAwesomeIcon icon={faPlay} />
+              </button>
+            )}
             <button
-              onClick={() => onSetActiveMatch(division.id, phase.id, match.id)}
-              title="Set as active match"
-              className="text-green-800 font-bold flex flex-row gap-2"
+              title="Add a new round/song to the match"
+              onClick={() => {
+                /* Add a new song to the match */
+              }}
+              className=" text-green-800 font-bold flex flex-row gap-2"
             >
-              <FontAwesomeIcon icon={faPlay} />
+              <FontAwesomeIcon icon={faPlus} />
             </button>
-          )}
-          <button
-            title="Add a new round/song to the match"
-            onClick={() => {
-              /* Add a new song to the match */
-            }}
-            className=" text-green-800 font-bold flex flex-row gap-2"
-          >
-            <FontAwesomeIcon icon={faPlus} />
-          </button>
 
-          <button
-            title="Add a new round/song to the match by roll"
-            onClick={() => {
-              /* Add a new song to the match */
-            }}
-            className=" text-green-800 font-bold flex flex-row gap-2"
-          >
-            <FontAwesomeIcon icon={faShuffle} />
-          </button>
-          <button
-            onClick={() => onDeleteMatch(match.id)}
-            className="ml-3 text-red-800 font-bold flex flex-row gap-2"
-          >
-            <FontAwesomeIcon icon={faTrash} />
-          </button>
-        </div>
+            <button
+              title="Add a new round/song to the match by roll"
+              onClick={() => {
+                /* Add a new song to the match */
+              }}
+              className=" text-green-800 font-bold flex flex-row gap-2"
+            >
+              <FontAwesomeIcon icon={faShuffle} />
+            </button>
+            <button
+              onClick={() => onDeleteMatch(match.id)}
+              className="ml-3 text-red-800 font-bold flex flex-row gap-2"
+            >
+              <FontAwesomeIcon icon={faTrash} />
+            </button>
+          </div>
+        )}
       </div>
 
       <div>
@@ -113,12 +112,16 @@ export default function MatchTable({
             <div key={i} className="border border-blue-400 p-2">
               <div className="text-center font-bold text-blue-800">
                 {song.title}{" "}
-                <button className="ml-3">
-                  <FontAwesomeIcon icon={faRefresh} />
-                </button>
-                <button className="ml-3">
-                  <FontAwesomeIcon icon={faShuffle} />
-                </button>
+                {controls && (
+                  <>
+                    <button className="ml-3">
+                      <FontAwesomeIcon icon={faRefresh} />
+                    </button>
+                    <button className="ml-3">
+                      <FontAwesomeIcon icon={faShuffle} />
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           ))}
@@ -154,7 +157,7 @@ export default function MatchTable({
                       ? `${scoreData.score} (${scoreData.percentage}%)`
                       : "-"}
 
-                    {!scoreData && (
+                    {!scoreData && controls && (
                       <button
                         title="Manually add score"
                         className="text-green-700"

@@ -15,6 +15,15 @@ export function useMatches(phaseId: number) {
       throw new Error("Unable to list matches by phase.");
     }
   }
+  async function getActiveMatch() {
+    try {
+      const item = await MatchesApi.getActiveMatch();
+      dispatch({ type: "onSetActiveMatch", payload: item });
+    } catch (error) {
+      console.error("Error getting active match:", error);
+      throw new Error("Unable to get active match.");
+    }
+  }
 
   async function create(request: CreateMatchRequest) {
     try {
@@ -148,6 +157,7 @@ export function useMatches(phaseId: number) {
     state,
     actions: {
       list,
+      getActiveMatch,
       create,
       setActiveMatch,
       deleteMatch,

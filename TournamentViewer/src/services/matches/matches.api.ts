@@ -12,6 +12,7 @@ export async function listByPhase(phaseId: number): Promise<Match[]> {
     const response = await axios.get<Match[]>(
       "tournament/expandphase/" + phaseId
     );
+
     return response.data;
   } catch (error) {
     console.error("Error listing matches by phase:", error);
@@ -19,9 +20,20 @@ export async function listByPhase(phaseId: number): Promise<Match[]> {
   }
 }
 
+export async function getActiveMatch(): Promise<Match> {
+  try {
+    const response = await axios.get<Match>("tournament/activeMatch");
+
+    return response.data;
+  } catch (error) {
+    console.error("Error getting active match:", error);
+    throw new Error("Unable to get active match.");
+  }
+}
+
 export async function create(request: CreateMatchRequest): Promise<Match> {
   try {
-    const response = await axios.post<Match>("matches", request);
+    const response = await axios.post<Match>("tournament/addMatch", request);
     return response.data;
   } catch (error) {
     console.error("Error creating match:", error);
