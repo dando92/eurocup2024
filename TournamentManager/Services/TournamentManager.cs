@@ -21,8 +21,6 @@ namespace TournamentManager.Services
             if (_cache.ActiveMatch == null || _cache.CurrentRound == null)
                 return;
 
-            standing.RoundId = _cache.CurrentRound.Id;
-
             if (standing.Song == null || standing.Player == null)
                 return;
 
@@ -31,6 +29,8 @@ namespace TournamentManager.Services
             
             if (playerInActiveMatch == null || songInActiveMatch == null)
                 return;
+
+            standing.RoundId = _cache.CurrentRound.Id;
 
             _cache.Standings.Add(standing);
 

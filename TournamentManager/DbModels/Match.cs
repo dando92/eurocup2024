@@ -6,6 +6,8 @@ namespace TournamentManager.DbModels
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public string Subtitle { get; set; }
+        public string Notes { get; set; }
         public int PhaseId { get; set; }
 
         [JsonIgnore]

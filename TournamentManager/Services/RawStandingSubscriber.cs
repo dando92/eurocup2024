@@ -6,7 +6,7 @@ namespace TournamentManager.Services
 {
     public class RawStandingSubscriber : IRawStandingSubscriber
     {
-        private IStandingSubscriber _subscribers;
+        private IStandingSubscriber _subscriber;
 
         private readonly IGenericRepository<Standing> _standingRepo;
         private readonly IGenericRepository<Song> _songRepo;
@@ -19,7 +19,7 @@ namespace TournamentManager.Services
         {
             _songRepo = songRepo;
             _playerRepo = playerRepo;
-            _subscribers = subscribers;
+            _subscriber = subscribers;
             _standingRepo = standingRepo;
         }
 
@@ -51,19 +51,27 @@ namespace TournamentManager.Services
                     IsFailed = score.IsFailed
                 };
 
-                NotifyNewStanding(standing);
+                Standing duplicate = _standingRepo
+                   .GetAll()
+                   .Where(s => s.PlayerId == standing.PlayerId && s.SongId == standing.PlayerId)
+                   .FirstOrDefault();
 
-                if(standing.RoundId == null)
+                if (duplicate != null)
+                    return;
+
+                NotifyNewStanding(standing);
+                
+                if(standing.RoundId != 0)
                     _standingRepo.Add(standing);
             }
         }
 
         private void NotifyNewStanding(Standing standing)
         {
-            if (_subscribers == null)
+            if (_subscriber == null)
                 return;
 
-            _subscribers.OnNewStanding(standing);
+            _subscriber.OnNewStanding(standing);
         }
     }
 }

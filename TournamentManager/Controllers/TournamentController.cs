@@ -54,7 +54,7 @@ namespace TournamentManager.Controllers
 
             _matchRepo.Update(match);
 
-            return Ok();
+            return Ok(GetPhaseExpanded(match.PhaseId));
         }
 
         [HttpGet("deleteStandingForPlayer")]
@@ -88,7 +88,7 @@ namespace TournamentManager.Controllers
 
             _matchRepo.Update(match);
 
-            return Ok();
+            return Ok(GetPhaseExpanded(match.PhaseId));
         }
 
         [HttpGet("expandPhase/{id}")]
@@ -154,7 +154,7 @@ namespace TournamentManager.Controllers
 
             _matchRepo.Update(match);
 
-            return Ok();
+            return Ok(GetPhaseExpanded(request.PhaseId));
         }
 
         [HttpPost("addSongToMatch")]
@@ -183,7 +183,7 @@ namespace TournamentManager.Controllers
                 AddRound(match, _songRepo.RollSong(phase, request.Group, level));
             }
 
-            return Ok();
+            return Ok(GetPhaseExpanded(request.PhaseId));
         }
 
         [HttpPost("addMatch")]
@@ -218,7 +218,7 @@ namespace TournamentManager.Controllers
 
             _divisionRepo.Update(division);
 
-            return Ok();
+            return Ok(GetPhaseExpanded(request.PhaseId));
         }
 
         private void CreateMatch(Phase phase, string matchName, int[] players, List<int> songs)
