@@ -29,20 +29,14 @@ namespace TournamentManager.Services
 
             standing.RoundId = _cache.CurrentRound.Id;
 
-            _cache.Standings.Add(standing);
+            _cache.CurrentRound.Standings.Add(standing);
 
-            if (_cache.Standings.Count >= _cache.ActiveMatch.PlayerInMatches.Count)
+            if (_cache.CurrentRound.Standings.Count >= _cache.ActiveMatch.PlayerInMatches.Count)
             {
-                _cache.Standings = _cache.Standings.Recalc();
-
-                foreach (var std in _cache.Standings)
-                    _cache.CurrentRound.Standings.Add(std);
-                
+                _cache.CurrentRound.Standings.Recalc();
                 _cache.AdvanceRound();
 
                 _hub?.OnMatchUpdate(_cache.ActiveMatch);
-
-                _cache.Standings.Clear();
             }
         }
 
@@ -55,29 +49,12 @@ namespace TournamentManager.Services
             
             Round round = _cache.CurrentRound;
 
-            int standingsBeforeDeleteCount = round.Standings.Count;
-
             foreach (var standing in round.Standings)
             {
                 if (shallDelete(standing))
                 {
                     round.Standings.Remove(standing);
                     removed = true;
-                }
-            }
-
-            if (removed)
-            {
-                int newStandingsCount = round.Standings.Count;
-
-
-                if (standingsBeforeDeleteCount != newStandingsCount && //If count changed
-                    standingsBeforeDeleteCount > 0 && // and there were any standings before
-                    newStandingsCount > 0) //and removed some and not all
-                {
-                    //Reopen current round
-                    _cache.Standings.AddRange(round.Standings);
-                    round.Standings.Clear();
                 }
             }
 

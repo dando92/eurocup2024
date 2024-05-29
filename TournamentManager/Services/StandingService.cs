@@ -1,17 +1,17 @@
 ﻿using System.Net.WebSockets;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.Serialization;
-using System.Text.Json;
 using System.Text.Json.Serialization;
-using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
+using TournamentManager.DbModels;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace TournamentManager.Services
 {
-    public class RawStanding
+    public class RawStanding 
     {
         [JsonPropertyName("scores")]
         public Score[] Scores { get; set; }
+
     }
 
     public class Score
@@ -172,6 +172,7 @@ namespace TournamentManager.Services
                 }
             }
         }
+
         static T Deserialize<T>(byte[] buffer, int datalen)
         {
             using (StreamReader sr = new StreamReader(new MemoryStream(buffer, 0, datalen)))

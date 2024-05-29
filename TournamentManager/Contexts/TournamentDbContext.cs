@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using TournamentManager.DbModels;
 
 namespace TournamentManager.Contexts

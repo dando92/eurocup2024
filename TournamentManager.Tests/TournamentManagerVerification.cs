@@ -66,7 +66,7 @@ namespace TournamentManager.Tests
             });
 
             Assert.AreEqual(TestUtils.Match.Rounds.ToArray()[0], _cache.CurrentRound);
-            Assert.AreEqual(++index, _cache.Standings.Count);
+            Assert.AreEqual(++index, _cache.CurrentRound.Standings.Count);
 
             _tournamentManager.OnNewStanding(new Standing()
             {
@@ -77,7 +77,7 @@ namespace TournamentManager.Tests
             });
 
             Assert.AreEqual(TestUtils.Match.Rounds.ToArray()[0], _cache.CurrentRound);
-            Assert.AreEqual(++index, _cache.Standings.Count);
+            Assert.AreEqual(++index, _cache.CurrentRound.Standings.Count);
 
             _tournamentManager.OnNewStanding(new Standing()
             {
@@ -88,7 +88,7 @@ namespace TournamentManager.Tests
             });
 
             Assert.AreEqual(TestUtils.Match.Rounds.ToArray()[0], _cache.CurrentRound);
-            Assert.AreEqual(++index, _cache.Standings.Count);
+            Assert.AreEqual(++index, _cache.CurrentRound.Standings.Count);
 
             _tournamentManager.OnNewStanding(new Standing()
             {
@@ -99,7 +99,7 @@ namespace TournamentManager.Tests
             });
 
             Assert.AreEqual(TestUtils.Match.Rounds.ToArray()[1], _cache.CurrentRound);
-            Assert.AreEqual(0, _cache.Standings.Count);
+            Assert.AreEqual(0, _cache.CurrentRound.Standings.Count);
             Assert.IsNotNull(_cache.ActiveMatch);
         }
 
@@ -112,14 +112,14 @@ namespace TournamentManager.Tests
 
             Round updatedRound = _cache.ActiveMatch.Rounds.Where(r => r.Id == roundId).First();
 
-            Assert.AreEqual(4, updatedRound.Standings.ToArray()[0].Score);
-            Assert.AreEqual(100, updatedRound.Standings.ToArray()[0].Percentage);
+            Assert.AreEqual(3, updatedRound.Standings.ToArray()[0].Score);
+            Assert.AreEqual(80, updatedRound.Standings.ToArray()[0].Percentage);
 
-            Assert.AreEqual(3, updatedRound.Standings.ToArray()[1].Score);
-            Assert.AreEqual(80, updatedRound.Standings.ToArray()[1].Percentage);
+            Assert.AreEqual(2, updatedRound.Standings.ToArray()[1].Score);
+            Assert.AreEqual(60, updatedRound.Standings.ToArray()[1].Percentage);
 
-            Assert.AreEqual(2, updatedRound.Standings.ToArray()[2].Score);
-            Assert.AreEqual(60, updatedRound.Standings.ToArray()[2].Percentage);
+            Assert.AreEqual(4, updatedRound.Standings.ToArray()[2].Score);
+            Assert.AreEqual(100, updatedRound.Standings.ToArray()[2].Percentage);
 
             Assert.AreEqual(1, updatedRound.Standings.ToArray()[3].Score);
             Assert.AreEqual(40, updatedRound.Standings.ToArray()[3].Percentage);

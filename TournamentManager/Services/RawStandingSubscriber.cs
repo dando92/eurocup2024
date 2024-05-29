@@ -1,6 +1,5 @@
 ﻿using TournamentManager.Contexts;
 using TournamentManager.DbModels;
-using TournamentManager.Requests;
 
 namespace TournamentManager.Services
 {

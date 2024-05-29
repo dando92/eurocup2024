@@ -48,7 +48,7 @@ namespace TournamentManager.Controllers
             var match = new Match
             {
                 Name = request.Name,
-                PhaseId = request.PhaseId,
+                PhaseId = request.MatchId,
             };
 
             _repo.Add(match);
@@ -56,19 +56,26 @@ namespace TournamentManager.Controllers
             return Ok(match);
         }
 
-        [HttpPut("{id}")]
-        public IActionResult UpdateMatch(int id, [FromBody] PostMatchRequest request)
+        [HttpPut]
+        public IActionResult UpdateMatch([FromBody] PostMatchRequest request)
         {
-            var match = _repo.GetById(id);
+            var match = _repo.GetAll().Where(m => m.Id == request.MatchId).FirstOrDefault();
 
             if (match == null)
             {
                 return NotFound();
             }
 
-            match.Name = request.Name;
+            if (request.Name != null)
+                match.Name = request.Name;
 
-            _repo.Update(match);
+            if (request.Subtitle != null)
+                match.Subtitle = request.Subtitle;
+
+            if (request.Notes != null)
+                match.Notes = request.Notes;
+
+            _repo.Save();
 
             return Ok(match);
         }

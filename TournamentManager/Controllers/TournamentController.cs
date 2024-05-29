@@ -176,7 +176,7 @@ namespace TournamentManager.Controllers
                     songs.Add(_songRepo.RollSong(division, request.Group, level));
             }
 
-            var newMatch = CreateMatch(request.MatchName, request.PlayerIds, songs);
+            var newMatch = CreateMatch(request.MatchName, request.Notes, request.Subtitle, request.PlayerIds, songs);
 
             newMatch.PhaseId = request.PhaseId;
 
@@ -219,11 +219,13 @@ namespace TournamentManager.Controllers
             return Ok();
         }
 
-        private Match CreateMatch(string matchName, int[] players, List<int> songs)
+        private Match CreateMatch(string matchName, string notes, string subTitle, int[] players, List<int> songs)
         {
             var match = new Match()
             {
                 Name = matchName,
+                Subtitle = subTitle,
+                Notes = notes,
                 PlayerInMatches = new List<PlayerInMatch>(players.Length),
                 SongInMatches = new List<SongInMatch>(),
                 Rounds = new List<Round>(),

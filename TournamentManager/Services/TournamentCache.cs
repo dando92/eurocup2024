@@ -1,4 +1,5 @@
-﻿using TournamentManager.DbModels;
+﻿using TournamentManager.Contexts;
+using TournamentManager.DbModels;
 
 namespace TournamentManager.Services
 {
@@ -6,7 +7,6 @@ namespace TournamentManager.Services
     {
         Round CurrentRound { get; }
         Match ActiveMatch { get; }
-        List<Standing> Standings { get; set; }
         Round AdvanceRound();
         void SetActiveMatch(Match match);
     }
@@ -19,11 +19,9 @@ namespace TournamentManager.Services
         
         public Round CurrentRound { get => _currentRound; }
         public Match ActiveMatch { get => _activeMatch; }
-        public List<Standing> Standings { get; set; }
 
         public TournamentCache()
         {
-            Standings = new List<Standing>();
         }
 
         public void SetActiveMatch(Match match)

@@ -6,7 +6,8 @@
         public int PhaseId { get; set; }
         public string MatchName { get; set; }
         public string Group { get; set; }
-
+        public string Subtitle { get; set; }
+        public string Notes { get; set; }
         public string Levels { get; set; }
         public List<int> SongIds { get; set; }
 
