@@ -11,14 +11,12 @@ namespace TournamentManager.Tests
     {
         Services.TournamentManager _tournamentManager;
         TournamentCache _cache;
-        Mock<IGenericRepository<Round>> _mock;
 
         [TestInitialize]
         public void Initialize()
         {
-            _mock = new Mock<IGenericRepository<Round>>();
             _cache = new TournamentCache();
-            _tournamentManager = new Services.TournamentManager(_cache, _mock.Object, null);
+            _tournamentManager = new Services.TournamentManager(_cache, null);
         }
 
         [TestCleanup]
@@ -108,13 +106,11 @@ namespace TournamentManager.Tests
         [TestMethod]
         public void UpdateStandingsRepository_WorksCorrectly()
         {
-            Round updatedRound = null;
-            _mock.Setup(c => c.Update(It.IsAny<Round>()))
-                .Callback<Round>((round) => { updatedRound = round; });
+            int roundId = TestUtils.Match.Rounds.First().Id;
 
             CachedStandings_AreCorrect();
 
-            _mock.Verify(c => c.Update(It.IsAny<Round>()), Times.Once());
+            Round updatedRound = _cache.ActiveMatch.Rounds.Where(r => r.Id == roundId).First();
 
             Assert.AreEqual(4, updatedRound.Standings.ToArray()[0].Score);
             Assert.AreEqual(100, updatedRound.Standings.ToArray()[0].Percentage);

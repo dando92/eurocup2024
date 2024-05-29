@@ -10,7 +10,7 @@ namespace TournamentManager.Tests
     public class TournamentControllerVerification
     {
         TournamentCache _cache;
-        Mock<IRawStandingSubscriber> _rawStandingSub;
+        Services.TournamentManager _tournamentManager;
         Mock<IGenericRepository<Division>> _divisionRepo;
         Mock<IGenericRepository<DbModels.Match>> _matchRepo;
         Mock<IGenericRepository<Phase>> _phaseRepo;
@@ -19,13 +19,14 @@ namespace TournamentManager.Tests
 
         [TestInitialize]
         public void Initialize()
-        {
-            _rawStandingSub = new Mock<IRawStandingSubscriber>();
+        {   
             _divisionRepo = new Mock<IGenericRepository<Division>>();
             _matchRepo = new Mock<IGenericRepository<DbModels.Match>>();
             _phaseRepo = new Mock<IGenericRepository<Phase>>();
             _songRepo = new Mock<IGenericRepository<Song>>();
             _cache = new TournamentCache();
+            
+            _tournamentManager = new Services.TournamentManager(_cache, null);
 
             _divisionRepo
                 .Setup(s => s.GetAll(true))
@@ -59,7 +60,7 @@ namespace TournamentManager.Tests
                 .Setup(s => s.GetById(It.IsAny<int>()))
                 .Returns((int id) => TournamentControllerDatabase.Phases.Find(p => p.Id == id));
 
-            _controller = new TournamentController(_cache, _divisionRepo.Object, _rawStandingSub.Object, _matchRepo.Object, _phaseRepo.Object, _songRepo.Object);
+            _controller = new TournamentController(_cache, _divisionRepo.Object, _tournamentManager, _matchRepo.Object, _phaseRepo.Object, _songRepo.Object);
         }
 
         [TestCleanup]

@@ -1,18 +1,15 @@
-﻿using TournamentManager.Contexts;
-using TournamentManager.DbModels;
+﻿using TournamentManager.DbModels;
 
 namespace TournamentManager.Services
 {
     public class TournamentManager : IStandingSubscriber
     {
         private TournamentCache _cache;
-        private readonly IGenericRepository<Round> _roundRepository;
         private readonly IMatchUpdate _hub;
 
-        public TournamentManager(TournamentCache cache, IGenericRepository<Round> roundRepository, IMatchUpdate hub)
+        public TournamentManager(TournamentCache cache, IMatchUpdate hub)
         {
             _cache = cache;
-            _roundRepository = roundRepository;
             _hub = hub;
         }
 
@@ -40,8 +37,6 @@ namespace TournamentManager.Services
 
                 foreach (var std in _cache.Standings)
                     _cache.CurrentRound.Standings.Add(std);
-
-                _roundRepository.Update(_cache.CurrentRound);
                 
                 _cache.AdvanceRound();
 
@@ -49,6 +44,44 @@ namespace TournamentManager.Services
 
                 _cache.Standings.Clear();
             }
+        }
+
+        public bool DeleteStanding(Func<Standing, bool> shallDelete)
+        {
+            bool removed = false;
+
+            if (_cache.ActiveMatch == null || _cache.CurrentRound == null)
+                return removed;
+            
+            Round round = _cache.CurrentRound;
+
+            int standingsBeforeDeleteCount = round.Standings.Count;
+
+            foreach (var standing in round.Standings)
+            {
+                if (shallDelete(standing))
+                {
+                    round.Standings.Remove(standing);
+                    removed = true;
+                }
+            }
+
+            if (removed)
+            {
+                int newStandingsCount = round.Standings.Count;
+
+
+                if (standingsBeforeDeleteCount != newStandingsCount && //If count changed
+                    standingsBeforeDeleteCount > 0 && // and there were any standings before
+                    newStandingsCount > 0) //and removed some and not all
+                {
+                    //Reopen current round
+                    _cache.Standings.AddRange(round.Standings);
+                    round.Standings.Clear();
+                }
+            }
+
+            return removed;
         }
     }
 }

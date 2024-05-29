@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNet.SignalR;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TournamentManager.Contexts;
 using TournamentManager.DbModels;
@@ -17,11 +18,11 @@ namespace TournamentManager.Controllers
         private readonly IGenericRepository<Match> _matchRepo;
         private readonly IGenericRepository<Song> _songRepo;
         private readonly TournamentCache _cache;
-        private IRawStandingSubscriber _subscriber;
+        private Services.TournamentManager _subscriber;
 
         public TournamentController(TournamentCache cache,
             IGenericRepository<Division> divisionRepo,
-            IRawStandingSubscriber subscriber,
+            Services.TournamentManager subscriber,
             IGenericRepository<Match> matchRepo,
             IGenericRepository<Phase> phaseRepo,
             IGenericRepository<Song> songRepo
@@ -41,20 +42,10 @@ namespace TournamentManager.Controllers
             if (_cache.ActiveMatch == null)
                 return NotFound();
 
-            var match = _matchRepo.GetById(_cache.ActiveMatch.Id);
+            if (songId == 0)
+                return NotFound();
 
-            foreach (var round in match.Rounds)
-            {
-                foreach (var standing in round.Standings)
-                {
-                    if (standing.SongId == songId)
-                        round.Standings.Remove(standing);
-                }
-            }
-
-            _matchRepo.Update(match);
-
-            return Ok(GetPhaseExpanded(match.PhaseId));
+            return DeleteStanding((standing) => standing.SongId == songId);
         }
 
         [HttpGet("deleteStandingForPlayer")]
@@ -63,32 +54,10 @@ namespace TournamentManager.Controllers
             if (_cache.ActiveMatch == null)
                 return NotFound();
 
-            var match = _matchRepo.GetById(_cache.ActiveMatch.Id);
-            
-            Round foundRound = null;
+            if (request.SongId == 0 || request.PlayerId == 0)
+                return NotFound();
 
-            foreach (var round in match.Rounds)
-            {
-                foreach (var standing in round.Standings)
-                {
-                    if ((standing.SongId == request.SongId) && (standing.PlayerId == request.PlayerId))
-                    {
-                        round.Standings.Remove(standing);
-                        foundRound = round;
-                        break;
-                    }
-                }
-                if (foundRound != null)
-                    break;
-            }
-
-            _cache.Standings.AddRange(foundRound.Standings);
-            
-            foundRound.Standings.Clear();
-
-            _matchRepo.Update(match);
-
-            return Ok(GetPhaseExpanded(match.PhaseId));
+            return DeleteStanding((standing) => (standing.SongId == request.SongId) && (standing.PlayerId == request.PlayerId));
         }
 
         [HttpGet("expandPhase/{id}")]
@@ -106,20 +75,6 @@ namespace TournamentManager.Controllers
             });
 
             return Ok(matchesDto);
-        }
-
-        private void AddRound(Match match, int songId)
-        {
-            var round = new Round()
-            {
-                Match = match,
-                MatchId = match.Id,
-                Standings = new List<Standing>()
-            };
-
-            match.SongInMatches.Add(new SongInMatch() { SongId = songId, MatchId = match.Id });
-
-            match.Rounds.Add(round);
         }
 
         [HttpPost("editMatchSong")]
@@ -160,17 +115,15 @@ namespace TournamentManager.Controllers
         [HttpPost("addSongToMatch")]
         public IActionResult AddSongToMatch(PostAddSongToMatch request)
         {
-            var division = _divisionRepo.GetById(request.DivisionId);
-
-            if (division == null)
-                return NotFound();
-
-            var phase = _phaseRepo.GetById(request.PhaseId);
-
+            var phase = _phaseRepo
+                .GetAll()
+                .Include(p => p.Matches)
+                    .ThenInclude(m => m.SongInMatches).FirstOrDefault();
+            
             if (phase == null)
                 return NotFound();
 
-            var match = phase.Matches.Where(m => m.Id == request.MatchId).FirstOrDefault();
+            var match = GetMatchFromId(request.MatchId).FirstOrDefault();
 
             if (match == null)
                 return NotFound();
@@ -182,6 +135,8 @@ namespace TournamentManager.Controllers
                 var level = int.Parse(request.Level);
                 AddRound(match, _songRepo.RollSong(phase, request.Group, level));
             }
+            
+            _matchRepo.Save();
 
             return Ok(GetPhaseExpanded(request.PhaseId));
         }
@@ -189,15 +144,7 @@ namespace TournamentManager.Controllers
         [HttpPost("addMatch")]
         public IActionResult AddMatch(PostAddMatch request)
         {
-            var division = _divisionRepo
-                .GetById(request.DivisionId);
-
-            if (division == null)
-                return NotFound();
-
             var phase = _phaseRepo.GetById(request.PhaseId);
-
-            phase.Matches = GetMatchesFromPhaseId(phase.Id).ToList();
 
             if (phase == null)
                 return NotFound();
@@ -214,64 +161,19 @@ namespace TournamentManager.Controllers
                     songs.Add(_songRepo.RollSong(phase, request.Group, level));
             }
 
-            CreateMatch(phase, request.MatchName, request.PlayerIds, songs);
+            var newMatch = CreateMatch(request.MatchName, request.PlayerIds, songs);
 
-            _divisionRepo.Update(division);
+            newMatch.PhaseId = request.PhaseId;
+            
+            _matchRepo.Add(newMatch);
 
             return Ok(GetPhaseExpanded(request.PhaseId));
-        }
-
-        private void CreateMatch(Phase phase, string matchName, int[] players, List<int> songs)
-        {
-            var match = new Match()
-            {
-                Name = matchName,
-                Phase = phase,
-                PhaseId = phase.Id,
-                PlayerInMatches = new List<PlayerInMatch>(players.Length),
-                SongInMatches = new List<SongInMatch>(),
-                Rounds = new List<Round>(),
-            };
-
-            phase.Matches.Add(match);
-
-            foreach (var player in players)
-                match.PlayerInMatches.Add(new PlayerInMatch() { PlayerId = player, MatchId = match.Id, Match = match });
-
-            if (songs != null)
-            {
-                foreach (var song in songs)
-                    AddRound(match, song);
-            }
         }
 
         [HttpPost("setActiveMatch")]
         public IActionResult SetActiveMatch([FromBody] PostActiveMatchRequest request)
         {
-            var activeDivision = _divisionRepo.GetAll()
-                .Include(d => d.Phases)
-                    .ThenInclude(p => p.Matches)
-                        .ThenInclude(m => m.Rounds)
-                            .ThenInclude(r => r.Standings)
-                .Include(d => d.Phases)
-                    .ThenInclude(p => p.Matches)
-                        .ThenInclude(m => m.PlayerInMatches)
-                            .ThenInclude(pim => pim.Player)
-                .Include(d => d.Phases)
-                    .ThenInclude(p => p.Matches)
-                        .ThenInclude(m => m.SongInMatches)
-                            .ThenInclude(sim => sim.Song)
-                .FirstOrDefault(d => d.Id == request.DivisionId);
-
-            if (activeDivision == null)
-                return NotFound();
-
-            var activePhase = activeDivision.Phases.Where(p => p.Id == request.PhaseId).FirstOrDefault();
-
-            if (activePhase == null)
-                return NotFound();
-
-            var activeMatch = activePhase.Matches.Where(m => m.Id == request.MatchId).FirstOrDefault();
+            var activeMatch = GetMatchFromId(request.MatchId).FirstOrDefault();
 
             if (activeMatch == null)
                 return NotFound();
@@ -292,12 +194,63 @@ namespace TournamentManager.Controllers
             return Ok(activeMatch);
         }
 
-        [HttpPost("updateScore")]
-        public IActionResult UpdateScore(RawStanding request)
+        [HttpPost("addStanding")]
+        public IActionResult AddStanding(Standing request)
         {
             _subscriber.OnNewStanding(request);
+            
+            _matchRepo.Save();
 
             return Ok();
+        }
+            
+        private Match CreateMatch(string matchName, int[] players, List<int> songs)
+        {
+            
+            var match = new Match()
+            {
+                Name = matchName,
+                PlayerInMatches = new List<PlayerInMatch>(players.Length),
+                SongInMatches = new List<SongInMatch>(),
+                Rounds = new List<Round>(),
+            };
+
+            foreach (var player in players)
+                match.PlayerInMatches.Add(new PlayerInMatch() { PlayerId = player, MatchId = match.Id, Match = match });
+
+            if (songs != null)
+            {
+                foreach (var song in songs)
+                    AddRound(match, song);
+            }
+            
+            return match;
+        }
+
+        private void AddRound(Match match, int songId)
+        {
+            var round = new Round()
+            {
+                Match = match,
+                MatchId = match.Id,
+                Standings = new List<Standing>()
+            };
+
+            match.SongInMatches.Add(new SongInMatch() { SongId = songId, MatchId = match.Id });
+
+            match.Rounds.Add(round);
+        }
+
+        private IActionResult DeleteStanding(Func<Standing, bool> shallDelete)
+        {
+            bool removed = _subscriber.DeleteStanding(shallDelete);
+
+            if (!removed)
+                return NotFound();
+
+            _matchRepo.Save();
+
+            return Ok(GetPhaseExpanded(_cache.ActiveMatch.PhaseId));
         }
 
         private IQueryable<Match> GetMatchesFromPhaseId(int phaseId)
@@ -314,5 +267,17 @@ namespace TournamentManager.Controllers
             return matches;
         }
 
+        private IQueryable<Match> GetMatchFromId(int matchId)
+        {
+            return _matchRepo
+                .GetAll()
+                .Include(m => m.Rounds)
+                    .ThenInclude(m => m.Standings)
+                .Include(m => m.PlayerInMatches)
+                    .ThenInclude(p => p.Player)
+                .Include(m => m.SongInMatches)
+                    .ThenInclude(s => s.Song)
+                .Where(m => m.Id == matchId);
+        }
     }
 }
