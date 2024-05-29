@@ -35,7 +35,18 @@ namespace TournamentManager.Controllers
             _songRepo = songRepo;
         }
 
-        [HttpGet("deleteStanding/{songId}")]
+        [HttpGet("matches/{id}")]
+        public IActionResult GetMatches(int id)
+        {
+            var match = GetMatchDtoFromId(id);
+
+            if (match == null)
+                return NotFound();
+
+            return Ok(match);
+        }
+
+        [HttpDelete("deleteStanding/{songId}")]
         public IActionResult DeleteStanding(int songId)
         {
             if (_cache.ActiveMatch == null)
@@ -47,7 +58,7 @@ namespace TournamentManager.Controllers
             return DeleteStanding((standing) => standing.SongId == songId);
         }
 
-        [HttpGet("deleteStandingForPlayer")]
+        [HttpDelete("deleteStandingForPlayer")]
         public IActionResult DeleteStandingForPlayer(PostDeleteStandingByPlayer request)
         {
             if (_cache.ActiveMatch == null)

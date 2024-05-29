@@ -13,3 +13,19 @@ export interface SetActiveMatchRequest {
   phaseId: number;
   matchId: number;
 }
+
+export interface AddSongToMatchRequest {
+  divisionId: number;
+  phaseId: number;
+  matchId: number;
+  group?: string;
+  level?: string;
+  songId?: number;
+}
+
+export interface AddStandingToMatchRequest {
+  playerId: number;
+  songId: number;
+  percentage: number;
+  isFailed: boolean;
+}
