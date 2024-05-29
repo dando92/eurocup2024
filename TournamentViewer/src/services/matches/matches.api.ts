@@ -4,6 +4,7 @@ import {
   AddSongToMatchRequest,
   AddStandingToMatchRequest,
   CreateMatchRequest,
+  EditSongToMatchRequest,
   SetActiveMatchRequest,
 } from "../../models/requests/match-requests";
 
@@ -71,6 +72,16 @@ export async function addSongToActiveMatch(
   } catch (error) {
     console.error("Error adding song to active match:", error);
     throw new Error("Unable to add song to active match.");
+  }
+}
+
+export async function editSongToActiveMatch(request: EditSongToMatchRequest) {
+  try {
+    const response = await axios.post("tournament/editmatchsong", request);
+    return response.data;
+  } catch (error) {
+    console.error("Error editing song to active match:", error);
+    throw new Error("Unable to edit song to active match.");
   }
 }
 

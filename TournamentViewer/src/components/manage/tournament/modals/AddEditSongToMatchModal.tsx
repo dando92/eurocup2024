@@ -8,6 +8,7 @@ type AddSongToMatchModalProps = {
   divisionId: number;
   matchId: number;
   phaseId: number;
+  songId?: number | null;
   open: boolean;
   onClose: () => void;
   onAddSongToMatchByRoll: (
@@ -23,16 +24,34 @@ type AddSongToMatchModalProps = {
     matchId: number,
     songId: number
   ) => void;
+  onEditSongToMatchByRoll: (
+    divisionId: number,
+    phaseId: number,
+    matchId: number,
+    group: string,
+    level: string,
+    editSongId: number
+  ) => void;
+  onEditSongToMatchBySongId: (
+    divisionId: number,
+    phaseId: number,
+    matchId: number,
+    songId: number,
+    editSongId: number
+  ) => void;
 };
 
-export default function AddSongToMatchModal({
+export default function AddEditSongToMatchModal({
   divisionId,
   phaseId,
   matchId,
+  songId,
   open,
   onClose,
   onAddSongToMatchByRoll,
   onAddSongToMatchBySongId,
+  onEditSongToMatchByRoll,
+  onEditSongToMatchBySongId,
 }: AddSongToMatchModalProps) {
   const [songAddType, setSongAddType] = useState<"title" | "roll">("roll");
 
@@ -68,13 +87,22 @@ export default function AddSongToMatchModal({
 
   const createRoundByRoll = () => {
     if (selectedGroupName && difficultyInput) {
-      onAddSongToMatchByRoll(
-        divisionId,
-        phaseId,
-        matchId,
-        selectedGroupName,
-        difficultyInput
-      );
+      songId
+        ? onEditSongToMatchByRoll(
+            divisionId,
+            phaseId,
+            matchId,
+            selectedGroupName,
+            difficultyInput,
+            songId
+          )
+        : onAddSongToMatchByRoll(
+            divisionId,
+            phaseId,
+            matchId,
+            selectedGroupName,
+            difficultyInput
+          );
 
       onClose();
     }
@@ -82,7 +110,20 @@ export default function AddSongToMatchModal({
 
   const createRoundBySongId = () => {
     if (selectedSong) {
-      onAddSongToMatchBySongId(divisionId, phaseId, matchId, selectedSong.id);
+      songId
+        ? onEditSongToMatchBySongId(
+            divisionId,
+            phaseId,
+            matchId,
+            selectedSong.id,
+            songId
+          )
+        : onAddSongToMatchBySongId(
+            divisionId,
+            phaseId,
+            matchId,
+            selectedSong.id
+          );
 
       onClose();
     }
@@ -92,7 +133,7 @@ export default function AddSongToMatchModal({
     <OkModal
       open={open}
       onClose={onClose}
-      title="Add Song to Match"
+      title={songId ? "Edit song" : "Add song"}
       onOk={onSubmit}
     >
       <div className="w-full">

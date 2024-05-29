@@ -2,6 +2,8 @@ export interface CreateMatchRequest {
   divisionId: number;
   phaseId: number;
   matchName: string;
+  subtitle: string;
+  notes: string;
   group: string;
   levels: string;
   songIds: number[];
@@ -21,6 +23,10 @@ export interface AddSongToMatchRequest {
   group?: string;
   level?: string;
   songId?: number;
+}
+
+export interface EditSongToMatchRequest extends AddSongToMatchRequest {
+  editSongId: number;
 }
 
 export interface AddStandingToMatchRequest {

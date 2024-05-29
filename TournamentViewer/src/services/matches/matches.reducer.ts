@@ -34,6 +34,8 @@ export function matchesReducer(state: MatchesState, action: MatchesActions) {
       return {
         ...state,
         matches: state.matches.filter((match) => match.id !== payload.id),
+        activeMatch:
+          state.activeMatch?.id === payload.id ? null : state.activeMatch,
       };
     case "onAddSongToMatch":
       return {

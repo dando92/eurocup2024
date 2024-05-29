@@ -331,7 +331,6 @@ namespace TournamentManager.Controllers
             };
 
             return matchDto;
-
         }
     }
 }

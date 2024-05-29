@@ -78,6 +78,8 @@ export default function MatchesView({ phaseId, division }: MatchesViewProps) {
               onDeleteMatch={actions.deleteMatch}
               onAddSongToMatchByRoll={actions.addSongToMatchByRoll}
               onAddSongToMatchBySongId={actions.addSongToMatchBySongId}
+              onEditSongToMatchByRoll={actions.editSongToMatchByRoll}
+              onEditSongToMatchBySongId={actions.editSongToMatchBySongId}
               match={state.activeMatch}
             />
           </div>
@@ -97,6 +99,8 @@ export default function MatchesView({ phaseId, division }: MatchesViewProps) {
                 onDeleteMatch={actions.deleteMatch}
                 onAddSongToMatchByRoll={actions.addSongToMatchByRoll}
                 onAddSongToMatchBySongId={actions.addSongToMatchBySongId}
+                onEditSongToMatchByRoll={actions.editSongToMatchByRoll}
+                onEditSongToMatchBySongId={actions.editSongToMatchBySongId}
                 key={match.id}
                 match={match}
               />

@@ -87,6 +87,30 @@ export function useMatches(phaseId: number) {
     }
   }
 
+  async function editSongToMatchByRoll(
+    divisionId: number,
+    phaseId: number,
+    matchId: number,
+    group: string,
+    level: string,
+    editSongId: number
+  ) {
+    try {
+      const item = await MatchesApi.editSongToActiveMatch({
+        divisionId,
+        phaseId,
+        matchId,
+        group,
+        level,
+        editSongId,
+      });
+      dispatch({ type: "onAddSongToMatch", payload: item });
+    } catch (error) {
+      console.error("Error adding song to match:", error);
+      throw new Error("Unable to add song to match.");
+    }
+  }
+
   async function addSongToMatchBySongId(
     divisionId: number,
     phaseId: number,
@@ -99,6 +123,28 @@ export function useMatches(phaseId: number) {
         phaseId,
         matchId,
         songId,
+      });
+      dispatch({ type: "onAddSongToMatch", payload: item });
+    } catch (error) {
+      console.error("Error adding song to match:", error);
+      throw new Error("Unable to add song to match.");
+    }
+  }
+
+  async function editSongToMatchBySongId(
+    divisionId: number,
+    phaseId: number,
+    matchId: number,
+    songId: number,
+    editSongId: number
+  ) {
+    try {
+      const item = await MatchesApi.editSongToActiveMatch({
+        divisionId,
+        phaseId,
+        matchId,
+        songId,
+        editSongId,
       });
       dispatch({ type: "onAddSongToMatch", payload: item });
     } catch (error) {
@@ -163,6 +209,8 @@ export function useMatches(phaseId: number) {
       deleteMatch,
       addSongToMatchByRoll,
       addSongToMatchBySongId,
+      editSongToMatchByRoll,
+      editSongToMatchBySongId,
       addStandingToMatch,
       deleteStandingFromMatch,
       deleteStandingsForPlayerFromMatch,

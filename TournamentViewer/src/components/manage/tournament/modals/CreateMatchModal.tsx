@@ -28,6 +28,7 @@ export default function CreateMatchModal({
   const [players, setPlayers] = useState<Player[]>([]);
 
   const [matchName, setMatchName] = useState<string>("");
+  const [subtitle, setSubtitle] = useState<string>("");
 
   const [selectedPlayers, setSelectedPlayers] = useState<Player[]>([]);
 
@@ -75,6 +76,7 @@ export default function CreateMatchModal({
       divisionId: division.id,
       phaseId: phase.id,
       matchName: matchName,
+      subtitle: subtitle,
       group: selectedGroupName,
       songIds: selectedSongs.map((s) => s.id),
       playerIds: selectedPlayers.map((p) => p.id),
@@ -89,6 +91,7 @@ export default function CreateMatchModal({
       divisionId: division.id,
       phaseId: phase.id,
       matchName: matchName,
+      subtitle: subtitle,
       group: selectedGroupName,
       levels: selectedSongDifficulties.join(","),
       playerIds: selectedPlayers.map((p) => p.id),
@@ -115,6 +118,16 @@ export default function CreateMatchModal({
             value={matchName}
             onChange={(e) => setMatchName(e.target.value)}
             placeholder="Type match name"
+          />
+        </div>
+        <div className="w-full">
+          <h3>Subtitle</h3>
+          <input
+            className="w-full border border-gray-300 px-2 py-2 rounded-lg"
+            type="text"
+            value={subtitle}
+            onChange={(e) => setSubtitle(e.target.value)}
+            placeholder="Type subtitle"
           />
         </div>
         <div className="w-full">

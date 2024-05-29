@@ -4,12 +4,11 @@ import {
   faPlay,
   faPlus,
   faRefresh,
-  faShuffle,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { Division } from "../../../models/Division";
 import { Phase } from "../../../models/Phase";
-import AddSongToMatchModal from "./modals/AddSongToMatchModal";
+import AddEditSongToMatchModal from "./modals/AddEditSongToMatchModal";
 import { useState } from "react";
 
 type MatchTableProps = {
@@ -37,6 +36,21 @@ type MatchTableProps = {
     matchId: number,
     songId: number
   ) => void;
+  onEditSongToMatchByRoll: (
+    divisionId: number,
+    phaseId: number,
+    matchId: number,
+    group: string,
+    level: string,
+    editSongId: number
+  ) => void;
+  onEditSongToMatchBySongId: (
+    divisionId: number,
+    phaseId: number,
+    matchId: number,
+    songId: number,
+    editSongId: number
+  ) => void;
 };
 
 export default function MatchTable({
@@ -49,12 +63,15 @@ export default function MatchTable({
   onSetActiveMatch,
   onAddSongToMatchByRoll,
   onAddSongToMatchBySongId,
+  onEditSongToMatchByRoll,
+  onEditSongToMatchBySongId,
 }: MatchTableProps) {
   // Create a lookup table for scores and percentages
   const scoreTable: { [key: string]: { score: number; percentage: number } } =
     {};
 
   const [addSongToMatchModalOpen, setAddSongToMatchModalOpen] = useState(false);
+  const [editSongId, setEditSongId] = useState<number | null>(null);
 
   match.rounds.forEach((round) => {
     round.standings.forEach((standing) => {
@@ -72,14 +89,20 @@ export default function MatchTable({
         <h2 className="text-center text-4xl font-bold text-blue-600">
           &nbsp;{match.name}
         </h2>
-        <AddSongToMatchModal
+        <AddEditSongToMatchModal
+          songId={editSongId}
           phaseId={phase.id}
           matchId={match.id}
           divisionId={division.id}
           open={addSongToMatchModalOpen}
           onAddSongToMatchByRoll={onAddSongToMatchByRoll}
           onAddSongToMatchBySongId={onAddSongToMatchBySongId}
-          onClose={() => setAddSongToMatchModalOpen(false)}
+          onEditSongToMatchByRoll={onEditSongToMatchByRoll}
+          onEditSongToMatchBySongId={onEditSongToMatchBySongId}
+          onClose={() => {
+            setAddSongToMatchModalOpen(false);
+            setEditSongId(null);
+          }}
         />
         {controls && (
           <div className="ml-3 bg-gray-300 rounded-xl p-3 flex flex-row gap-3">
@@ -133,11 +156,15 @@ export default function MatchTable({
                 {song.title}{" "}
                 {controls && isActive && (
                   <>
-                    <button className="ml-3">
+                    <button
+                      onClick={() => {
+                        setEditSongId(song.id);
+                        setAddSongToMatchModalOpen(true);
+                      }}
+                      className="ml-3"
+                      title="Change round song"
+                    >
                       <FontAwesomeIcon icon={faRefresh} />
-                    </button>
-                    <button className="ml-3">
-                      <FontAwesomeIcon icon={faShuffle} />
                     </button>
                   </>
                 )}
