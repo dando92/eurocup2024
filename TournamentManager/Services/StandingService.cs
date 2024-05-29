@@ -145,7 +145,7 @@ namespace TournamentManager.Services
                 try
                 {
                     await _socket.ConnectAsync(new Uri($"ws://{StandingServiceConfiguration.Address}:{StandingServiceConfiguration.Port}/"), stoppingToken);
-
+                    File.AppendAllText("log.txt", "Connected");
                     var buffer = new byte[1024];
 
                     while (!stoppingToken.IsCancellationRequested)
@@ -156,6 +156,8 @@ namespace TournamentManager.Services
                         {
                             IRawStandingSubscriber scopedProcessingService =
                                 scope.ServiceProvider.GetRequiredService<IRawStandingSubscriber>();
+
+                            File.AppendAllText("log.txt", System.Text.Encoding.ASCII.GetString(buffer.Take(res.Count).ToArray()));
 
                             scopedProcessingService.OnNewStanding(Deserialize<RawStanding>(buffer, res.Count));
                         }
