@@ -302,6 +302,8 @@ namespace TournamentManager.Controllers
             {
                 Id = match.Id,
                 Name = match.Name,
+                Subtitle = match.Subtitle,
+                Notes = match.Notes,
                 Players = match.PlayerInMatches.Select(p => p.Player).ToList(),
                 Songs = match.SongInMatches.Select(s => s.Song).ToList(),
                 Rounds = match.Rounds.ToList()
@@ -321,6 +323,8 @@ namespace TournamentManager.Controllers
             {
                 Id = match.Id,
                 Name = match.Name,
+                Subtitle = match.Subtitle,
+                Notes = match.Notes,
                 Players = match.PlayerInMatches.Select(p => p.Player).ToList(),
                 Songs = match.SongInMatches.Select(s => s.Song).ToList(),
                 Rounds = match.Rounds.ToList()

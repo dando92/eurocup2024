@@ -3,9 +3,11 @@ import { Round } from "./Round";
 import { Song } from "./Song";
 
 export interface Match {
-    id: number;
-    name: string;
-    players: Player[];
-    songs: Song[];
-    rounds: Round[];
+  id: number;
+  name: string;
+  subtitle: string;
+  notes: string;
+  players: Player[];
+  songs: Song[];
+  rounds: Round[];
 }
