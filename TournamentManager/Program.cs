@@ -18,8 +18,7 @@ builder.Services.AddDbContext<TournamentDbContext>(options =>
     options.UseSqlite($"Data Source={exeDir}/DB/db.db");
 });
 
-builder.Configuration.AddJsonFile("appsettings.json");
-builder.Services.Configure<StandingServiceConfiguration>(builder.Configuration.GetSection(nameof(StandingServiceConfiguration)));
+builder.Services.Configure<StandingServiceConfiguration>(builder.Configuration.GetSection("StandingServiceConfiguration"));
 
 builder.Services.AddSignalR();
 

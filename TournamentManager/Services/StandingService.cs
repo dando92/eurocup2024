@@ -4,6 +4,7 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 using TournamentManager.DbModels;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Options;
 
 namespace TournamentManager.Services
 {
@@ -37,8 +38,8 @@ namespace TournamentManager.Services
         [JsonPropertyName("formattedScore")]
         public string FormattedScore { get; set; }
 
-        //[JsonPropertyName("life")]
-        //public double Life { get; set; }
+        [JsonPropertyName("life")]
+        public double Life { get; set; }
 
         [JsonPropertyName("isFailed")]
         public bool IsFailed { get; set; }
@@ -111,28 +112,22 @@ namespace TournamentManager.Services
     }
     public class StandingServiceConfiguration
     {
-        public string Address { get; }
-        public ushort Port { get; }
+        public string Address { get; set; }
+        public ushort Port { get; set; }
     }
+
     public class StandingService : BackgroundService
     {
         private IServiceScopeFactory _serviceScopeFactory;
         private ClientWebSocket _socket;
 
-        public string Address { get; }
-        public ushort Port { get; }
-        public StandingService(IServiceScopeFactory serviceScopeFactory)
+        public StandingServiceConfiguration StandingServiceConfiguration { get; }
+
+        public StandingService(IOptions<StandingServiceConfiguration> standingServiceConfiguration, IServiceScopeFactory serviceScopeFactory)
         {
-            Address = "localhost";
-            Port = 8080;
+            StandingServiceConfiguration = standingServiceConfiguration.Value;
             _serviceScopeFactory = serviceScopeFactory;
         }
-        //public StandingService(StandingServiceConfiguration config, IServiceScopeFactory serviceScopeFactory)
-        //{
-        //    Address = config.Address;
-        //    Port = config.Port;
-        //    _serviceScopeFactory = serviceScopeFactory;
-        //}
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -149,7 +144,7 @@ namespace TournamentManager.Services
             {
                 try
                 {
-                    await _socket.ConnectAsync(new Uri($"ws://{Address}:{Port}/"), stoppingToken);
+                    await _socket.ConnectAsync(new Uri($"ws://{StandingServiceConfiguration.Address}:{StandingServiceConfiguration.Port}/"), stoppingToken);
 
                     var buffer = new byte[1024];
 
