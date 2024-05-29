@@ -42,19 +42,26 @@ namespace TournamentManager.Tests
             phase
                 .AddMatch(0, [0])
                 .AddMatch(1, [1, 2]);
+            
+            Division division = new Division()
+            {
+                Id = 0,
+                Name = "Lower",
+                Phases = new List<Phase>() { phase }
+            };
 
             _mock
                 .Setup(s => s.GetAll(true))
                 .Returns(TestUtils.SongsInMatch.AsQueryable());
 
-            var banned = phase.GetBannedSongs();
+            var banned = division.GetBannedSongs();
 
             Assert.IsTrue(banned.Count == 3);
             Assert.IsTrue(banned.Contains(0));
             Assert.IsTrue(banned.Contains(1));
             Assert.IsTrue(banned.Contains(2));
 
-            var availble = _mock.Object.GetAvailableSong(phase, 9, null);
+            var availble = _mock.Object.GetAvailableSong(division, 9, null);
 
             Assert.IsTrue(availble.Count == 3);
             Assert.IsTrue(availble.Contains(3));
@@ -75,6 +82,7 @@ namespace TournamentManager.Tests
         public void AvailableAndBannedSongsByGroup_WorksCorrectly()
         {
             Mock<IGenericRepository<Song>> _mock = new Mock<IGenericRepository<Song>>();
+
             Phase phase = new Phase()
             {
                 Id = 0,
@@ -86,17 +94,24 @@ namespace TournamentManager.Tests
                 .AddMatch(0, [0])
                 .AddMatch(1, [3]);
 
+            Division division = new Division()
+            {
+                Id = 0,
+                Name = "Lower",
+                Phases = new List<Phase>() { phase }
+            };
+
             _mock
                 .Setup(s => s.GetAll(true))
                 .Returns(TestUtils.SongsInMatch.AsQueryable());
 
-            var banned = phase.GetBannedSongs();
+            var banned = division.GetBannedSongs();
 
             Assert.IsTrue(banned.Count == 2);
             Assert.IsTrue(banned.Contains(0));
             Assert.IsTrue(banned.Contains(3));
 
-            var available = _mock.Object.GetAvailableSong(phase, 9, "g2");
+            var available = _mock.Object.GetAvailableSong(division, 9, "g2");
 
             Assert.IsTrue(available.Count == 2);
             Assert.IsTrue(available.Contains(4));

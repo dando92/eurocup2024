@@ -10,23 +10,26 @@ namespace TournamentManager
             return songs.Select(s => s.Group).Distinct();
         }
 
-        public static List<int> GetBannedSongs(this Phase phase)
+        public static List<int> GetBannedSongs(this Division division)
         {
             List<int> bannedSongs = new List<int>();
-            
-            var songInMathces = phase.Matches.Select(m => m.SongInMatches);
-            
-            foreach(IEnumerable<SongInMatch> sim in songInMathces)
-                bannedSongs.AddRange(sim.Select(m => m.SongId));
+
+            foreach (var phase in division.Phases)
+            {
+                var songInMathces = phase.Matches.Select(m => m.SongInMatches);
+
+                foreach (IEnumerable<SongInMatch> sim in songInMathces)
+                    bannedSongs.AddRange(sim.Select(m => m.SongId));
+            }
 
             return bannedSongs;
         }
 
-        public static List<int> GetAvailableSong(this IGenericRepository<Song> songRepository, Phase phase, int level, string group)
+        public static List<int> GetAvailableSong(this IGenericRepository<Song> songRepository, Division division, int level, string group)
         {
             List<int> availableSongs = new List<int>();
             List<int> allSongs = songRepository.GetAll().Where(s => (group == null || (group!=null && s.Group == group)) && s.Difficulty == level).Select(s => s.Id).ToList();
-            List<int> bannedSongs = phase.GetBannedSongs();
+            List<int> bannedSongs = division.GetBannedSongs();
 
             foreach (int s in allSongs)
             {
@@ -37,9 +40,9 @@ namespace TournamentManager
             return availableSongs;
         }
 
-        public static int RollSong(this IGenericRepository<Song> songRepository, Phase phase, string group, int level)
+        public static int RollSong(this IGenericRepository<Song> songRepository, Division division, string group, int level)
         {
-            return songRepository.GetAvailableSong(phase, level, group).RandomElement();
+            return songRepository.GetAvailableSong(division, level, group).RandomElement();
         }
 
         public static T RandomElement<T>(this IEnumerable<T> enumerable)

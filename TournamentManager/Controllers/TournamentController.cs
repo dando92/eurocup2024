@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNet.SignalR;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TournamentManager.Contexts;
 using TournamentManager.DbModels;
@@ -80,20 +79,20 @@ namespace TournamentManager.Controllers
         [HttpPost("editMatchSong")]
         public IActionResult EditMatchSong(PostEditSongToMatch request)
         {
-            var division = _divisionRepo.GetById(request.DivisionId);
+            var division = _divisionRepo.GetAll()
+                .Include(m => m.Phases)
+                    .ThenInclude(m => m.Matches)
+                        .ThenInclude(m => m.SongInMatches)
+                .Where(m => m.Id == request.DivisionId).FirstOrDefault();
 
             if (division == null)
                 return NotFound();
 
-            var phase = _phaseRepo.GetById(request.PhaseId);
-
-            if (phase == null)
-                return NotFound();
-
-            var match = phase.Matches.Where(m => m.Id == request.MatchId).FirstOrDefault();
+            var match = GetMatchFromId(request.MatchId).FirstOrDefault();
 
             if (match == null)
                 return NotFound();
+
             var sim = match.SongInMatches.Where(sim => sim.SongId == request.EditSongId).FirstOrDefault();
 
             if (sim == null)
@@ -104,7 +103,7 @@ namespace TournamentManager.Controllers
             else if (request.Level != null)
             {
                 var level = int.Parse(request.Level);
-                sim.SongId = _songRepo.RollSong(phase, request.Group, level);
+                sim.SongId = _songRepo.RollSong(division, request.Group, level);
             }
 
             _matchRepo.Update(match);
@@ -115,12 +114,13 @@ namespace TournamentManager.Controllers
         [HttpPost("addSongToMatch")]
         public IActionResult AddSongToMatch(PostAddSongToMatch request)
         {
-            var phase = _phaseRepo
-                .GetAll()
-                .Include(p => p.Matches)
-                    .ThenInclude(m => m.SongInMatches).FirstOrDefault();
-            
-            if (phase == null)
+            var division = _divisionRepo.GetAll()
+                .Include(m => m.Phases)
+                    .ThenInclude(m => m.Matches)
+                        .ThenInclude(m => m.SongInMatches)
+                .Where(m => m.Id == request.DivisionId).FirstOrDefault();
+
+            if (division == null)
                 return NotFound();
 
             var match = GetMatchFromId(request.MatchId).FirstOrDefault();
@@ -133,7 +133,7 @@ namespace TournamentManager.Controllers
             else if (request.Level != null)
             {
                 var level = int.Parse(request.Level);
-                AddRound(match, _songRepo.RollSong(phase, request.Group, level));
+                AddRound(match, _songRepo.RollSong(division, request.Group, level));
             }
             
             _matchRepo.Save();
@@ -144,9 +144,13 @@ namespace TournamentManager.Controllers
         [HttpPost("addMatch")]
         public IActionResult AddMatch(PostAddMatch request)
         {
-            var phase = _phaseRepo.GetById(request.PhaseId);
+            var division = _divisionRepo.GetAll()
+                .Include(m => m.Phases)
+                    .ThenInclude(m => m.Matches)
+                        .ThenInclude(m => m.SongInMatches)
+                .Where(m => m.Id == request.DivisionId).FirstOrDefault();
 
-            if (phase == null)
+            if (division == null)
                 return NotFound();
 
             var songs = new List<int>();
@@ -158,7 +162,7 @@ namespace TournamentManager.Controllers
                 var levels = request.Levels.Split(",").Select(s => int.Parse(s)).ToArray();
 
                 foreach (var level in levels)
-                    songs.Add(_songRepo.RollSong(phase, request.Group, level));
+                    songs.Add(_songRepo.RollSong(division, request.Group, level));
             }
 
             var newMatch = CreateMatch(request.MatchName, request.PlayerIds, songs);
