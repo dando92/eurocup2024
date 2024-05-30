@@ -16,12 +16,14 @@ namespace TournamentManager.Services
         public StandingManager(IGenericRepository<Song> songRepo,
             IGenericRepository<Player> playerRepo,
             IGenericRepository<Standing> standingRepo,
-            ITournamentCache cache)
+            ITournamentCache cache,
+            IMatchUpdate matchUpdate)
         {
             _songRepo = songRepo;
             _playerRepo = playerRepo;
             _cache = cache;
             _standingRepo = standingRepo;
+            _hub = matchUpdate;
         }
 
         public void AddStanding(Score score)
