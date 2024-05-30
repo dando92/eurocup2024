@@ -42,6 +42,20 @@ export async function create(request: CreateMatchRequest): Promise<Match> {
   }
 }
 
+export async function editMatchNotes(matchId: number, notes: string): Promise<string> {
+  try {
+    const response = await axios.put<Match>("matches", {
+      matchId,
+      notes,
+    });
+
+    return response.data.notes;
+  } catch (error) {
+    console.error("Error editing match notes:", error);
+    throw new Error("Unable to edit match notes.");
+  }
+}
+
 export async function setActiveMatch(
   request: SetActiveMatchRequest
 ): Promise<void> {

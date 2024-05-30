@@ -35,6 +35,16 @@ export function useMatches(phaseId: number) {
     }
   }
 
+  async function editMatchNotes(matchId: number, notes: string) {
+    try {
+      await MatchesApi.editMatchNotes(matchId, notes);
+      dispatch({ type: "onEditMatchNotes", payload: [matchId, notes] });
+    } catch (error) {
+      console.error("Error editing match notes:", error);
+      throw new Error("Unable to edit match notes.");
+    }
+  }
+
   async function setActiveMatch(
     divisionId: number,
     phaseId: number,
@@ -205,6 +215,7 @@ export function useMatches(phaseId: number) {
       list,
       getActiveMatch,
       create,
+      editMatchNotes,
       setActiveMatch,
       deleteMatch,
       addSongToMatchByRoll,

@@ -10,6 +10,11 @@ type onCreateMatch = {
   payload: Match;
 };
 
+type onEditMatchNotes = {
+  type: "onEditMatchNotes";
+  payload: [number, string];
+};
+
 type onSetActiveMatch = {
   type: "onSetActiveMatch";
   payload: Match;
@@ -38,6 +43,7 @@ type onDeleteStandingFromMatch = {
 export type MatchesActions =
   | onListMatchesByPhase
   | onCreateMatch
+  | onEditMatchNotes
   | onSetActiveMatch
   | onDeleteMatch
   | onAddSongToMatch

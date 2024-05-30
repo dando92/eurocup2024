@@ -25,6 +25,17 @@ export function matchesReducer(state: MatchesState, action: MatchesActions) {
         ...state,
         matches: [...state.matches, payload],
       };
+    case "onEditMatchNotes":
+      return {
+        ...state,
+        matches: state.matches.map((match) =>
+          match.id === payload[0] ? { ...match, notes: payload[1] } : match
+        ),
+        activeMatch:
+          state.activeMatch?.id === payload[0]
+            ? { ...state.activeMatch, notes: payload[1] }
+            : state.activeMatch,
+      };
     case "onSetActiveMatch":
       return {
         ...state,
