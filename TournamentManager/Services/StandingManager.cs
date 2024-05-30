@@ -48,8 +48,6 @@ namespace TournamentManager.Services
                 Percentage = double.Parse(score.FormattedScore, CultureInfo.InvariantCulture),
                 PlayerId = player.Id,
                 SongId = song.Id,
-                Song = song,
-                Player = player,
                 IsFailed = score.IsFailed
             };
 
@@ -92,6 +90,7 @@ namespace TournamentManager.Services
                 
                 foreach (var recalcStanding in _cache.CurrentRound.Standings)
                     _standingRepo.Update(recalcStanding);
+
                 _cache.AdvanceRound();
                 
                 _hub?.OnMatchUpdate(new MatchUpdateDTO() { MatchId = _cache.ActiveMatch.Id, PhaseId = _cache.ActiveMatch.PhaseId, DivisionId = _cache.ActiveMatch.Phase.DivisionId });
