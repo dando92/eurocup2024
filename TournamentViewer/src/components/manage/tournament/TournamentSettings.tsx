@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Division } from "../../../models/Division";
 import DivisionList from "./DivisionList";
 import { Phase } from "../../../models/Phase";
-import { HttpTransportType, HubConnectionBuilder } from "@microsoft/signalr";
 import PhaseList from "./PhaseList";
 import MatchesView from "./MatchesView";
 
@@ -11,21 +10,6 @@ export default function TournamentSettings() {
     null
   );
   const [selectedPhase, setSelectedPhase] = useState<Phase | null>(null);
-
-  const connection = new HubConnectionBuilder()
-    .withUrl(`${import.meta.env.VITE_PUBLIC_API_URL}../matchupdatehub`, {
-      skipNegotiation: true,
-      transport: HttpTransportType.WebSockets,
-    })
-    .build();
-
-  connection.on("OnMatchUpdate", (message) => {
-    console.log(message);
-  });
-
-  connection.start().then(() => {
-    console.log("Connection started!");
-  });
 
   return (
     <div>

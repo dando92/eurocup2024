@@ -74,6 +74,7 @@ export default function MatchesView({ phaseId, division }: MatchesViewProps) {
               division={division}
               phase={phase}
               isActive={true}
+              onGetActiveMatch={actions.getActiveMatch}
               onSetActiveMatch={actions.setActiveMatch}
               onDeleteMatch={actions.deleteMatch}
               onAddSongToMatchByRoll={actions.addSongToMatchByRoll}
@@ -95,6 +96,7 @@ export default function MatchesView({ phaseId, division }: MatchesViewProps) {
                 controls
                 division={division}
                 phase={phase}
+                onGetActiveMatch={actions.getActiveMatch}
                 isActive={state.activeMatch?.id === match.id}
                 onSetActiveMatch={actions.setActiveMatch}
                 onDeleteMatch={actions.deleteMatch}

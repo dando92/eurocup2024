@@ -9,8 +9,9 @@ import {
 import { Division } from "../../../models/Division";
 import { Phase } from "../../../models/Phase";
 import AddEditSongToMatchModal from "./modals/AddEditSongToMatchModal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddStandingToMatchModal from "./modals/AddStandingToMatchModal";
+import { HttpTransportType, HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 
 type MatchTableProps = {
   division: Division;
@@ -18,6 +19,7 @@ type MatchTableProps = {
   match: Match;
   isActive: boolean;
   controls?: boolean;
+  onGetActiveMatch: () => void;
   onSetActiveMatch: (
     divisionId: number,
     phaseId: number,
@@ -66,6 +68,7 @@ export default function MatchTable({
   match,
   isActive,
   controls = false,
+  onGetActiveMatch,
   onDeleteMatch,
   onSetActiveMatch,
   onAddSongToMatchByRoll,
@@ -91,6 +94,8 @@ export default function MatchTable({
     songTitle: string;
   }>({ songId: 0, playerId: 0, playerName: "", songTitle: "" });
 
+  const [connection, setConnection] = useState<null | HubConnection>(null);
+
   match.rounds.forEach((round) => {
     round.standings.forEach((standing) => {
       const key = `${standing.playerId}-${standing.songId}`;
@@ -100,6 +105,28 @@ export default function MatchTable({
       };
     });
   });
+
+  useEffect(() => {
+    if (connection === null && isActive) {
+      const conn = new HubConnectionBuilder()
+        .withUrl(`${import.meta.env.VITE_PUBLIC_API_URL}../matchupdatehub`, {
+          skipNegotiation: true,
+          transport: HttpTransportType.WebSockets,
+        })
+        .build();
+
+      conn.on("OnMatchUpdate", () => {
+        onGetActiveMatch();
+      });
+
+      conn.start().then(() => {
+        console.log("Now listening to match changes.");
+      });
+
+      setConnection(conn);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isActive, connection]);
 
   return (
     <div className="flex flex-col w-full p-4 my-3 bg-gray-200 rounded-lg shadow-md">
