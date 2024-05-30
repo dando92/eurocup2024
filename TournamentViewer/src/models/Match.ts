@@ -4,6 +4,7 @@ import { Song } from "./Song";
 
 export interface Match {
   id: number;
+  phaseId: number;
   name: string;
   subtitle: string;
   notes: string;

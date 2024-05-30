@@ -2,11 +2,12 @@ import { Tab } from "@headlessui/react";
 import { classNames } from "./ManagePage";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircle } from "@fortawesome/free-solid-svg-icons";
+import LivePhase from "../components/view/LivePhase";
 
 export default function ViewPage() {
   return (
     <div>
-      <h1 className="text-3xl text-center">Tournament settings</h1>
+      <h1 className="text-3xl text-center">In The Groove Eurocup 2024</h1>
       <Tab.Group>
         <Tab.List className="flex flex-row gap-10 border-b mt-5">
           <Tab
@@ -41,7 +42,7 @@ export default function ViewPage() {
           </Tab>
         </Tab.List>
         <Tab.Panels className="mt-3">
-          <Tab.Panel>LIVE</Tab.Panel>
+          <Tab.Panel><LivePhase /></Tab.Panel>
           <Tab.Panel>HISTORY</Tab.Panel>
         </Tab.Panels>
       </Tab.Group>

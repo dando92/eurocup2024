@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Phase } from "../../../models/Phase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircle, faHandFist } from "@fortawesome/free-solid-svg-icons";
+import { faHandFist } from "@fortawesome/free-solid-svg-icons";
 import CreateMatchModal from "./modals/CreateMatchModal";
 import { Division } from "../../../models/Division";
 import MatchTable from "./MatchTable";
@@ -45,9 +45,7 @@ export default function MatchesView({
           onCreate={actions.create}
         />
       )}
-      <h1 className="text-center text-3xl">
-        Overall View of Phase &quot;{phase?.name}&quot;
-      </h1>
+      <h1 className="text-center text-3xl text-lower">{phase?.name}</h1>
       {controls && (
         <div className="mt-2 w-full bg-gray-200 p-2 rounded-lg">
           <button
@@ -68,14 +66,6 @@ export default function MatchesView({
 
         {state.activeMatch && phase && (
           <div className="pb-20">
-            <div className="flex flex-row justify-center items-center gap-3">
-              <FontAwesomeIcon
-                icon={faCircle}
-                className="text-green-800 text-xs animate-pulse"
-              />
-
-              <h3 className="text-3xl text-center">Now playing:</h3>
-            </div>
             <MatchTable
               controls={controls}
               division={division}

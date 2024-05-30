@@ -14,6 +14,7 @@ namespace TournamentManager.Controllers
         private readonly ITournamentCache _cache;
         private IStandingManager _standingManager;
         private readonly IMatchManager _matchManager;
+        
 
         public TournamentController(ITournamentCache cache,
             IStandingManager standingManager,
@@ -141,6 +142,7 @@ namespace TournamentManager.Controllers
             var matchDto = new MatchDto
             {
                 Id = match.Id,
+                PhaseId = match.PhaseId,
                 Name = match.Name,
                 Subtitle = match.Subtitle,
                 Notes = match.Notes,
@@ -159,6 +161,7 @@ namespace TournamentManager.Controllers
             var matchesDto = matches.Select(match => new MatchDto
             {
                 Id = match.Id,
+                PhaseId = match.PhaseId,
                 Name = match.Name,
                 Subtitle = match.Subtitle,
                 Notes = match.Notes,

@@ -29,7 +29,7 @@ namespace TournamentManager.Services
             
             AdvanceRound();
 
-            _hub.OnMatchUpdate(new MatchUpdateDTO() { MatchId = _activeMatch.Id, PhaseId = _activeMatch.PhaseId, DivisionId = _activeMatch.Phase.DivisionId })
+            _hub.OnMatchUpdate(new MatchUpdateDTO() { MatchId = _activeMatch.Id, PhaseId = _activeMatch.PhaseId, DivisionId = _activeMatch.Phase.DivisionId });
         }
 
         public Round AdvanceRound(bool forceRestart = false)

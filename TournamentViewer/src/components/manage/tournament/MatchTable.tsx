@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Match } from "../../../models/Match";
 import {
+  faCircle,
   faPlay,
   faPlus,
   faRefresh,
@@ -152,10 +153,16 @@ export default function MatchTable({
   );
 
   return (
-    <div className="flex flex-col w-full p-4 my-3 bg-gray-200 rounded-lg shadow-md">
+    <div className="flex flex-col w-full p-4 my-3 rounded-lg">
       <div className="flex flex-row mb-6 justify-center items-center">
         <h2 className="text-center text-4xl font-bold text-blue-600">
-          &nbsp;{match.name}
+          <div className="flex flex-row justify-center items-center gap-3">
+            {isActive && <FontAwesomeIcon
+              icon={faCircle}
+              className="text-red-800 text-xs animate-pulse"
+            />}
+            <span className="text-xl">{match.name}</span>
+          </div>
         </h2>
         <AddEditSongToMatchModal
           songId={editSongId}
@@ -223,21 +230,21 @@ export default function MatchTable({
         )}
       </div>
 
-      <div>
+      <div className="shadow-lg">
         <div
           className={`grid grid-cols-${
             match.songs.length + 2
-          } w-full bg-blue-200 rounded-t-lg`}
+          } w-full bg-lower rounded-t-lg`}
           style={{
             gridTemplateColumns: `repeat(${match.songs.length + 2}, 1fr)`,
           }}
         >
-          <div className="border border-blue-400 p-2">
+          <div className=" border-blue-400 p-2">
             <div className="text-center font-bold text-blue-800"></div>
           </div>
           {match.songs.map((song, i) => (
-            <div key={i} className="border border-blue-400 p-2">
-              <div className="text-center font-bold text-blue-800">
+            <div key={i} className="border-x border-blue-400 p-2">
+              <div className="text-center font-bold text-blue-100">
                 {song.title}{" "}
                 {controls && isActive && (
                   <>
@@ -256,8 +263,8 @@ export default function MatchTable({
               </div>
             </div>
           ))}
-          <div className="border border-blue-400 p-2">
-            <div className="text-center font-bold text-blue-800">
+          <div className=" p-2">
+            <div className="text-center font-bold text-blue-100">
               Total Points
             </div>
           </div>

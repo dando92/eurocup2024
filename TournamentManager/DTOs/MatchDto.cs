@@ -5,6 +5,7 @@ namespace TournamentManager.DTOs
     public class MatchDto
     {
         public int Id { get; set; }
+        public int PhaseId { get; set; }
         public string Name { get; set; }
         public string Subtitle { get; set; }
         public string Notes { get; set; }
