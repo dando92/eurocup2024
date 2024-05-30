@@ -2,6 +2,7 @@ import { useReducer } from "react";
 import { initialState, matchesReducer } from "./matches.reducer";
 import * as MatchesApi from "./matches.api";
 import { CreateMatchRequest } from "../../models/requests/match-requests";
+import { toast } from "react-toastify";
 
 export function useMatches(phaseId: number) {
   const [state, dispatch] = useReducer(matchesReducer, initialState);
@@ -12,6 +13,7 @@ export function useMatches(phaseId: number) {
       dispatch({ type: "onListMatches", payload: items });
     } catch (error) {
       console.error("Error listing matches by phase:", error);
+      toast.error("Error listing matches by phase.");
       throw new Error("Unable to list matches by phase.");
     }
   }
@@ -19,6 +21,7 @@ export function useMatches(phaseId: number) {
     try {
       const item = await MatchesApi.getActiveMatch();
       dispatch({ type: "onSetActiveMatch", payload: item });
+      
     } catch (error) {
       console.error("Error getting active match:", error);
       throw new Error("Unable to get active match.");
@@ -29,7 +32,9 @@ export function useMatches(phaseId: number) {
     try {
       const item = await MatchesApi.create(request);
       dispatch({ type: "onCreateMatch", payload: item });
+      toast.success("Match created successfully.");
     } catch (error) {
+      toast.error("Error creating match.");
       console.error("Error creating match:", error);
       throw new Error("Unable to create match.");
     }
@@ -40,6 +45,7 @@ export function useMatches(phaseId: number) {
       await MatchesApi.editMatchNotes(matchId, notes);
       dispatch({ type: "onEditMatchNotes", payload: [matchId, notes] });
     } catch (error) {
+      toast.error("Error editing match notes.");
       console.error("Error editing match notes:", error);
       throw new Error("Unable to edit match notes.");
     }
@@ -57,6 +63,7 @@ export function useMatches(phaseId: number) {
         payload: state.matches.find((m) => m.id === matchId)!,
       });
     } catch (error) {
+      toast.error("Error setting active match.");
       console.error("Error setting active match:", error);
       throw new Error("Unable to set active match.");
     }
@@ -70,6 +77,7 @@ export function useMatches(phaseId: number) {
         payload: state.matches.find((m) => m.id === matchId)!,
       });
     } catch (error) {
+      toast.error("Error deleting match.");
       console.error("Error deleting match:", error);
       throw new Error("Unable to delete match.");
     }
@@ -92,6 +100,7 @@ export function useMatches(phaseId: number) {
       });
       dispatch({ type: "onAddSongToMatch", payload: item });
     } catch (error) {
+      toast.error("Error adding song to match.");
       console.error("Error adding song to match:", error);
       throw new Error("Unable to add song to match.");
     }
@@ -116,6 +125,7 @@ export function useMatches(phaseId: number) {
       });
       dispatch({ type: "onAddSongToMatch", payload: item });
     } catch (error) {
+      toast.error("Error adding song to match.");
       console.error("Error adding song to match:", error);
       throw new Error("Unable to add song to match.");
     }
@@ -136,6 +146,7 @@ export function useMatches(phaseId: number) {
       });
       dispatch({ type: "onAddSongToMatch", payload: item });
     } catch (error) {
+      toast.error("Error adding song to match.");
       console.error("Error adding song to match:", error);
       throw new Error("Unable to add song to match.");
     }
@@ -158,6 +169,7 @@ export function useMatches(phaseId: number) {
       });
       dispatch({ type: "onAddSongToMatch", payload: item });
     } catch (error) {
+      toast.error("Error adding song to match.");
       console.error("Error adding song to match:", error);
       throw new Error("Unable to add song to match.");
     }
@@ -178,6 +190,7 @@ export function useMatches(phaseId: number) {
       });
       dispatch({ type: "onAddStandingToMatch", payload: item });
     } catch (error) {
+      toast.error("Error adding standing to match.");
       console.error("Error adding standing to match:", error);
       throw new Error("Unable to add standing to match.");
     }
@@ -188,6 +201,7 @@ export function useMatches(phaseId: number) {
       const item = await MatchesApi.deleteStandingsFromActiveMatch(songId);
       dispatch({ type: "onDeleteStandingFromMatch", payload: item });
     } catch (error) {
+      toast.error("Error deleting standing from match.");
       console.error("Error deleting standing from match:", error);
       throw new Error("Unable to delete standing from match.");
     }
@@ -204,6 +218,7 @@ export function useMatches(phaseId: number) {
       );
       dispatch({ type: "onDeleteStandingFromMatch", payload: item });
     } catch (error) {
+      toast.error("Error deleting standings for player from match.");
       console.error("Error deleting standings for player from match:", error);
       throw new Error("Unable to delete standings for player from match.");
     }

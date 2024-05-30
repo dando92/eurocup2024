@@ -12,6 +12,7 @@ import AddEditSongToMatchModal from "./modals/AddEditSongToMatchModal";
 import { useEffect, useState } from "react";
 import AddStandingToMatchModal from "./modals/AddStandingToMatchModal";
 import { HttpTransportType, HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
+import { toast } from "react-toastify";
 
 type MatchTableProps = {
   division: Division;
@@ -121,6 +122,7 @@ export default function MatchTable({
 
       conn.start().then(() => {
         console.log("Now listening to match changes.");
+        toast.info("Now listening to match changes.");
       });
 
       setConnection(conn);
