@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNet.SignalR;
+using System.Globalization;
 using TournamentManager.Contexts;
 using TournamentManager.DbModels;
 
@@ -41,7 +42,7 @@ namespace TournamentManager.Services
 
             Standing standing = new Standing()
             {
-                Percentage = double.Parse(score.FormattedScore),
+                Percentage = double.Parse(score.FormattedScore, CultureInfo.InvariantCulture),
                 PlayerId = player.Id,
                 SongId = song.Id,
                 Song = song,
