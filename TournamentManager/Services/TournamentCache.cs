@@ -5,14 +5,16 @@ namespace TournamentManager.Services
     public class TournamentCache : ITournamentCache
     {
         private IEnumerator<Round> _iterator;
+        private readonly IMatchUpdate _hub;
         private Round _currentRound = null;
         private Match _activeMatch;
         
         public Round CurrentRound { get => _currentRound; }
         public Match ActiveMatch { get => _activeMatch; }
 
-        public TournamentCache()
+        public TournamentCache(IMatchUpdate hub)
         {
+            _hub = hub;
         }
 
         public void SetActiveMatch(Match match)
@@ -26,6 +28,8 @@ namespace TournamentManager.Services
             _activeMatch = match;
             
             AdvanceRound();
+
+            _hub.OnMatchUpdate(new MatchUpdateDTO() { MatchId = _activeMatch.Id, PhaseId = _activeMatch.PhaseId, DivisionId = _activeMatch.Phase.DivisionId })
         }
 
         public Round AdvanceRound(bool forceRestart = false)
