@@ -7,11 +7,13 @@ import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 type PhaseListProps = {
   divisionId: number;
+  controls?: boolean;
   onPhaseSelect: (phase: Phase | null) => void;
 };
 
 export default function PhaseList({
   divisionId,
+  controls = false,
   onPhaseSelect,
 }: PhaseListProps) {
   const [phases, setPhases] = useState<Phase[]>([]);
@@ -20,7 +22,8 @@ export default function PhaseList({
   useEffect(() => {
     axios.get<Phase[]>(`divisions/${divisionId}/phases`).then((response) => {
       setPhases(response.data);
-      if (response.data.length > 0) {setSelectedPhaseId(response.data[0].id);
+      if (response.data.length > 0) {
+        setSelectedPhaseId(response.data[0].id);
         onPhaseSelect(response.data[0]);
       }
     });
@@ -39,9 +42,7 @@ export default function PhaseList({
     }
   };
   const deletePhase = () => {
-    if (
-      window.confirm("Are you sure you want to delete this phase?")
-    ) {
+    if (window.confirm("Are you sure you want to delete this phase?")) {
       axios.delete(`phases/${selectedPhaseId}`).then(() => {
         setPhases(phases.filter((d) => d.id !== selectedPhaseId));
         setSelectedPhaseId(-1);
@@ -68,7 +69,7 @@ export default function PhaseList({
             : null
         }
       />
-      <button
+      {controls && <><button
         onClick={createPhase}
         className="text-green-700"
         title="Create new division"
@@ -84,7 +85,7 @@ export default function PhaseList({
         }
       >
         <FontAwesomeIcon icon={faTrash} />
-      </button>
+      </button></>}
     </div>
   );
 }

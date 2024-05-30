@@ -7,9 +7,10 @@ import axios from "axios";
 
 type DivisionListProps = {
   onDivisionSelect: (division: Division | null) => void;
+  controls?: boolean;
 };
 
-export default function DivisionList({ onDivisionSelect }: DivisionListProps) {
+export default function DivisionList({ onDivisionSelect, controls = false }: DivisionListProps) {
   const [divisions, setDivisions] = useState<Division[]>([]);
   const [selectedDivisionId, setSelectedDivisionId] = useState<number>(-1);
 
@@ -69,7 +70,7 @@ export default function DivisionList({ onDivisionSelect }: DivisionListProps) {
             : null
         }
       />
-      <button
+      {controls && <><button
         onClick={createDivision}
         className="text-green-700"
         title="Create new division"
@@ -87,7 +88,7 @@ export default function DivisionList({ onDivisionSelect }: DivisionListProps) {
         }
       >
         <FontAwesomeIcon icon={faTrash} />
-      </button>
+      </button></>}
     </div>
   );
 }

@@ -10,10 +10,15 @@ import { useMatches } from "../../../services/matches/useMatches";
 
 type MatchesViewProps = {
   phaseId: number;
+  controls?: boolean;
   division: Division;
 };
 
-export default function MatchesView({ phaseId, division }: MatchesViewProps) {
+export default function MatchesView({
+  phaseId,
+  division,
+  controls = false,
+}: MatchesViewProps) {
   const [phase, setPhase] = useState<Phase | null>(null);
   const { state, actions } = useMatches(phaseId);
 
@@ -31,7 +36,7 @@ export default function MatchesView({ phaseId, division }: MatchesViewProps) {
 
   return (
     <div className="mt-10">
-      {phase && (
+      {phase && controls && (
         <CreateMatchModal
           phase={phase}
           division={division}
@@ -43,15 +48,17 @@ export default function MatchesView({ phaseId, division }: MatchesViewProps) {
       <h1 className="text-center text-3xl">
         Overall View of Phase &quot;{phase?.name}&quot;
       </h1>
-      <div className="mt-2 w-full bg-gray-200 p-2 rounded-lg">
-        <button
-          onClick={() => setCreateMatchModalOpened(true)}
-          className="text-green-800 font-bold flex flex-row gap-2 items-center"
-        >
-          <FontAwesomeIcon icon={faHandFist} />
-          <span>New match</span>
-        </button>
-      </div>
+      {controls && (
+        <div className="mt-2 w-full bg-gray-200 p-2 rounded-lg">
+          <button
+            onClick={() => setCreateMatchModalOpened(true)}
+            className="text-green-800 font-bold flex flex-row gap-2 items-center"
+          >
+            <FontAwesomeIcon icon={faHandFist} />
+            <span>New match</span>
+          </button>
+        </div>
+      )}
       <div className="w-full mt-10">
         {state.matches.length === 0 && (
           <p className="text-center text-red-500 font-bold">
@@ -70,7 +77,7 @@ export default function MatchesView({ phaseId, division }: MatchesViewProps) {
               <h3 className="text-3xl text-center">Now playing:</h3>
             </div>
             <MatchTable
-              controls
+              controls={controls}
               division={division}
               phase={phase}
               isActive={true}
@@ -93,7 +100,7 @@ export default function MatchesView({ phaseId, division }: MatchesViewProps) {
             .filter((m) => m.id !== state.activeMatch?.id)
             .map((match) => (
               <MatchTable
-                controls
+                controls={controls}
                 division={division}
                 phase={phase}
                 onGetActiveMatch={actions.getActiveMatch}
