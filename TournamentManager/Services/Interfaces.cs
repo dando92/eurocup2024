@@ -17,7 +17,7 @@ namespace TournamentManager.Services
 
     public interface IMatchUpdate
     {
-        Task OnMatchUpdate(Match match);
+        Task OnMatchUpdate(MatchUpdateDTO match);
     }
 
     public interface ITournamentCache

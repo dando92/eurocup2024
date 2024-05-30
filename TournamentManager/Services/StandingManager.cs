@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNet.SignalR;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using TournamentManager.Contexts;
 using TournamentManager.DbModels;
 
@@ -91,13 +92,11 @@ namespace TournamentManager.Services
                 
                 foreach (var recalcStanding in _cache.CurrentRound.Standings)
                     _standingRepo.Update(recalcStanding);
-                
                 _cache.AdvanceRound();
-
-                _hub?.OnMatchUpdate(_cache.ActiveMatch);
+                
+                _hub?.OnMatchUpdate(new MatchUpdateDTO() { MatchId = _cache.ActiveMatch.Id, PhaseId = _cache.ActiveMatch.PhaseId, DivisionId = _cache.ActiveMatch.Phase.DivisionId });
             }
         }
-
         public bool DeleteStanding(Func<Standing, bool> shallDelete)
         {
             bool removed = false;

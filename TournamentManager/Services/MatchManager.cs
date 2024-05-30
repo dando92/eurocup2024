@@ -167,6 +167,7 @@ namespace TournamentManager.Services
         {
             return _matchRepo
                 .GetAll()
+                .Include(m => m.Phase)
                 .Include(m => m.Rounds)
                     .ThenInclude(m => m.Standings)
                 .Include(m => m.PlayerInMatches)
