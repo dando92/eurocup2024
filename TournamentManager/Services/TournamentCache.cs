@@ -1,16 +1,7 @@
-﻿using TournamentManager.Contexts;
-using TournamentManager.DbModels;
+﻿using TournamentManager.DbModels;
 
 namespace TournamentManager.Services
 {
-    public interface ITournamentCache
-    {
-        Round CurrentRound { get; }
-        Match ActiveMatch { get; }
-        Round AdvanceRound();
-        void SetActiveMatch(Match match);
-    }
-
     public class TournamentCache : ITournamentCache
     {
         private IEnumerator<Round> _iterator;
@@ -26,9 +17,6 @@ namespace TournamentManager.Services
 
         public void SetActiveMatch(Match match)
         {
-            if (match == _activeMatch)
-                return;
-            
             if (_activeMatch != null)
             {
                 _iterator = null;
@@ -36,23 +24,30 @@ namespace TournamentManager.Services
             }
 
             _activeMatch = match;
+            
             AdvanceRound();
         }
 
-        public Round AdvanceRound()
+        public Round AdvanceRound(bool forceRestart = false)
         {
             if (_activeMatch == null)
                 return null; 
 
-            if (_iterator == null)
+            if (_iterator == null || forceRestart)
                 _iterator = GetIterator();
-            
-            bool notLastElement =_iterator.MoveNext();
 
+            bool notLastElement =_iterator.MoveNext();
+            
             if (notLastElement)
+            {
                 _currentRound = _iterator.Current;
+            }
             else
+            {
+                _iterator = GetIterator();
                 _currentRound = null;
+            }
+                
 
             return _currentRound;
         }
@@ -62,7 +57,7 @@ namespace TournamentManager.Services
             foreach (var round in _activeMatch.Rounds)
             {
                 //If round is already populated.
-                if (round.Standings.Count == _activeMatch.PlayerInMatches.Count)
+                if (round.IsComplete())
                     continue;
              
                 yield return round;

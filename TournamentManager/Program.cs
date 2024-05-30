@@ -21,17 +21,15 @@ builder.Services.AddDbContext<TournamentDbContext>(options =>
     options.UseSqlite($"Data Source={exeDir}/DB/db.db");
 });
 
-builder.Services.Configure<StandingServiceConfiguration>(builder.Configuration.GetSection("StandingServiceConfiguration"));
-
 builder.Services.AddSignalR();
 
 builder.Services
     .AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>))
-    .AddScoped<TournamentManager.Services.TournamentManager>()
+    .AddScoped<IMatchManager, MatchManager>()
+    .AddScoped<IStandingManager, StandingManager>()
+    .AddScoped<ISongRoller, SongRoller>()
     .AddScoped<IMatchUpdate, NotificationHub>()
-    .AddSingleton<TournamentCache>()
-    .AddScoped<IStandingSubscriber, TournamentManager.Services.TournamentManager>()
-    .AddScoped<IRawStandingSubscriber, RawStandingSubscriber>();
+    .AddSingleton<ITournamentCache, TournamentCache>();
 
 // cors
 builder.Services.AddCors(options =>

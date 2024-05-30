@@ -1,20 +1,31 @@
 ﻿using TournamentManager.DbModels;
-using TournamentManager.Requests;
 
 namespace TournamentManager.Services
 {
-    public interface IRawStandingSubscriber
+    public interface ISongRoller
     {
-        void OnNewStanding(RawStanding standing);
+        List<int> RollSongs(int divisionId, string group, string levels);
+        int RollSong(int divisionId, string group, int level);
     }
 
-    public interface IStandingSubscriber
+    public interface IStandingManager
     {
-        void OnNewStanding(Standing standing);
+        void AddStanding(Score standing);
+        void AddStanding(Standing standing);
+        bool DeleteStanding(Func<Standing, bool> shallDelete);
     }
 
     public interface IMatchUpdate
     {
         Task OnMatchUpdate(Match match);
     }
+
+    public interface ITournamentCache
+    {
+        Round CurrentRound { get; }
+        Match ActiveMatch { get; }
+        Round AdvanceRound(bool forceRestart = false);
+        void SetActiveMatch(Match match);
+    }
+
 }

@@ -22,7 +22,7 @@
 
         public string Group { get; set; }
         public string Level { get; set; }
-        public int? SongId { get; set; }
+        public int SongId { get; set; }
     }
 
     public class PostEditSongToMatch : PostAddSongToMatch

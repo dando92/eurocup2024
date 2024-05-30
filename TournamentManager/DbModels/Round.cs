@@ -10,6 +10,8 @@ namespace TournamentManager.DbModels
         [JsonIgnore]
         public Match Match { get; set; }
         public ICollection<Standing> Standings { get; set; }
+        
+        public bool IsComplete() => Standings.Count >= Match.PlayerInMatches.Count;
     }
 
 }
