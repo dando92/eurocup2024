@@ -29,6 +29,9 @@ namespace TournamentManager.Services
 
             standing.RoundId = _cache.CurrentRound.Id;
 
+            if (_cache.CurrentRound.Standings.Where(s => s.PlayerId == standing.PlayerId && s.SongId == standing.SongId).Count() > 0)
+                return;
+
             _cache.CurrentRound.Standings.Add(standing);
 
             if (_cache.CurrentRound.Standings.Count >= _cache.ActiveMatch.PlayerInMatches.Count)

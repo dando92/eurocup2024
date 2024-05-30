@@ -9,6 +9,7 @@ using TournamentManager.Services;
 namespace TournamentManager.Controllers
 {
     [Route("api/[controller]")]
+    [Route("ws")]
     [ApiController]
     public class TournamentController : ControllerBase
     {
@@ -16,6 +17,8 @@ namespace TournamentManager.Controllers
         private readonly IGenericRepository<Phase> _phaseRepo;
         private readonly IGenericRepository<Match> _matchRepo;
         private readonly IGenericRepository<Song> _songRepo;
+        private readonly IGenericRepository<Player> _playerRepo;
+        
         private readonly TournamentCache _cache;
         private Services.TournamentManager _subscriber;
 
@@ -24,7 +27,8 @@ namespace TournamentManager.Controllers
             Services.TournamentManager subscriber,
             IGenericRepository<Match> matchRepo,
             IGenericRepository<Phase> phaseRepo,
-            IGenericRepository<Song> songRepo
+            IGenericRepository<Song> songRepo,
+            IGenericRepository<Player> playerRepo
             )
         {
             _subscriber = subscriber;
@@ -33,6 +37,7 @@ namespace TournamentManager.Controllers
             _matchRepo = matchRepo;
             _phaseRepo = phaseRepo;
             _songRepo = songRepo;
+            _playerRepo = playerRepo;
         }
 
         [HttpGet("matches/{id}")]
@@ -212,11 +217,28 @@ namespace TournamentManager.Controllers
         [HttpPost("addStanding")]
         public IActionResult AddStanding(Standing request)
         {
+            Song song = _songRepo
+                .GetAll()
+                .Where(s => s.Id == request.SongId)
+                .FirstOrDefault();
+
+            Player player = _playerRepo
+                .GetAll()
+                .Where(s => s.Id == request.PlayerId)
+                .FirstOrDefault();
+
+            //Player or song not registered, do nothing
+            if (song == null || player == null)
+                return NotFound();
+
+            request.Song = song;
+            request.Player = player;
+
             _subscriber.OnNewStanding(request);
 
             _matchRepo.Save();
 
-            return Ok();
+            return Ok(GetMatchDtoFromId(_cache.ActiveMatch.Id));
         }
 
         private Match CreateMatch(string matchName, string notes, string subTitle, int[] players, List<int> songs)

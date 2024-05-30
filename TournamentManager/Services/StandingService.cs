@@ -5,6 +5,8 @@ using TournamentManager.DbModels;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Options;
+using System.Net.Sockets;
+using System.Text;
 
 namespace TournamentManager.Services
 {
@@ -116,66 +118,78 @@ namespace TournamentManager.Services
         public ushort Port { get; set; }
     }
 
-    public class StandingService : BackgroundService
+    public class StandingService
     {
+        private RequestDelegate next;
+
         private IServiceScopeFactory _serviceScopeFactory;
-        private ClientWebSocket _socket;
-
-        public StandingServiceConfiguration StandingServiceConfiguration { get; }
-
-        public StandingService(IOptions<StandingServiceConfiguration> standingServiceConfiguration, IServiceScopeFactory serviceScopeFactory)
+        public StandingService(RequestDelegate _next, IServiceScopeFactory serviceScopeFactory)
         {
-            StandingServiceConfiguration = standingServiceConfiguration.Value;
+            this.next = _next;
             _serviceScopeFactory = serviceScopeFactory;
         }
 
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        public async Task Invoke(HttpContext context)
         {
-            _socket = new ClientWebSocket();
-
-            Receive(stoppingToken);
-
-            return Task.CompletedTask;
+            if (!context.WebSockets.IsWebSocketRequest)
+            {
+                return;
+            }
+            var socket = await context.WebSockets.AcceptWebSocketAsync();
+            await RunAsync(socket);
         }
 
-        private async void Receive(CancellationToken stoppingToken)
+        private async Task RunAsync(WebSocket socket)
         {
-            while (!stoppingToken.IsCancellationRequested)
+            try
             {
-                try
+                await Receive(socket);
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
+        }
+
+        private async Task Receive(WebSocket client)
+        {
+            CancellationTokenSource source = new CancellationTokenSource();
+
+            using (IServiceScope scope = _serviceScopeFactory.CreateScope())
+            {
+                IRawStandingSubscriber scopedProcessingService =
+                    scope.ServiceProvider.GetRequiredService<IRawStandingSubscriber>();
+
+                var buffer = new byte[1024*8];
+
+                while (!source.IsCancellationRequested)
                 {
-                    await _socket.ConnectAsync(new Uri($"ws://{StandingServiceConfiguration.Address}:{StandingServiceConfiguration.Port}/"), stoppingToken);
-                    File.AppendAllText("log.txt", "Connected");
-                    var buffer = new byte[1024];
+                    var res = await client.ReceiveAsync(buffer, source.Token);
 
-                    while (!stoppingToken.IsCancellationRequested)
+                    if (res.MessageType == WebSocketMessageType.Text)
                     {
-                        var res = await _socket.ReceiveAsync(buffer, stoppingToken);
-
-                        using (IServiceScope scope = _serviceScopeFactory.CreateScope())
+                        try
                         {
-                            IRawStandingSubscriber scopedProcessingService =
-                                scope.ServiceProvider.GetRequiredService<IRawStandingSubscriber>();
+                            var mes = Encoding.UTF8.GetString(buffer, 0, res.Count);
 
-                            File.AppendAllText("log.txt", System.Text.Encoding.ASCII.GetString(buffer.Take(res.Count).ToArray()));
+                            RawStanding score = Deserialize<RawStanding>(mes);
+                            scopedProcessingService.OnNewStanding(score);
+                        }
+                        catch
+                        {
 
-                            scopedProcessingService.OnNewStanding(Deserialize<RawStanding>(buffer, res.Count));
                         }
                     }
-                }
-                catch
-                {
-                    await Task.Delay(5000);
+
                 }
             }
         }
 
-        static T Deserialize<T>(byte[] buffer, int datalen)
+        static T Deserialize<T>(string json)
         {
-            using (StreamReader sr = new StreamReader(new MemoryStream(buffer, 0, datalen)))
-            {
-                return JsonSerializer.Deserialize<T>(sr.ReadToEnd());
-            }
+            return JsonSerializer.Deserialize<T>(json);
         }
     }
 }

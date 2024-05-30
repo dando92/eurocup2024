@@ -60,7 +60,7 @@ namespace TournamentManager.Tests
                 .Setup(s => s.GetById(It.IsAny<int>()))
                 .Returns((int id) => TournamentControllerDatabase.Phases.Find(p => p.Id == id));
 
-            _controller = new TournamentController(_cache, _divisionRepo.Object, _tournamentManager, _matchRepo.Object, _phaseRepo.Object, _songRepo.Object);
+            _controller = new TournamentController(_cache, _divisionRepo.Object, _tournamentManager, _matchRepo.Object, _phaseRepo.Object, _songRepo.Object, null);
         }
 
         [TestCleanup]

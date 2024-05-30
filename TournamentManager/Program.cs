@@ -1,7 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using System.Net.WebSockets;
+using System.Net;
 using System.Reflection;
 using TournamentManager.Contexts;
 using TournamentManager.Services;
+using TournamentManager;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,8 +31,7 @@ builder.Services
     .AddScoped<IMatchUpdate, NotificationHub>()
     .AddSingleton<TournamentCache>()
     .AddScoped<IStandingSubscriber, TournamentManager.Services.TournamentManager>()
-    .AddScoped<IRawStandingSubscriber, RawStandingSubscriber>()
-    .AddSingleton<IHostedService, StandingService>();
+    .AddScoped<IRawStandingSubscriber, RawStandingSubscriber>();
 
 // cors
 builder.Services.AddCors(options =>
@@ -65,5 +67,29 @@ app.UseEndpoints(endpoints =>
     endpoints.MapHub<MatchUpdateHub>("/matchUpdateHub");
 });
 
+app.UseWebSockets();
+app.UseMiddleware<StandingService>();
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path == "/ws")
+    {
+        if (context.WebSockets.IsWebSocketRequest)
+        {
+            using (WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync())
+            {
+                await Extension.Echo(context, webSocket);
+            }
+        }
+        else
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+        }
+    }
+    else
+    {
+        await next();
+    }
+
+});
 
 app.Run();
