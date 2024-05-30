@@ -234,7 +234,7 @@ export default function MatchTable({
         )}
       </div>
 
-      <div className="shadow-lg">
+      <div style={{minWidth: match.songs.length * 200}} className={`shadow-lg overflow-auto lg:min-w-fit`}>
         <div
           className={`grid grid-cols-${
             match.songs.length + 2

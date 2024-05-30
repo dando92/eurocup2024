@@ -3,6 +3,7 @@ import { classNames } from "./ManagePage";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircle } from "@fortawesome/free-solid-svg-icons";
 import LivePhase from "../components/view/LivePhase";
+import TournamentSettings from "../components/manage/tournament/TournamentSettings";
 
 export default function ViewPage() {
   return (
@@ -43,7 +44,7 @@ export default function ViewPage() {
         </Tab.List>
         <Tab.Panels className="mt-3">
           <Tab.Panel><LivePhase /></Tab.Panel>
-          <Tab.Panel>HISTORY</Tab.Panel>
+          <Tab.Panel><TournamentSettings controls={false}/></Tab.Panel>
         </Tab.Panels>
       </Tab.Group>
     </div>

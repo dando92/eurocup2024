@@ -5,7 +5,11 @@ import { Division } from "../../models/Division";
 import { Phase } from "../../models/Phase";
 import axios from "axios";
 import MatchesView from "../manage/tournament/MatchesView";
-import { HttpTransportType, HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
+import {
+  HttpTransportType,
+  HubConnection,
+  HubConnectionBuilder,
+} from "@microsoft/signalr";
 
 export default function LivePhase() {
   const [loading, setLoading] = useState(true);
@@ -60,7 +64,11 @@ export default function LivePhase() {
           >
             {division.name}
           </h1>
-          <MatchesView phaseId={phase.id} division={division} />
+          <MatchesView
+            showPastMatches={false}
+            phaseId={phase.id}
+            division={division}
+          />
         </div>
       )}
     </div>

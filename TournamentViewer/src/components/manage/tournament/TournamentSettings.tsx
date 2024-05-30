@@ -5,7 +5,13 @@ import { Phase } from "../../../models/Phase";
 import PhaseList from "./PhaseList";
 import MatchesView from "./MatchesView";
 
-export default function TournamentSettings() {
+type TournamentSettingsProps = {
+  controls: boolean;
+};
+
+export default function TournamentSettings({
+  controls,
+}: TournamentSettingsProps) {
   const [selectedDivision, setSelectedDivision] = useState<Division | null>(
     null
   );
@@ -15,21 +21,26 @@ export default function TournamentSettings() {
     <div>
       <div className="flex flex-col justify-start gap-3">
         <div className="flex flex-row gap-3">
-          <h2>Configure your tournament!</h2>
+          <h2>{controls ? "Configure your tournament" : "History of Eurocup 2024"}!</h2>
         </div>
         <DivisionList
-          controls
+          controls={controls}
           onDivisionSelect={(division) => setSelectedDivision(division)}
         />
         {selectedDivision && (
           <PhaseList
-            controls
+            controls={controls}
             onPhaseSelect={setSelectedPhase}
             divisionId={selectedDivision.id}
           />
         )}
         {selectedPhase && selectedDivision && (
-          <MatchesView showPastMatches controls division={selectedDivision} phaseId={selectedPhase.id} />
+          <MatchesView
+            showPastMatches={true}
+            controls={controls}
+            division={selectedDivision}
+            phaseId={selectedPhase.id}
+          />
         )}
       </div>
     </div>

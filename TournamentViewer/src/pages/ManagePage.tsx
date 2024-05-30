@@ -46,7 +46,7 @@ export default function ManagePage() {
         </Tab.List>
         <Tab.Panels className="mt-3">
           <Tab.Panel>
-            <TournamentSettings />
+            <TournamentSettings controls />
           </Tab.Panel>
           <Tab.Panel>
             <SongsList />

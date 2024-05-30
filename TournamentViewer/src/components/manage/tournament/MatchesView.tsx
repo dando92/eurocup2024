@@ -60,33 +60,37 @@ export default function MatchesView({
         </div>
       )}
       <div className="w-full mt-10">
+        {state.activeMatch &&
+          phase &&
+          state.activeMatch.phaseId === phase.id && (
+            <div className="pb-20">
+              <h3 className="text-3xl text-center">Active match:</h3>
+              <MatchTable
+                controls={controls}
+                division={division}
+                phase={phase}
+                isActive={true}
+                onGetActiveMatch={actions.getActiveMatch}
+                onSetActiveMatch={actions.setActiveMatch}
+                onDeleteMatch={actions.deleteMatch}
+                onAddSongToMatchByRoll={actions.addSongToMatchByRoll}
+                onAddSongToMatchBySongId={actions.addSongToMatchBySongId}
+                onEditSongToMatchByRoll={actions.editSongToMatchByRoll}
+                onEditSongToMatchBySongId={actions.editSongToMatchBySongId}
+                onAddStandingToMatch={actions.addStandingToMatch}
+                match={state.activeMatch}
+              />
+            </div>
+          )}
+
         {state.matches.length === 0 && (
           <p className="text-center text-red-500 font-bold">
             No matches found.
           </p>
         )}
-
-        {state.activeMatch && phase && (
-          <div className="pb-20">
-            <MatchTable
-              controls={controls}
-              division={division}
-              phase={phase}
-              isActive={true}
-              onGetActiveMatch={actions.getActiveMatch}
-              onSetActiveMatch={actions.setActiveMatch}
-              onDeleteMatch={actions.deleteMatch}
-              onAddSongToMatchByRoll={actions.addSongToMatchByRoll}
-              onAddSongToMatchBySongId={actions.addSongToMatchBySongId}
-              onEditSongToMatchByRoll={actions.editSongToMatchByRoll}
-              onEditSongToMatchBySongId={actions.editSongToMatchBySongId}
-              onAddStandingToMatch={actions.addStandingToMatch}
-              match={state.activeMatch}
-            />
-          </div>
+        {showPastMatches && (
+          <h3 className="text-3xl text-center">Past matches:</h3>
         )}
-
-        {showPastMatches && <h3 className="text-3xl text-center">Past matches:</h3>}
         {phase &&
           showPastMatches &&
           state.matches
