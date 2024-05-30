@@ -29,7 +29,7 @@ export default function TournamentSettings() {
           />
         )}
         {selectedPhase && selectedDivision && (
-          <MatchesView controls division={selectedDivision} phaseId={selectedPhase.id} />
+          <MatchesView showPastMatches controls division={selectedDivision} phaseId={selectedPhase.id} />
         )}
       </div>
     </div>

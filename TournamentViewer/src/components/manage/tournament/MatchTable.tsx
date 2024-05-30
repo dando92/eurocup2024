@@ -84,8 +84,9 @@ export default function MatchTable({
   onAddStandingToMatch,
 }: MatchTableProps) {
   // Create a lookup table for scores and percentages
-  const scoreTable: { [key: string]: { score: number; percentage: number } } =
-    {};
+  const scoreTable: {
+    [key: string]: { score: number; percentage: number; isFailed: boolean };
+  } = {};
 
   const [addSongToMatchModalOpen, setAddSongToMatchModalOpen] = useState(false);
   const [editSongId, setEditSongId] = useState<number | null>(null);
@@ -108,6 +109,7 @@ export default function MatchTable({
       scoreTable[key] = {
         score: standing.score,
         percentage: standing.percentage,
+        isFailed: standing.isFailed,
       };
     });
   });
@@ -157,10 +159,12 @@ export default function MatchTable({
       <div className="flex flex-row mb-6 justify-center items-center">
         <h2 className="text-center text-4xl font-bold text-blue-600">
           <div className="flex flex-row justify-center items-center gap-3">
-            {isActive && <FontAwesomeIcon
-              icon={faCircle}
-              className="text-red-800 text-xs animate-pulse"
-            />}
+            {isActive && (
+              <FontAwesomeIcon
+                icon={faCircle}
+                className="text-red-800 text-xs animate-pulse"
+              />
+            )}
             <span className="text-xl">{match.name}</span>
           </div>
         </h2>
@@ -291,10 +295,19 @@ export default function MatchTable({
               return (
                 <div key={j} className="border border-gray-300 p-2">
                   <div className="text-center  justify-center flex flex-row gap-3 items-center text-gray-600">
-                    {scoreData
-                      ? `${scoreData.score} (${scoreData.percentage}%)`
-                      : "-"}
-
+                    <p
+                      className={`${
+                        scoreData?.isFailed
+                          ? "text-red-500 font-bold"
+                          : "text-black"
+                      }`}
+                    >
+                      {scoreData
+                        ? `${scoreData.score} (${scoreData.percentage}%) ${
+                            scoreData.isFailed ? "F" : ""
+                          }`
+                        : "-"}
+                    </p>
                     {!scoreData && controls && isActive && (
                       <button
                         title="Manually add score"

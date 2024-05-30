@@ -4,5 +4,6 @@ export interface Standing {
     songId: number;
     playerId: number;
     percentage: number;
+    isFailed: boolean;
     score: number;
 }

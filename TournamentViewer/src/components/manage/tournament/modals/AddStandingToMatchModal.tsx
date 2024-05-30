@@ -25,11 +25,16 @@ export default function AddStandingToMatchModal({
   onClose,
   onAddStandingToMatch,
 }: AddStandingToMatchModalProps) {
-  const [percentage, setPercentage] = useState<number>(0);
+  const [percentage, setPercentage] = useState<string>("0");
   const [isFailed, setIsFailed] = useState<boolean>(false);
 
   const onSubmit = () => {
-    onAddStandingToMatch(playerId, songId, percentage, false);
+    onAddStandingToMatch(
+      playerId,
+      songId,
+      Number.parseFloat(percentage.replace(",", ".")),
+      isFailed
+    );
     onClose();
   };
 
@@ -49,9 +54,9 @@ export default function AddStandingToMatchModal({
             Percentage
           </label>
           <input
-            type="number"
+            type="text"
             value={percentage}
-            onChange={(e) => setPercentage(parseInt(e.target.value))}
+            onChange={(e) => setPercentage(e.target.value)}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
         </div>

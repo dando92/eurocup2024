@@ -5,13 +5,14 @@ import { Division } from "../../models/Division";
 import { Phase } from "../../models/Phase";
 import axios from "axios";
 import MatchesView from "../manage/tournament/MatchesView";
-import { HttpTransportType, HubConnectionBuilder } from "@microsoft/signalr";
+import { HttpTransportType, HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 
 export default function LivePhase() {
   const [loading, setLoading] = useState(true);
   const [phase, setPhase] = useState<Phase | null>(null);
   const [division, setDivision] = useState<Division | null>(null);
   const [activeMatch, setActiveMatch] = useState<Match | null>(null);
+  const [, setConnection] = useState<HubConnection | null>(null);
 
   useEffect(() => {
     MatchesApi.getActiveMatch()
@@ -42,6 +43,8 @@ export default function LivePhase() {
         conn.start().then(() => {
           console.log("Now listening to match changes.");
         });
+
+        setConnection(conn);
       })
       .finally(() => setLoading(false));
   }, []);

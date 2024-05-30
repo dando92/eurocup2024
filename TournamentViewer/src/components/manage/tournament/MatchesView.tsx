@@ -11,12 +11,14 @@ import { useMatches } from "../../../services/matches/useMatches";
 type MatchesViewProps = {
   phaseId: number;
   controls?: boolean;
+  showPastMatches?: boolean;
   division: Division;
 };
 
 export default function MatchesView({
   phaseId,
   division,
+  showPastMatches = false,
   controls = false,
 }: MatchesViewProps) {
   const [phase, setPhase] = useState<Phase | null>(null);
@@ -84,8 +86,9 @@ export default function MatchesView({
           </div>
         )}
 
-        <h3 className="text-3xl text-center">Past matches:</h3>
+        {showPastMatches && <h3 className="text-3xl text-center">Past matches:</h3>}
         {phase &&
+          showPastMatches &&
           state.matches
             .filter((m) => m.id !== state.activeMatch?.id)
             .map((match) => (
