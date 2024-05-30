@@ -51,12 +51,12 @@ namespace TournamentManager.Services
 
             match.SongInMatches.Remove(sim);
 
-            var round = _roundRepo.GetAll().Where(round => round.MatchId == match.Id).FirstOrDefault();
+            var round = _roundRepo.GetAll().Where(round => round.MatchId == match.Id && round.Standings.Count == 0).FirstOrDefault();
 
             _roundRepo.DeleteById(round.Id);
 
             _roundRepo.Save();
-            _matchRepo.Save();
+            _matchRepo.Update(match);
         }
 
         public void RemoveSongFromMatch(int matchId, int songId)
