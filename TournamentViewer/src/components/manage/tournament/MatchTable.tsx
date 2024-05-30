@@ -11,7 +11,11 @@ import { Phase } from "../../../models/Phase";
 import AddEditSongToMatchModal from "./modals/AddEditSongToMatchModal";
 import { useEffect, useState } from "react";
 import AddStandingToMatchModal from "./modals/AddStandingToMatchModal";
-import { HttpTransportType, HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
+import {
+  HttpTransportType,
+  HubConnection,
+  HubConnectionBuilder,
+} from "@microsoft/signalr";
 import { toast } from "react-toastify";
 
 type MatchTableProps = {
@@ -130,6 +134,23 @@ export default function MatchTable({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isActive, connection]);
 
+  // Calculate total points for each player
+  const getTotalPoints = (playerId: number) => {
+    return match.rounds
+      .map((round) => round.standings.find((s) => s.playerId === playerId))
+      .reduce((acc, standing) => {
+        if (standing) {
+          return acc + standing.score;
+        }
+        return acc;
+      }, 0);
+  };
+
+  // Sort players by total points
+  const sortedPlayers = [...match.players].sort(
+    (a, b) => getTotalPoints(b.id) - getTotalPoints(a.id)
+  );
+
   return (
     <div className="flex flex-col w-full p-4 my-3 bg-gray-200 rounded-lg shadow-md">
       <div className="flex flex-row mb-6 justify-center items-center">
@@ -242,7 +263,7 @@ export default function MatchTable({
           </div>
         </div>
 
-        {match.players.map((player, i) => (
+        {sortedPlayers.map((player, i) => (
           <div
             key={i}
             className={`grid grid-cols-${

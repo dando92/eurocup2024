@@ -3,7 +3,7 @@ import PlayersList from "../components/manage/players/PlayersList";
 import SongsList from "../components/manage/songs/SongsList";
 import TournamentSettings from "../components/manage/tournament/TournamentSettings";
 
-function classNames(...classes: string[]) {
+export function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
