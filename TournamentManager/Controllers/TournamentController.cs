@@ -94,7 +94,7 @@ namespace TournamentManager.Controllers
                 _matchManager.AddRandomSongsToMatch(match, request.DivisionId, request.Group, request.Levels);
             }
 
-            return Ok(GetMatchDtoFromId(match.Id));
+            return Ok(GetMatchDto(match));
         }
 
         [HttpPost("setActiveMatch")]
@@ -133,9 +133,11 @@ namespace TournamentManager.Controllers
         {
             var match = _matchManager.GetMatchFromId(matchId).FirstOrDefault();
 
-            if (match == null)
-                return null;
+            return GetMatchDto(match);
+        }
 
+        private MatchDto GetMatchDto(Match match)
+        {
             var matchDto = new MatchDto
             {
                 Id = match.Id,
