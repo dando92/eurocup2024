@@ -58,10 +58,11 @@ namespace TournamentManager
 
         public static List<Standing> Recalc(this ICollection<Standing> standings)
         {
-            int maxPoints = standings.Count;
-            var orderedStandings = standings.OrderByDescending(s => s.Percentage).ToList();
+            int failed = standings.Count(s => s.IsFailed);
+            int maxPoints = standings.Count - failed;
+            var orderedStandings = standings.Where(s => !s.IsFailed).OrderByDescending(s => s.Percentage).ToList();
 
-            for (int i = 0; i < standings.Count; i++)
+            for (int i = 0; i < orderedStandings.Count; i++)
             {
                 orderedStandings[i].Score = maxPoints;
 

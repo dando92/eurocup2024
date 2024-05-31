@@ -51,11 +51,6 @@ namespace TournamentManager.Contexts
 
         public void Update(T entity)
         {
-            bool tracked = _databaseContext.Entry(entity).State != EntityState.Detached;
-
-            if (tracked)
-                return;
-
             _dbSet.Update(entity);
             Save();
         }
@@ -63,18 +58,6 @@ namespace TournamentManager.Contexts
         public void Save()
         {
             _databaseContext.SaveChanges();
-        }
-
-        private static object[] GetPrimaryKeys<T>(DbContext context, T value)
-        {
-            var keyNames = context.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties
-                      .Select(x => x.Name).ToArray();
-            var result = new object[keyNames.Length];
-            for (int i = 0; i < keyNames.Length; i++)
-            {
-                result[i] = typeof(T).GetProperty(keyNames[i])?.GetValue(value);
-            }
-            return result;
         }
     }
 }

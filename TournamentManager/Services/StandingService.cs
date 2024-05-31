@@ -44,21 +44,22 @@ namespace TournamentManager.Services
         {
             CancellationTokenSource source = new CancellationTokenSource();
 
-            using (IServiceScope scope = _serviceScopeFactory.CreateScope())
+            var buffer = new byte[1024 * 8];
+
+            while (!source.IsCancellationRequested)
             {
-                IStandingManager scopedProcessingService =
-                    scope.ServiceProvider.GetRequiredService<IStandingManager>();
-                ILogUpdate logUpdate =
-                    scope.ServiceProvider.GetRequiredService<ILogUpdate>();
+                var res = await client.ReceiveAsync(buffer, source.Token);
 
-                var buffer = new byte[1024*8];
-
-                while (!source.IsCancellationRequested)
+                if (res.MessageType == WebSocketMessageType.Text)
                 {
-                    var res = await client.ReceiveAsync(buffer, source.Token);
 
-                    if (res.MessageType == WebSocketMessageType.Text)
+                    using (IServiceScope scope = _serviceScopeFactory.CreateScope())
                     {
+                        IStandingManager scopedProcessingService =
+                            scope.ServiceProvider.GetRequiredService<IStandingManager>();
+                        ILogUpdate logUpdate =
+                            scope.ServiceProvider.GetRequiredService<ILogUpdate>();
+
                         try
                         {
                             var mes = Encoding.UTF8.GetString(buffer, 0, res.Count);
@@ -66,14 +67,14 @@ namespace TournamentManager.Services
                             Score score = Deserialize<Score>(mes);
                             scopedProcessingService.AddStanding(score);
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             logUpdate.OnLogUpdate(new LogUpdateDTO() { Exception = ex.Message, Message = "Error parsing score from itg" });
                         }
                     }
-
                 }
             }
+
         }
 
         static T Deserialize<T>(string json)

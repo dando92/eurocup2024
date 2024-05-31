@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Linq;
 using TournamentManager.Contexts;
 using TournamentManager.DbModels;
 
@@ -124,9 +125,8 @@ namespace TournamentManager.Services
                         foreach (var recalcStanding in round.Standings)
                             _standingRepo.Update(recalcStanding);
                     }
-
-                    _hub?.OnMatchUpdate(new MatchUpdateDTO() { MatchId = activeMatch.Id, PhaseId = activeMatch.PhaseId, DivisionId = activeMatch.Phase.DivisionId });
                 }
+                _hub?.OnMatchUpdate(new MatchUpdateDTO() { MatchId = activeMatch.Id, PhaseId = activeMatch.PhaseId, DivisionId = activeMatch.Phase.DivisionId });
             }
             catch(Exception ex)
             {
@@ -180,8 +180,8 @@ namespace TournamentManager.Services
         public bool DeleteStanding(int playerdId, int songId)
         {
             bool removed = false;
-
-            if (GetActiveMatch() == null)
+            Match activeMatch = GetActiveMatch();
+            if (activeMatch == null)
             {
                 _logHub.OnLogUpdate(new LogUpdateDTO() { Message = $"No active match during standing edit" });
                 return removed;
@@ -205,7 +205,13 @@ namespace TournamentManager.Services
                         round.Standings.Remove(standing);
                         removed = true;
                     }
+                    else
+                    {
+                        standing.Score = 0;
+                        _standingRepo.Update(standing);
+                    }
                 }
+                _hub?.OnMatchUpdate(new MatchUpdateDTO() { MatchId = activeMatch.Id, PhaseId = activeMatch.PhaseId, DivisionId = activeMatch.Phase.DivisionId });
             }
             catch (Exception ex)
             {
