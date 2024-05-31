@@ -44,7 +44,7 @@ namespace TournamentManager.Controllers
             bool edited = _standingManager.EditStanding(request.PlayerId, request.SongId, request.Percentage, request.Score);
 
             if (edited)
-                return Ok(GetActiveMatch());
+                return Ok(GetMatchDtoFromId(_cache.ActiveMatch.Id));
             else
                 return NotFound();
         }
@@ -55,7 +55,7 @@ namespace TournamentManager.Controllers
             bool removed = _standingManager.DeleteStanding(playerId, songId);
 
             if (removed)
-                return Ok(GetActiveMatch());
+                return Ok(GetMatchDtoFromId(_cache.ActiveMatch.Id));
             else
                 return NotFound();
         }

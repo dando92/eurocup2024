@@ -141,8 +141,8 @@ export async function editStandingForPlayerFromActiveMatch(
 }
 
 export async function deleteStandingsForPlayerFromActiveMatch(
-  songId: number,
-  playerId: number
+  playerId: number,
+  songId: number
 ): Promise<Match> {
   try {
     const response = await axios.delete(

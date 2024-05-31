@@ -144,6 +144,9 @@ namespace TournamentManager.Services
 
             match.SongInMatches.Add(new SongInMatch() { SongId = songId, MatchId = match.Id });
 
+            match.Rounds.Add(round);
+
+
             return round;
         }
 

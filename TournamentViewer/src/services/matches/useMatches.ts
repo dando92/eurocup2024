@@ -197,13 +197,13 @@ export function useMatches(phaseId: number) {
   }
 
   async function deleteStandingsForPlayerFromMatch(
-    songId: number,
-    playerId: number
+    playerId: number,
+    songId: number
   ) {
     try {
       const item = await MatchesApi.deleteStandingsForPlayerFromActiveMatch(
-        songId,
-        playerId
+        playerId,
+        songId
       );
       dispatch({ type: "onDeleteStandingFromMatch", payload: item });
     } catch (error) {
