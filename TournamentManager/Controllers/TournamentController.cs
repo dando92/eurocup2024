@@ -14,17 +14,14 @@ namespace TournamentManager.Controllers
         private readonly ITournamentCache _cache;
         private IStandingManager _standingManager;
         private readonly IMatchManager _matchManager;
-        private readonly IMatchUpdate _hub;
 
         public TournamentController(ITournamentCache cache,
             IStandingManager standingManager,
-            IMatchManager matchManager,
-            IMatchUpdate hub)
+            IMatchManager matchManager)
         {
             _standingManager = standingManager;
             _cache = cache;
             _matchManager = matchManager;
-            _hub = hub;
         }
 
         [HttpGet("matches/{id}")]
@@ -108,9 +105,8 @@ namespace TournamentManager.Controllers
             if (activeMatch == null)
                 return NotFound();
 
-            _cache.SetActiveMatch(activeMatch);
-
-            _hub?.OnMatchUpdate(new MatchUpdateDTO() { MatchId = _cache.ActiveMatch.Id, PhaseId = _cache.ActiveMatch.PhaseId, DivisionId = _cache.ActiveMatch.Phase.DivisionId });
+            _matchManager.SetActiveMatch(activeMatch);
+            
             return Ok(GetMatchDtoFromId(_cache.ActiveMatch.Id));
         }
 

@@ -15,6 +15,7 @@ namespace TournamentManager.Services
         void RemoveSongFromMatch(Match match, int songId);
         IQueryable<Match> GetMatchFromId(int matchId);
         IQueryable<Match> GetMatchesFromPhaseId(int phaseId);
+        void SetActiveMatch(Match match);
     }
 
     public class MatchManager : IMatchManager
@@ -23,12 +24,25 @@ namespace TournamentManager.Services
         private readonly IGenericRepository<Match> _matchRepo;
         private readonly IGenericRepository<Round> _roundRepo;
         private readonly ITournamentCache _cache;
-        public MatchManager(ISongRoller roller, IGenericRepository<Match> matchRepo, IGenericRepository<Round> roundRepo, ITournamentCache cache)
+        private readonly IMatchUpdate _hub;
+
+        public MatchManager(ISongRoller roller, 
+            IGenericRepository<Match> matchRepo, 
+            IGenericRepository<Round> roundRepo, 
+            ITournamentCache cache, 
+            IMatchUpdate hub)
         {
             _roller = roller;
             _matchRepo = matchRepo;
             _roundRepo = roundRepo;
             _cache = cache;
+            _hub = hub;
+        }
+
+        public void SetActiveMatch(Match match)
+        {
+            _cache.SetActiveMatch(match);
+            _hub?.OnMatchUpdate(new MatchUpdateDTO() { MatchId = match.Id, PhaseId = match.PhaseId, DivisionId = match.Phase.DivisionId });
         }
 
         public Match AddMatch(string matchName, string notes, string subtitle, int[] playerIds, int phaseId, bool isManualMatch)
@@ -56,6 +70,12 @@ namespace TournamentManager.Services
             _roundRepo.DeleteById(round.Id);
 
             _roundRepo.Save();
+
+            //TODO:Need better architecture, Keep active match updated
+            if (match.Id == _cache.ActiveMatch.Id)
+                SetActiveMatch(match);
+
+            //TODO: match is tracked, might remove
             _matchRepo.Update(match);
         }
 
@@ -83,6 +103,10 @@ namespace TournamentManager.Services
         {
             foreach (var songId in songIds)
                 AddSongToMatch(match, songId);
+
+            //TODO:Need better architecture, Keep active match updated
+            if (match.Id == _cache.ActiveMatch.Id)
+                SetActiveMatch(match);
         }
 
         public void AddRandomSongsToMatch(Match match, int divisionId, string group, string levels)
