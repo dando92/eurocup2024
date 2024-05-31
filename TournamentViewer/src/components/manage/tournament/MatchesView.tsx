@@ -64,25 +64,27 @@ export default function MatchesView({
           phase &&
           state.activeMatch.phaseId === phase.id && (
             <div className="pb-20">
-              <h3 className="text-3xl text-center">Active match:</h3>
-              <MatchTable
-                controls={controls}
-                division={division}
-                phase={phase}
-                isActive={true}
-                onDeleteStanding={actions.deleteStandingsForPlayerFromMatch}
-                onGetActiveMatch={actions.getActiveMatch}
-                onSetActiveMatch={actions.setActiveMatch}
-                onEditMatchNotes={actions.editMatchNotes}
-                onDeleteMatch={actions.deleteMatch}
-                onAddSongToMatchByRoll={actions.addSongToMatchByRoll}
-                onAddSongToMatchBySongId={actions.addSongToMatchBySongId}
-                onEditSongToMatchByRoll={actions.editSongToMatchByRoll}
-                onEditSongToMatchBySongId={actions.editSongToMatchBySongId}
-                onAddStandingToMatch={actions.addStandingToMatch}
-                onEditStanding={actions.editStandingFromMatch}
-                match={state.activeMatch}
-              />
+              <div>
+                <h3 className="text-3xl text-center">Active match:</h3>
+                <MatchTable
+                  controls={controls}
+                  division={division}
+                  phase={phase}
+                  isActive={true}
+                  onDeleteStanding={actions.deleteStandingsForPlayerFromMatch}
+                  onGetActiveMatch={actions.getActiveMatch}
+                  onSetActiveMatch={actions.setActiveMatch}
+                  onEditMatchNotes={actions.editMatchNotes}
+                  onDeleteMatch={actions.deleteMatch}
+                  onAddSongToMatchByRoll={actions.addSongToMatchByRoll}
+                  onAddSongToMatchBySongId={actions.addSongToMatchBySongId}
+                  onEditSongToMatchByRoll={actions.editSongToMatchByRoll}
+                  onEditSongToMatchBySongId={actions.editSongToMatchBySongId}
+                  onAddStandingToMatch={actions.addStandingToMatch}
+                  onEditStanding={actions.editStandingFromMatch}
+                  match={state.activeMatch}
+                />
+              </div>
             </div>
           )}
 

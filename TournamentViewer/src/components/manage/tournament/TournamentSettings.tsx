@@ -9,6 +9,7 @@ type TournamentSettingsProps = {
   controls: boolean;
 };
 
+
 export default function TournamentSettings({
   controls,
 }: TournamentSettingsProps) {
@@ -21,19 +22,26 @@ export default function TournamentSettings({
     <div>
       <div className="flex flex-col justify-start gap-3">
         <div className="flex flex-row gap-3">
-          <h2>{controls ? "Configure your tournament" : "History of Eurocup 2024"}!</h2>
+          <h2>
+            {controls ? "Configure your tournament" : "History of Eurocup 2024"}
+            !
+          </h2>
         </div>
-        <DivisionList
-          controls={controls}
-          onDivisionSelect={(division) => setSelectedDivision(division)}
-        />
-        {selectedDivision && (
-          <PhaseList
-            controls={controls}
-            onPhaseSelect={setSelectedPhase}
-            divisionId={selectedDivision.id}
-          />
-        )}
+        <div className="flex flex-row justify-between gap-3">
+          <div>
+            <DivisionList
+              controls={controls}
+              onDivisionSelect={(division) => setSelectedDivision(division)}
+            />
+            {selectedDivision && (
+              <PhaseList
+                controls={controls}
+                onPhaseSelect={setSelectedPhase}
+                divisionId={selectedDivision.id}
+              />
+            )}
+          </div>
+        </div>
         {selectedPhase && selectedDivision && (
           <MatchesView
             showPastMatches={true}

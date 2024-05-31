@@ -23,6 +23,11 @@ import {
 import { toast } from "react-toastify";
 import EditMatchNotesModal from "./modals/EditMatchNotesModal";
 
+export type Log = {
+  message: string;
+  exception: string;
+};
+
 type MatchTableProps = {
   division: Division;
   phase: Phase;
@@ -96,7 +101,7 @@ export default function MatchTable({
   onEditSongToMatchBySongId,
   onAddStandingToMatch,
   onEditMatchNotes,
-  onDeleteStanding
+  onDeleteStanding,
 }: MatchTableProps) {
   // Create a lookup table for scores and percentages
   const scoreTable: {
@@ -105,6 +110,7 @@ export default function MatchTable({
 
   const [addSongToMatchModalOpen, setAddSongToMatchModalOpen] = useState(false);
   const [editSongId, setEditSongId] = useState<number | null>(null);
+
 
   const [addStandingToMatchModalOpen, setAddStandingToMatchModalOpen] =
     useState(false);
@@ -142,6 +148,13 @@ export default function MatchTable({
 
       conn.on("OnMatchUpdate", () => {
         onGetActiveMatch();
+      });
+
+      controls && conn.on("OnLogUpdate", ({ message, exception }: Log) => {
+        console.log(message, exception);
+        toast.error(`Error: ${message} - ${exception}`, {
+          autoClose: false,
+        });
       });
 
       conn.start().then(() => {
