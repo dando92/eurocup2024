@@ -78,6 +78,7 @@ type MatchTableProps = {
     score: number,
     isFailed: boolean
   ) => void;
+  onDeleteStanding: (playerId: number, songId: number) => void;
 };
 
 export default function MatchTable({
@@ -95,6 +96,7 @@ export default function MatchTable({
   onEditSongToMatchBySongId,
   onAddStandingToMatch,
   onEditMatchNotes,
+  onDeleteStanding
 }: MatchTableProps) {
   // Create a lookup table for scores and percentages
   const scoreTable: {
@@ -349,12 +351,29 @@ export default function MatchTable({
                           }`
                         : "-"}
                       {controls && isActive && scoreData && (
-                        <button
-                          title="Edit standing manually"
-                          className="text-xs ml-3 text-blu"
-                        >
-                          <FontAwesomeIcon icon={faPencil} />
-                        </button>
+                        <>
+                          <button
+                            title="Edit standing manually"
+                            className="text-xs ml-3 text-blu"
+                          >
+                            <FontAwesomeIcon icon={faPencil} />
+                          </button>
+                          <button
+                            title="Delete this standing"
+                            className="text-xs ml-3 text-red-500"
+                            onClick={() => {
+                              if (
+                                window.confirm(
+                                  "Are you sure you want to delete this standing?"
+                                )
+                              ) {
+                                onDeleteStanding(player.id, song.id);
+                              }
+                            }}
+                          >
+                            <FontAwesomeIcon icon={faTrash} />
+                          </button>
+                        </>
                       )}
                     </p>
 

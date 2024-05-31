@@ -70,6 +70,7 @@ export default function MatchesView({
                 division={division}
                 phase={phase}
                 isActive={true}
+                onDeleteStanding={actions.deleteStandingsForPlayerFromMatch}
                 onGetActiveMatch={actions.getActiveMatch}
                 onSetActiveMatch={actions.setActiveMatch}
                 onEditMatchNotes={actions.editMatchNotes}
@@ -102,6 +103,7 @@ export default function MatchesView({
                 controls={controls}
                 division={division}
                 phase={phase}
+                onDeleteStanding={actions.deleteStandingsForPlayerFromMatch}
                 onGetActiveMatch={actions.getActiveMatch}
                 isActive={state.activeMatch?.id === match.id}
                 onSetActiveMatch={actions.setActiveMatch}
