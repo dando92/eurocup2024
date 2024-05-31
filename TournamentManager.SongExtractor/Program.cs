@@ -9,6 +9,8 @@ namespace TournamentManager.SongExtractor
         {
             string[] lines = File.ReadAllLines(fileName);
             string title = "";
+            string subtitle = "";
+
             string difficulty = "";
 
             foreach (string line in lines)
@@ -20,6 +22,13 @@ namespace TournamentManager.SongExtractor
                     title = title.Remove(title.Length - 1);
                 }
 
+                if (line.Contains("#SUBTITLE:"))
+                {
+                    subtitle = line.Split(":")[1];
+
+                    subtitle = subtitle.Remove(subtitle.Length - 1);
+                }
+
                 if (line.Contains("#METER:"))
                 {
                     difficulty = line.Split(":")[1];
@@ -27,10 +36,10 @@ namespace TournamentManager.SongExtractor
                     break;
                 }
             }
-
+            title = title + " " + subtitle;
             return new Song()
             {
-                Title = title,
+                Title = title.Trim(),
                 Group = Path.GetFileName(pack),
                 Difficulty = int.Parse(difficulty)
             };
@@ -41,8 +50,8 @@ namespace TournamentManager.SongExtractor
             string[] lines = File.ReadAllLines(fileName);
             string title = "";
             string difficulty = "";
-
-            for(int i = 0; i < lines.Length; i++)
+            string subtitle = "";
+            for (int i = 0; i < lines.Length; i++)
             {
                 if (lines[i].Contains("#TITLE:"))
                 {
@@ -51,16 +60,22 @@ namespace TournamentManager.SongExtractor
                     title = title.Remove(title.Length - 1);
                 }
 
+                if (lines[i].Contains("#SUBTITLE:"))
+                {
+                    subtitle = lines[i].Split(":")[1];
+
+                    subtitle = subtitle.Remove(subtitle.Length - 1);
+                }
                 if (lines[i].Contains("Challenge:") || lines[i].Contains("Hard:") || lines[i].Contains("Medium:") || lines[i].Contains("Easy:"))
                 {
                     difficulty = lines[i + 1].Split(":")[0].Trim();
                     break;
                 }
             }
-
+            title = title + " " + subtitle;
             return new Song()
             {
-                Title = title,
+                Title = title.Trim(),
                 Group = Path.GetFileName(pack),
                 Difficulty = int.Parse(difficulty)
             };
