@@ -128,9 +128,12 @@ namespace TournamentManager.Controllers
         [HttpPost("addStanding")]
         public IActionResult AddStanding(Standing request)
         {
-            _standingManager.AddStanding(request);
+            bool added = _standingManager.AddStanding(request);
 
-            return Ok(GetMatchDtoFromId(_cache.ActiveMatch.Id));
+            if (added)
+                return Ok(GetMatchDtoFromId(_cache.ActiveMatch.Id));
+            else
+                return NotFound();
         }
 
         private MatchDto GetMatchDtoFromId(int matchId)

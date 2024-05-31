@@ -10,8 +10,8 @@ namespace TournamentManager.Services
 
     public interface IStandingManager
     {
-        void AddStanding(Score standing);
-        void AddStanding(Standing standing);
+        bool AddStanding(Score standing);
+        bool AddStanding(Standing standing);
         bool DeleteStanding(int playerdId, int songId);
         bool EditStanding(int playerdId, int songId, double percentage, int score);
     }

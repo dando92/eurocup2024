@@ -32,7 +32,7 @@ namespace TournamentManager.Services
             _logHub = logHub;
         }
 
-        public void AddStanding(Score score)
+        public bool AddStanding(Score score)
         {
             Song song = _songRepo
                 .GetAll()
@@ -48,7 +48,7 @@ namespace TournamentManager.Services
             if (song == null || player == null)
             {
                 _logHub.OnLogUpdate(new LogUpdateDTO() { Message = "No song or player found for standing" });
-                return;
+                return false;
             }
                 
             Standing standing = new Standing()
@@ -67,24 +67,24 @@ namespace TournamentManager.Services
             if (duplicate != null)
             {
                 _logHub.OnLogUpdate(new LogUpdateDTO() { Message = $"duplicate found for {song.Title} - {player.Name}" });
-                return;
+                return false;
             }
                 
-            AddStanding(standing);
+            return AddStanding(standing);
         }
 
-        public void AddStanding(Standing standing)
+        public bool AddStanding(Standing standing)
         {
             if (_cache.ActiveMatch == null)
             {
                 _logHub.OnLogUpdate(new LogUpdateDTO() { Message = $"No active match during standing push" });
-                return;
+                return false;
             }
                 
             if (standing.SongId == 0 || standing.PlayerId == 0)
             {
                 _logHub.OnLogUpdate(new LogUpdateDTO() { Message = "No song or player found for standing" });
-                return;
+                return false;
             }
                 
             Round round = _cache.GetRoundBySongId(standing.SongId);
@@ -92,22 +92,23 @@ namespace TournamentManager.Services
             if (round == null)
             {
                 _logHub.OnLogUpdate(new LogUpdateDTO() { Message = "Round not found for active match" });
-                return;
+                return false;
             }
                 
             var playerInActiveMatch = _cache.ActiveMatch.PlayerInMatches.Where(pim => pim.PlayerId == standing.PlayerId).FirstOrDefault();
             var songInActiveMatch = _cache.ActiveMatch.SongInMatches.Where(pim => pim.SongId == standing.SongId).FirstOrDefault();
 
             if (playerInActiveMatch == null || songInActiveMatch == null)
-                return;
+                return false;
 
             standing.RoundId = round.Id;
 
             if (round.Standings.Where(s => s.PlayerId == standing.PlayerId && s.SongId == standing.SongId).Count() > 0)
             {
                 _logHub.OnLogUpdate(new LogUpdateDTO() { Message = "Skip standing, duplicate" });
-                return;
+                return false;
             }
+
             try
             {
                 _standingRepo.Add(standing);
@@ -130,6 +131,8 @@ namespace TournamentManager.Services
             {
                 _logHub.OnLogUpdate(new LogUpdateDTO() { Exception = ex.Message });
             }
+
+            return true;
         }
 
         public bool EditStanding(int playerdId, int songId, double percentage, int score)
