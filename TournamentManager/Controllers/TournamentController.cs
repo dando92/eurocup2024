@@ -15,6 +15,7 @@ namespace TournamentManager.Controllers
         private IStandingManager _standingManager;
         private readonly IMatchManager _matchManager;
         private readonly IMatchUpdate _hub;
+
         public TournamentController(ITournamentCache cache,
             IStandingManager standingManager,
             IMatchManager matchManager,
@@ -37,23 +38,23 @@ namespace TournamentManager.Controllers
             return Ok(match);
         }
 
-        [HttpDelete("deleteStanding/{songId}")]
-        public IActionResult DeleteStanding(int songId)
+        [HttpDelete("editStanding")]
+        public IActionResult EditStanding(PostEditStanding request)
         {
-            bool found = _standingManager.DeleteStanding((standing) => standing.SongId == songId);
+            bool edited = _standingManager.EditStanding(request.PlayerId, request.SongId, request.Percentage, request.Score);
 
-            if (found)
+            if (edited)
                 return Ok();
             else
                 return NotFound();
         }
 
-        [HttpDelete("deleteStandingForPlayer")]
-        public IActionResult DeleteStandingForPlayer(PostDeleteStandingByPlayer request)
+        [HttpDelete("deleteStanding")]
+        public IActionResult DeleteStandingForPlayer(PostDeleteStanding request)
         {
-            bool found = _standingManager.DeleteStanding((standing) => (standing.SongId == request.SongId) && (standing.PlayerId == request.PlayerId));
+            bool removed = _standingManager.DeleteStanding(request.PlayerId, request.SongId);
 
-            if (found)
+            if (removed)
                 return Ok();
             else
                 return NotFound();
@@ -87,7 +88,7 @@ namespace TournamentManager.Controllers
         [HttpPost("addMatch")]
         public IActionResult AddMatch(PostAddMatch request)
         {
-            Match match = _matchManager.AddMatch(request.MatchName, request.Notes, request.Subtitle, request.PlayerIds, request.PhaseId);
+            Match match = _matchManager.AddMatch(request.MatchName, request.Notes, request.Subtitle, request.PlayerIds, request.PhaseId, request.IsManualMatch);
 
             if (request.SongIds != null)
                 _matchManager.AddSongsToMatch(match, request.SongIds.ToArray());

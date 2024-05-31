@@ -7,6 +7,7 @@
         public string MatchName { get; set; }
         public string Group { get; set; }
         public string Subtitle { get; set; }
+        public bool IsManualMatch { get; set; }
         public string Notes { get; set; }
         public string Levels { get; set; }
         public List<int> SongIds { get; set; }

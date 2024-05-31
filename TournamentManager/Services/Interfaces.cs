@@ -12,7 +12,8 @@ namespace TournamentManager.Services
     {
         void AddStanding(Score standing);
         void AddStanding(Standing standing);
-        bool DeleteStanding(Func<Standing, bool> shallDelete);
+        bool DeleteStanding(int playerdId, int songId);
+        bool EditStanding(int playerdId, int songId, double percentage, int score);
     }
 
     public interface IMatchUpdate

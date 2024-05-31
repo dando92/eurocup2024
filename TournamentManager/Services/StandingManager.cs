@@ -86,17 +86,46 @@ namespace TournamentManager.Services
 
             if (_cache.CurrentRound.IsComplete())
             {
-                _cache.CurrentRound.Standings.Recalc();
-                
-                foreach (var recalcStanding in _cache.CurrentRound.Standings)
-                    _standingRepo.Update(recalcStanding);
+                if(!_cache.ActiveMatch.IsManualMatch)
+                {
+                    _cache.CurrentRound.Standings.Recalc();
+
+                    foreach (var recalcStanding in _cache.CurrentRound.Standings)
+                        _standingRepo.Update(recalcStanding);
+                }
 
                 _cache.AdvanceRound();
                 
                 _hub?.OnMatchUpdate(new MatchUpdateDTO() { MatchId = _cache.ActiveMatch.Id, PhaseId = _cache.ActiveMatch.PhaseId, DivisionId = _cache.ActiveMatch.Phase.DivisionId });
             }
         }
-        public bool DeleteStanding(Func<Standing, bool> shallDelete)
+
+        public bool EditStanding(int playerdId, int songId, double percentage, int score)
+        {
+            bool edited = false;
+
+            if (_cache.ActiveMatch == null || _cache.CurrentRound == null)
+                return edited;
+
+            Round round = _cache.CurrentRound;
+
+            foreach (var standing in round.Standings)
+            {
+                if (standing.PlayerId == playerdId && standing.SongId == songId)
+                {
+                    standing.Percentage = percentage;
+                    standing.Score = score;
+                    
+                    _standingRepo.Update(standing);
+
+                    edited = true;
+                }
+            }
+
+            return edited;
+        }
+
+        public bool DeleteStanding(int playerdId, int songId)
         {
             bool removed = false;
 
@@ -107,7 +136,7 @@ namespace TournamentManager.Services
 
             foreach (var standing in round.Standings)
             {
-                if (shallDelete(standing))
+                if (standing.PlayerId == playerdId && standing.SongId == songId)
                 {
                     _standingRepo.DeleteById(standing.Id);
                     round.Standings.Remove(standing);
@@ -117,5 +146,7 @@ namespace TournamentManager.Services
 
             return removed;
         }
+
+
     }
 }

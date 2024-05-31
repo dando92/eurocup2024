@@ -6,7 +6,7 @@ namespace TournamentManager.Services
 {
     public interface IMatchManager
     {
-        Match AddMatch(string matchName, string notes, string subtitle, int[] playerIds, int phaseId);
+        Match AddMatch(string matchName, string notes, string subtitle, int[] playerIds, int phaseId, bool isManualMatch);
         void AddRandomSongsToMatch(int matchId, int divisionId, string group, string levels);
         void AddRandomSongsToMatch(Match match, int divisionId, string group, string levels);
         void AddSongsToMatch(Match match, int[] songIds);
@@ -31,9 +31,9 @@ namespace TournamentManager.Services
             _cache = cache;
         }
 
-        public Match AddMatch(string matchName, string notes, string subtitle, int[] playerIds, int phaseId)
+        public Match AddMatch(string matchName, string notes, string subtitle, int[] playerIds, int phaseId, bool isManualMatch)
         {
-            var newMatch = CreateMatch(matchName, notes, subtitle, playerIds);
+            var newMatch = CreateMatch(matchName, notes, subtitle, playerIds, isManualMatch);
 
             newMatch.PhaseId = phaseId;
 
@@ -117,13 +117,14 @@ namespace TournamentManager.Services
             AddSongToMatch(match, _roller.RollSong(divisionId, group, int.Parse(level)));
         }
 
-        private Match CreateMatch(string matchName, string notes, string subTitle, int[] players)
+        private Match CreateMatch(string matchName, string notes, string subTitle, int[] players, bool isManualMatch)
         {
             var match = new Match()
             {
                 Name = matchName,
                 Subtitle = subTitle,
                 Notes = notes,
+                IsManualMatch = isManualMatch,
                 PlayerInMatches = new List<PlayerInMatch>(players.Length),
                 SongInMatches = new List<SongInMatch>(),
                 Rounds = new List<Round>(),
