@@ -111,7 +111,6 @@ export default function MatchTable({
   const [addSongToMatchModalOpen, setAddSongToMatchModalOpen] = useState(false);
   const [editSongId, setEditSongId] = useState<number | null>(null);
 
-
   const [addStandingToMatchModalOpen, setAddStandingToMatchModalOpen] =
     useState(false);
 
@@ -124,7 +123,12 @@ export default function MatchTable({
     songTitle: string;
   }>({ songId: 0, playerId: 0, playerName: "", songTitle: "" });
 
-  const [connection, setConnection] = useState<null | HubConnection>(null);
+  const [scoreConnection, setScoreConnection] = useState<null | HubConnection>(
+    null
+  );
+  const [errorConnection, setErrorConnection] = useState<null | HubConnection>(
+    null
+  );
 
   match.rounds.forEach((round) => {
     round.standings.forEach((standing) => {
@@ -138,7 +142,7 @@ export default function MatchTable({
   });
 
   useEffect(() => {
-    if (connection === null && isActive) {
+    if (scoreConnection === null && isActive) {
       const conn = new HubConnectionBuilder()
         .withUrl(`${import.meta.env.VITE_PUBLIC_API_URL}../matchupdatehub`, {
           skipNegotiation: true,
@@ -150,22 +154,38 @@ export default function MatchTable({
         onGetActiveMatch();
       });
 
-      controls && conn.on("OnLogUpdate", ({ message, exception }: Log) => {
-        console.log(message, exception);
-        toast.error(`Error: ${message} - ${exception}`, {
-          autoClose: false,
-        });
-      });
-
       conn.start().then(() => {
         console.log("Now listening to match changes.");
         toast.info("Now listening to match changes.");
       });
 
-      setConnection(conn);
+      if (!errorConnection) {
+        const errConn = new HubConnectionBuilder()
+          .withUrl(`${import.meta.env.VITE_PUBLIC_API_URL}../logupdatehub`, {
+            skipNegotiation: true,
+            transport: HttpTransportType.WebSockets,
+          })
+          .build();
+
+        errConn.on("OnLogUpdate", ({ message, exception }: Log) => {
+          console.log(message, exception);
+          toast.error(`Error: ${message} - ${exception}`, {
+            autoClose: false,
+          });
+        });
+
+        errConn.start().then(() => {
+          console.log("Now listening to log changes.");
+          toast.info("Now listening to log changes.");
+        });
+        
+        setErrorConnection(errConn);
+      }
+
+      setScoreConnection(conn);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isActive, connection]);
+  }, [isActive, scoreConnection, errorConnection]);
 
   // Calculate total points for each player
   const getTotalPoints = (playerId: number) => {
