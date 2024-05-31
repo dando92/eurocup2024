@@ -196,17 +196,6 @@ export function useMatches(phaseId: number) {
     }
   }
 
-  async function deleteStandingFromMatch(songId: number) {
-    try {
-      const item = await MatchesApi.deleteStandingsFromActiveMatch(songId);
-      dispatch({ type: "onDeleteStandingFromMatch", payload: item });
-    } catch (error) {
-      toast.error("Error deleting standing from match.");
-      console.error("Error deleting standing from match:", error);
-      throw new Error("Unable to delete standing from match.");
-    }
-  }
-
   async function deleteStandingsForPlayerFromMatch(
     songId: number,
     playerId: number
@@ -224,6 +213,17 @@ export function useMatches(phaseId: number) {
     }
   }
 
+  async function editStandingFromMatch(songId: number, playerId: number, percentage: number, score: number) {
+    try {
+      const item = await MatchesApi.editStandingForPlayerFromActiveMatch(songId, playerId, percentage, score);
+      dispatch({ type: "onEditStandingFromMatch", payload: item });
+    } catch (error) {
+      toast.error("Error editing standings for player from match.");
+      console.error("Error editing standings for player from match:", error);
+      throw new Error("Unable to edit standings for player from match.");
+    }
+  }
+
   return {
     state,
     actions: {
@@ -238,7 +238,7 @@ export function useMatches(phaseId: number) {
       editSongToMatchByRoll,
       editSongToMatchBySongId,
       addStandingToMatch,
-      deleteStandingFromMatch,
+      editStandingFromMatch,
       deleteStandingsForPlayerFromMatch,
     },
   };

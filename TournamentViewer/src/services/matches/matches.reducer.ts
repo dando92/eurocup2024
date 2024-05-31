@@ -72,6 +72,14 @@ export function matchesReducer(state: MatchesState, action: MatchesActions) {
         ),
         activeMatch: payload,
       };
+    case "onEditStandingFromMatch":
+      return {
+        ...state,
+        matches: state.matches.map((match) =>
+          match.id === payload.id ? payload : match
+        ),
+        activeMatch: payload,
+      };
     default:
       return state;
   }

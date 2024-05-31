@@ -42,7 +42,10 @@ export async function create(request: CreateMatchRequest): Promise<Match> {
   }
 }
 
-export async function editMatchNotes(matchId: number, notes: string): Promise<string> {
+export async function editMatchNotes(
+  matchId: number,
+  notes: string
+): Promise<string> {
   try {
     const response = await axios.put<Match>("matches", {
       matchId,
@@ -108,6 +111,30 @@ export async function addStandingToActiveMatch(
   } catch (error) {
     console.error("Error adding standing to active match:", error);
     throw new Error("Unable to add standing to active match.");
+  }
+}
+
+export async function editStandingForPlayerFromActiveMatch(
+  songId: number,
+  playerId: number,
+  percentage: number,
+  score: number
+): Promise<Match> {
+  try {
+    const response = await axios.put(`tournament/editstanding`, {
+      songId,
+      playerId,
+      percentage,
+      score,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error editing standings for player from active match:",
+      error
+    );
+    throw new Error("Unable to edit standings for player from active match.");
   }
 }
 
