@@ -115,7 +115,7 @@ namespace TournamentManager.Services
                 _standingRepo.Add(standing);
                 round.Standings.Add(standing);
 
-                if (round.IsComplete())
+                if (round.Standings.Count >= activeMatch.PlayerInMatches.Count)
                 {
                     if (!activeMatch.IsManualMatch)
                     {
