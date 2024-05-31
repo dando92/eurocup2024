@@ -106,10 +106,6 @@ namespace TournamentManager.Services
         protected void AddSongToMatch(Match match, int songId)
         {
             _roundRepo.Add(CreateRound(match, songId));
-
-            //If we just added a round and match was ended already, restart
-            if (_cache.CurrentRound == null)
-                _cache.SetActiveMatch(match);
         }
 
         protected void AddRandomSongToMatch(Match match, int divisionId, string group, string level)
@@ -142,6 +138,7 @@ namespace TournamentManager.Services
             {
                 Match = match,
                 MatchId = match.Id,
+                SongId = songId,
                 Standings = new List<Standing>()
             };
 

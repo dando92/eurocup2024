@@ -64,10 +64,15 @@ namespace TournamentManager.Services
 
         public void AddStanding(Standing standing)
         {
-            if (_cache.ActiveMatch == null || _cache.CurrentRound == null)
+            if (_cache.ActiveMatch == null)
                 return;
 
-            if (standing.SongId == 0|| standing.PlayerId == 0)
+            if (standing.SongId == 0 || standing.PlayerId == 0)
+                return;
+
+            Round round = _cache.GetRoundBySongId(standing.SongId);
+
+            if (round == null)
                 return;
 
             var playerInActiveMatch = _cache.ActiveMatch.PlayerInMatches.Where(pim => pim.PlayerId == standing.PlayerId).FirstOrDefault();
@@ -76,26 +81,24 @@ namespace TournamentManager.Services
             if (playerInActiveMatch == null || songInActiveMatch == null)
                 return;
 
-            standing.RoundId = _cache.CurrentRound.Id;
+            standing.RoundId = round.Id;
 
-            if (_cache.CurrentRound.Standings.Where(s => s.PlayerId == standing.PlayerId && s.SongId == standing.SongId).Count() > 0)
+            if (round.Standings.Where(s => s.PlayerId == standing.PlayerId && s.SongId == standing.SongId).Count() > 0)
                 return;
             
             _standingRepo.Add(standing);
-            _cache.CurrentRound.Standings.Add(standing);
+            round.Standings.Add(standing);
 
-            if (_cache.CurrentRound.IsComplete())
+            if (round.IsComplete())
             {
                 if(!_cache.ActiveMatch.IsManualMatch)
                 {
-                    _cache.CurrentRound.Standings.Recalc();
+                    round.Standings.Recalc();
 
-                    foreach (var recalcStanding in _cache.CurrentRound.Standings)
+                    foreach (var recalcStanding in round.Standings)
                         _standingRepo.Update(recalcStanding);
                 }
 
-                _cache.AdvanceRound();
-                
                 _hub?.OnMatchUpdate(new MatchUpdateDTO() { MatchId = _cache.ActiveMatch.Id, PhaseId = _cache.ActiveMatch.PhaseId, DivisionId = _cache.ActiveMatch.Phase.DivisionId });
             }
         }
@@ -104,10 +107,13 @@ namespace TournamentManager.Services
         {
             bool edited = false;
 
-            if (_cache.ActiveMatch == null || _cache.CurrentRound == null)
+            if (_cache.ActiveMatch == null)
                 return edited;
 
-            Round round = _cache.CurrentRound;
+            Round round = _cache.GetRoundBySongId(songId);
+
+            if (round == null)
+                return false;
 
             foreach (var standing in round.Standings)
             {
@@ -129,10 +135,13 @@ namespace TournamentManager.Services
         {
             bool removed = false;
 
-            if (_cache.ActiveMatch == null || _cache.CurrentRound == null)
+            if (_cache.ActiveMatch == null)
                 return removed;
 
-            Round round = _cache.CurrentRound;
+            Round round = _cache.GetRoundBySongId(songId);
+
+            if (round == null)
+                return false;
 
             foreach (var standing in round.Standings)
             {
@@ -146,7 +155,5 @@ namespace TournamentManager.Services
 
             return removed;
         }
-
-
     }
 }

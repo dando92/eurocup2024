@@ -23,10 +23,9 @@ namespace TournamentManager.Services
 
     public interface ITournamentCache
     {
-        Round CurrentRound { get; }
         Match ActiveMatch { get; }
-        Round AdvanceRound(bool forceRestart = false);
         void SetActiveMatch(Match match);
+        Round GetRoundBySongId(int id);
     }
 
 }

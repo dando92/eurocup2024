@@ -4,11 +4,8 @@ namespace TournamentManager.Services
 {
     public class TournamentCache : ITournamentCache
     {
-        private IEnumerator<Round> _iterator;
-        private Round _currentRound = null;
         private Match _activeMatch;
-        
-        public Round CurrentRound { get => _currentRound; }
+
         public Match ActiveMatch { get => _activeMatch; }
 
         public TournamentCache()
@@ -17,51 +14,15 @@ namespace TournamentManager.Services
 
         public void SetActiveMatch(Match match)
         {
-            if (_activeMatch != null)
-            {
-                _iterator = null;
-                _currentRound = null;
-            }
-
             _activeMatch = match;
-            
-            AdvanceRound();
         }
 
-        public Round AdvanceRound(bool forceRestart = false)
+        public Round GetRoundBySongId(int id)
         {
             if (_activeMatch == null)
-                return null; 
+                return null;
 
-            if (_iterator == null || forceRestart)
-                _iterator = GetIterator();
-
-            bool notLastElement =_iterator.MoveNext();
-            
-            if (notLastElement)
-            {
-                _currentRound = _iterator.Current;
-            }
-            else
-            {
-                _iterator = GetIterator();
-                _currentRound = null;
-            }
-                
-
-            return _currentRound;
-        }
-
-        private IEnumerator<Round> GetIterator()
-        {
-            foreach (var round in _activeMatch.Rounds)
-            {
-                //If round is already populated.
-                if (round.IsComplete())
-                    continue;
-             
-                yield return round;
-            }
+            return _activeMatch.Rounds.Where(r => r.SongId == id).FirstOrDefault();
         }
     }
 }
