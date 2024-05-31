@@ -146,7 +146,6 @@ namespace TournamentManager.Services
 
             match.Rounds.Add(round);
 
-
             return round;
         }
 

@@ -29,6 +29,7 @@ builder.Services
     .AddScoped<IStandingManager, StandingManager>()
     .AddScoped<ISongRoller, SongRoller>()
     .AddScoped<IMatchUpdate, NotificationHub>()
+    .AddScoped<ILogUpdate, NotificationHub>()
     .AddSingleton<ITournamentCache, TournamentCache>();
 
 // cors
