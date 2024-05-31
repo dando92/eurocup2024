@@ -111,25 +111,13 @@ export async function addStandingToActiveMatch(
   }
 }
 
-export async function deleteStandingsFromActiveMatch(
-  songId: number
-): Promise<Match> {
-  try {
-    const response = await axios.delete("tournament/deletestanding/" + songId);
-    return response.data;
-  } catch (error) {
-    console.error("Error deleting standings from active match:", error);
-    throw new Error("Unable to delete standings from active match.");
-  }
-}
-
 export async function deleteStandingsForPlayerFromActiveMatch(
   songId: number,
   playerId: number
 ): Promise<Match> {
   try {
     const response = await axios.delete(
-      `tournament/deletestanding/${songId}/${playerId}`,
+      `tournament/deletestanding/${playerId}/${songId}`,
       {
         data: { songId, playerId },
       }

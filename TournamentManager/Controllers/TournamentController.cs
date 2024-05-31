@@ -38,7 +38,7 @@ namespace TournamentManager.Controllers
             return Ok(match);
         }
 
-        [HttpDelete("editStanding")]
+        [HttpPost("editStanding")]
         public IActionResult EditStanding(PostEditStanding request)
         {
             bool edited = _standingManager.EditStanding(request.PlayerId, request.SongId, request.Percentage, request.Score);
@@ -49,10 +49,10 @@ namespace TournamentManager.Controllers
                 return NotFound();
         }
 
-        [HttpDelete("deleteStanding")]
-        public IActionResult DeleteStandingForPlayer(PostDeleteStanding request)
+        [HttpDelete("deleteStanding/{playerId}/{songId}")]
+        public IActionResult DeleteStandingForPlayer(int playerId, int songId)
         {
-            bool removed = _standingManager.DeleteStanding(request.PlayerId, request.SongId);
+            bool removed = _standingManager.DeleteStanding(playerId, songId);
 
             if (removed)
                 return Ok();

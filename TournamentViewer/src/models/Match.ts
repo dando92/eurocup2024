@@ -8,6 +8,7 @@ export interface Match {
   name: string;
   subtitle: string;
   notes: string;
+  isManualMatch: boolean;
   players: Player[];
   songs: Song[];
   rounds: Round[];

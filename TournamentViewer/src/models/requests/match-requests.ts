@@ -3,6 +3,7 @@ export interface CreateMatchRequest {
   phaseId: number;
   matchName: string;
   subtitle: string;
+  isManualMatch: boolean;
   notes: string;
   group: string;
   levels: string;
