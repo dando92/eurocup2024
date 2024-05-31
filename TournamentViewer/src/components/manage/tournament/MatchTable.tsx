@@ -159,7 +159,7 @@ export default function MatchTable({
         toast.info("Now listening to match changes.");
       });
 
-      if (!errorConnection) {
+      if (!errorConnection && controls) {
         const errConn = new HubConnectionBuilder()
           .withUrl(`${import.meta.env.VITE_PUBLIC_API_URL}../logupdatehub`, {
             skipNegotiation: true,
@@ -178,7 +178,7 @@ export default function MatchTable({
           console.log("Now listening to log changes.");
           toast.info("Now listening to log changes.");
         });
-        
+
         setErrorConnection(errConn);
       }
 
