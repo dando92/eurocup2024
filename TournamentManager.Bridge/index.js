@@ -1,13 +1,21 @@
 const SYNCSTART_UDP_PORT = 53000;
 const RECONNECT_INTERVAL = 5000;
-//const WS_URL = "wss://eurocup2024tournamentmanager.azurewebsites.net/ws";
-const WS_URL = "ws://localhost:5232/ws";
 
 const path = require("path");
 const fs = require("fs");
 const dgram = require("dgram");
 const WebSocket = require("ws");
 const sanitize = require("sanitize-filename");
+const dotenv = require("dotenv");
+
+const env = process.env.NODE_ENV;
+
+// use .env if production, .env.development if development
+const envFile = env === "production" ? ".env" : ".env.development";
+
+dotenv.config({ path: path.resolve(__dirname, envFile) });
+
+const WS_URL = process.env.WS_URL;
 
 var isWsConnected = false;
 var udpServer;
