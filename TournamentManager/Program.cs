@@ -64,6 +64,7 @@ app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
     endpoints.MapHub<MatchUpdateHub>("/matchUpdateHub");
+    endpoints.MapHub<LogUpdateHub>("/logUpdateHub");
 });
 
 app.UseWebSockets();
