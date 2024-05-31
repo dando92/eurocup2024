@@ -2,6 +2,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Match } from "../../../models/Match";
 import {
   faCircle,
+  faInfoCircle,
+  faPencil,
   faPlay,
   faPlus,
   faRefresh,
@@ -64,6 +66,14 @@ type MatchTableProps = {
     playerId: number,
     songId: number,
     percentage: number,
+    isFailed: boolean
+  ) => void;
+  onEditMatchNotes: (matchId: number, notes: string) => void;
+  onEditStanding: (
+    playerId: number,
+    songId: number,
+    percentage: number,
+    score: number,
     isFailed: boolean
   ) => void;
 };
@@ -157,17 +167,25 @@ export default function MatchTable({
   return (
     <div className="flex flex-col w-full p-4 my-3 rounded-lg">
       <div className="flex flex-row mb-6 justify-center items-center">
-        <h2 className="text-center text-4xl font-bold text-blue-600">
-          <div className="flex flex-row justify-center items-center gap-3">
-            {isActive && (
-              <FontAwesomeIcon
-                icon={faCircle}
-                className="text-red-800 text-xs animate-pulse"
-              />
-            )}
-            <span className="text-xl">{match.name}</span>
-          </div>
-        </h2>
+        <div>
+          <h2 className="text-center text-4xl font-bold text-blue-600">
+            <div className="flex flex-row justify-center items-center gap-3">
+              {isActive && (
+                <FontAwesomeIcon
+                  icon={faCircle}
+                  className="text-red-800 text-xs animate-pulse"
+                />
+              )}
+              <span className="text-xl">{match.name}</span>
+            </div>
+          </h2>
+          {match.subtitle && (
+            <p className="text-sm font-normal text-blu flex flex-row items-center gap-1">
+              <FontAwesomeIcon icon={faInfoCircle} />
+              {match.subtitle}
+            </p>
+          )}
+        </div>
         <AddEditSongToMatchModal
           songId={editSongId}
           phaseId={phase.id}
@@ -234,7 +252,10 @@ export default function MatchTable({
         )}
       </div>
 
-      <div style={{minWidth: match.songs.length * 200}} className={`shadow-lg overflow-auto lg:min-w-fit`}>
+      <div
+        style={{ minWidth: match.songs.length * 200 }}
+        className={`shadow-lg overflow-auto lg:min-w-fit`}
+      >
         <div
           className={`grid grid-cols-${
             match.songs.length + 2
@@ -307,7 +328,16 @@ export default function MatchTable({
                             scoreData.isFailed ? "F" : ""
                           }`
                         : "-"}
+                      {controls && isActive && scoreData && (
+                        <button
+                          title="Edit standing manually"
+                          className="text-xs ml-3 text-blu"
+                        >
+                          <FontAwesomeIcon icon={faPencil} />
+                        </button>
+                      )}
                     </p>
+
                     {!scoreData && controls && isActive && (
                       <button
                         title="Manually add score"

@@ -118,7 +118,8 @@ export async function editStandingForPlayerFromActiveMatch(
   songId: number,
   playerId: number,
   percentage: number,
-  score: number
+  score: number,
+  isFailed: boolean
 ): Promise<Match> {
   try {
     const response = await axios.put(`tournament/editstanding`, {
@@ -126,6 +127,7 @@ export async function editStandingForPlayerFromActiveMatch(
       playerId,
       percentage,
       score,
+      isFailed
     });
 
     return response.data;

@@ -72,12 +72,14 @@ export default function MatchesView({
                 isActive={true}
                 onGetActiveMatch={actions.getActiveMatch}
                 onSetActiveMatch={actions.setActiveMatch}
+                onEditMatchNotes={actions.editMatchNotes}
                 onDeleteMatch={actions.deleteMatch}
                 onAddSongToMatchByRoll={actions.addSongToMatchByRoll}
                 onAddSongToMatchBySongId={actions.addSongToMatchBySongId}
                 onEditSongToMatchByRoll={actions.editSongToMatchByRoll}
                 onEditSongToMatchBySongId={actions.editSongToMatchBySongId}
                 onAddStandingToMatch={actions.addStandingToMatch}
+                onEditStanding={actions.editStandingFromMatch}
                 match={state.activeMatch}
               />
             </div>
@@ -109,6 +111,8 @@ export default function MatchesView({
                 onEditSongToMatchByRoll={actions.editSongToMatchByRoll}
                 onEditSongToMatchBySongId={actions.editSongToMatchBySongId}
                 onAddStandingToMatch={actions.addStandingToMatch}
+                onEditMatchNotes={actions.editMatchNotes}
+                onEditStanding={actions.editStandingFromMatch}
                 key={match.id}
                 match={match}
               />

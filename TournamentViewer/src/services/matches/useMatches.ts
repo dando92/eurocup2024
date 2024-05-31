@@ -213,9 +213,9 @@ export function useMatches(phaseId: number) {
     }
   }
 
-  async function editStandingFromMatch(songId: number, playerId: number, percentage: number, score: number) {
+  async function editStandingFromMatch(songId: number, playerId: number, percentage: number, score: number, isFailed: boolean) {
     try {
-      const item = await MatchesApi.editStandingForPlayerFromActiveMatch(songId, playerId, percentage, score);
+      const item = await MatchesApi.editStandingForPlayerFromActiveMatch(songId, playerId, percentage, score, isFailed);
       dispatch({ type: "onEditStandingFromMatch", payload: item });
     } catch (error) {
       toast.error("Error editing standings for player from match.");
