@@ -147,9 +147,6 @@ export async function deleteStandingsForPlayerFromActiveMatch(
   try {
     const response = await axios.delete(
       `tournament/deletestanding/${playerId}/${songId}`,
-      {
-        data: { songId, playerId },
-      }
     );
 
     return response.data;
