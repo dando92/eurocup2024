@@ -71,10 +71,6 @@ namespace TournamentManager.Services
 
             _roundRepo.Save();
 
-            //TODO:Need better architecture, Keep active match updated
-            if (match.Id == _cache.ActiveMatch.Id)
-                SetActiveMatch(match);
-
             //TODO: match is tracked, might remove
             _matchRepo.Update(match);
         }
@@ -103,10 +99,6 @@ namespace TournamentManager.Services
         {
             foreach (var songId in songIds)
                 AddSongToMatch(match, songId);
-
-            //TODO:Need better architecture, Keep active match updated
-            if (match.Id == _cache.ActiveMatch.Id)
-                SetActiveMatch(match);
         }
 
         public void AddRandomSongsToMatch(Match match, int divisionId, string group, string levels)

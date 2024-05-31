@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNet.SignalR;
-using Microsoft.AspNetCore.Components.Forms;
-using System.Globalization;
-using System.Numerics;
-using System.Text.RegularExpressions;
+﻿using System.Globalization;
 using TournamentManager.Contexts;
 using TournamentManager.DbModels;
 
@@ -16,13 +12,15 @@ namespace TournamentManager.Services
         private readonly IGenericRepository<Standing> _standingRepo;
         private readonly IGenericRepository<Song> _songRepo;
         private readonly IGenericRepository<Player> _playerRepo;
+        private readonly IMatchManager _matchManager;
 
         public StandingManager(IGenericRepository<Song> songRepo,
             IGenericRepository<Player> playerRepo,
             IGenericRepository<Standing> standingRepo,
             ITournamentCache cache,
             IMatchUpdate matchUpdate,
-            ILogUpdate logHub)
+            ILogUpdate logHub,
+            IMatchManager matchManager)
         {
             _songRepo = songRepo;
             _playerRepo = playerRepo;
@@ -30,6 +28,7 @@ namespace TournamentManager.Services
             _standingRepo = standingRepo;
             _hub = matchUpdate;
             _logHub = logHub;
+            _matchManager = matchManager;
         }
 
         public bool AddStanding(Score score)
@@ -75,7 +74,9 @@ namespace TournamentManager.Services
 
         public bool AddStanding(Standing standing)
         {
-            if (_cache.ActiveMatch == null)
+            Match activeMatch = GetActiveMatch();
+
+            if (activeMatch == null)
             {
                 _logHub.OnLogUpdate(new LogUpdateDTO() { Message = $"No active match during standing push" });
                 return false;
@@ -87,7 +88,7 @@ namespace TournamentManager.Services
                 return false;
             }
                 
-            Round round = _cache.GetRoundBySongId(standing.SongId);
+            Round round = GetRoundBySongId(standing.SongId);
 
             if (round == null)
             {
@@ -95,8 +96,8 @@ namespace TournamentManager.Services
                 return false;
             }
                 
-            var playerInActiveMatch = _cache.ActiveMatch.PlayerInMatches.Where(pim => pim.PlayerId == standing.PlayerId).FirstOrDefault();
-            var songInActiveMatch = _cache.ActiveMatch.SongInMatches.Where(pim => pim.SongId == standing.SongId).FirstOrDefault();
+            var playerInActiveMatch = activeMatch.PlayerInMatches.Where(pim => pim.PlayerId == standing.PlayerId).FirstOrDefault();
+            var songInActiveMatch = activeMatch.SongInMatches.Where(pim => pim.SongId == standing.SongId).FirstOrDefault();
 
             if (playerInActiveMatch == null || songInActiveMatch == null)
                 return false;
@@ -116,7 +117,7 @@ namespace TournamentManager.Services
 
                 if (round.IsComplete())
                 {
-                    if (!_cache.ActiveMatch.IsManualMatch)
+                    if (!activeMatch.IsManualMatch)
                     {
                         round.Standings.Recalc();
 
@@ -124,7 +125,7 @@ namespace TournamentManager.Services
                             _standingRepo.Update(recalcStanding);
                     }
 
-                    _hub?.OnMatchUpdate(new MatchUpdateDTO() { MatchId = _cache.ActiveMatch.Id, PhaseId = _cache.ActiveMatch.PhaseId, DivisionId = _cache.ActiveMatch.Phase.DivisionId });
+                    _hub?.OnMatchUpdate(new MatchUpdateDTO() { MatchId = activeMatch.Id, PhaseId = activeMatch.PhaseId, DivisionId = activeMatch.Phase.DivisionId });
                 }
             }
             catch(Exception ex)
@@ -139,13 +140,13 @@ namespace TournamentManager.Services
         {
             bool edited = false;
 
-            if (_cache.ActiveMatch == null)
+            if (GetActiveMatch() == null)
             {
                 _logHub.OnLogUpdate(new LogUpdateDTO() { Message = $"No active match during standing edit" });
                 return edited;
             }
                 
-            Round round = _cache.GetRoundBySongId(songId);
+            Round round = GetRoundBySongId(songId);
 
             if (round == null)
             { 
@@ -180,13 +181,13 @@ namespace TournamentManager.Services
         {
             bool removed = false;
 
-            if (_cache.ActiveMatch == null)
+            if (GetActiveMatch() == null)
             {
                 _logHub.OnLogUpdate(new LogUpdateDTO() { Message = $"No active match during standing edit" });
                 return removed;
             }
 
-            Round round = _cache.GetRoundBySongId(songId);
+            Round round = GetRoundBySongId(songId);
 
             if (round == null)
             {
@@ -212,6 +213,22 @@ namespace TournamentManager.Services
             }
 
             return removed;
+        }
+
+
+        private Round GetRoundBySongId(int id)
+        {
+            Match activeMatch = GetActiveMatch();
+            
+            if (activeMatch == null)
+                return null;
+
+            return activeMatch.Rounds.Where(r => r.SongId == id).FirstOrDefault();
+        }
+
+        private Match GetActiveMatch()
+        {
+            return _matchManager.GetMatchFromId(_cache.ActiveMatch).First();
         }
     }
 }

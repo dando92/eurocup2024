@@ -28,9 +28,8 @@ namespace TournamentManager.Services
 
     public interface ITournamentCache
     {
-        Match ActiveMatch { get; }
+        int ActiveMatch { get; }
         void SetActiveMatch(Match match);
-        Round GetRoundBySongId(int id);
     }
 
 }

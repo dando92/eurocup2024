@@ -4,9 +4,9 @@ namespace TournamentManager.Services
 {
     public class TournamentCache : ITournamentCache
     {
-        private Match _activeMatch;
+        private int _activeMatch;
 
-        public Match ActiveMatch { get => _activeMatch; }
+        public int ActiveMatch { get => _activeMatch; }
 
         public TournamentCache()
         {
@@ -14,15 +14,8 @@ namespace TournamentManager.Services
 
         public void SetActiveMatch(Match match)
         {
-            _activeMatch = match;
+            _activeMatch = match.Id;
         }
 
-        public Round GetRoundBySongId(int id)
-        {
-            if (_activeMatch == null)
-                return null;
-
-            return _activeMatch.Rounds.Where(r => r.SongId == id).FirstOrDefault();
-        }
     }
 }

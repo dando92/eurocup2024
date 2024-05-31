@@ -41,7 +41,7 @@ namespace TournamentManager.Controllers
             bool edited = _standingManager.EditStanding(request.PlayerId, request.SongId, request.Percentage, request.Score);
 
             if (edited)
-                return Ok(GetMatchDtoFromId(_cache.ActiveMatch.Id));
+                return Ok(GetMatchDtoFromId(_cache.ActiveMatch));
             else
                 return NotFound();
         }
@@ -52,7 +52,7 @@ namespace TournamentManager.Controllers
             bool removed = _standingManager.DeleteStanding(playerId, songId);
 
             if (removed)
-                return Ok(GetMatchDtoFromId(_cache.ActiveMatch.Id));
+                return Ok(GetMatchDtoFromId(_cache.ActiveMatch));
             else
                 return NotFound();
         }
@@ -79,7 +79,7 @@ namespace TournamentManager.Controllers
             else if (request.Level != null)
                 _matchManager.AddRandomSongsToMatch(request.MatchId, request.DivisionId, request.Group, request.Level);
 
-            return Ok(GetMatchDtoFromId(_cache.ActiveMatch.Id));
+            return Ok(GetMatchDtoFromId(_cache.ActiveMatch));
         }
 
         [HttpPost("addMatch")]
@@ -107,18 +107,16 @@ namespace TournamentManager.Controllers
 
             _matchManager.SetActiveMatch(activeMatch);
             
-            return Ok(GetMatchDtoFromId(_cache.ActiveMatch.Id));
+            return Ok(GetMatchDtoFromId(_cache.ActiveMatch));
         }
 
         [HttpGet("activeMatch")]
         public IActionResult GetActiveMatch()
         {
-            var activeMatch = _cache.ActiveMatch;
-
-            if (activeMatch == null)
+            if (_cache.ActiveMatch == 0)
                 return NotFound();
 
-            return Ok(GetMatchDtoFromId(_cache.ActiveMatch.Id));
+            return Ok(GetMatchDtoFromId(_cache.ActiveMatch));
         }
 
         [HttpPost("addStanding")]
@@ -127,7 +125,7 @@ namespace TournamentManager.Controllers
             bool added = _standingManager.AddStanding(request);
 
             if (added)
-                return Ok(GetMatchDtoFromId(_cache.ActiveMatch.Id));
+                return Ok(GetMatchDtoFromId(_cache.ActiveMatch));
             else
                 return NotFound();
         }
