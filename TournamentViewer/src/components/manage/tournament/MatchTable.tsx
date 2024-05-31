@@ -7,6 +7,7 @@ import {
   faPlay,
   faPlus,
   faRefresh,
+  faStickyNote,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { Division } from "../../../models/Division";
@@ -20,6 +21,7 @@ import {
   HubConnectionBuilder,
 } from "@microsoft/signalr";
 import { toast } from "react-toastify";
+import EditMatchNotesModal from "./modals/EditMatchNotesModal";
 
 type MatchTableProps = {
   division: Division;
@@ -92,6 +94,7 @@ export default function MatchTable({
   onEditSongToMatchByRoll,
   onEditSongToMatchBySongId,
   onAddStandingToMatch,
+  onEditMatchNotes,
 }: MatchTableProps) {
   // Create a lookup table for scores and percentages
   const scoreTable: {
@@ -103,6 +106,8 @@ export default function MatchTable({
 
   const [addStandingToMatchModalOpen, setAddStandingToMatchModalOpen] =
     useState(false);
+
+  const [EditMatchNotesModalOpen, setEditMatchNotesModalOpen] = useState(false);
 
   const [songIdPlayerId, setSongIdPlayerId] = useState<{
     playerId: number;
@@ -177,6 +182,15 @@ export default function MatchTable({
                 />
               )}
               <span className="text-xl">{match.name}</span>
+              {controls && (
+                <button
+                  className="text-lg"
+                  title={match.notes ? match.notes : "Add notes"}
+                  onClick={() => setEditMatchNotesModalOpen(true)}
+                >
+                  <FontAwesomeIcon icon={faStickyNote} />
+                </button>
+              )}
             </div>
           </h2>
           {match.subtitle && (
@@ -217,6 +231,12 @@ export default function MatchTable({
             });
           }}
           onAddStandingToMatch={onAddStandingToMatch}
+        />
+        <EditMatchNotesModal
+          match={match}
+          open={EditMatchNotesModalOpen}
+          onClose={() => setEditMatchNotesModalOpen(false)}
+          onSave={onEditMatchNotes}
         />
         {controls && (
           <div className="ml-3 bg-gray-300 rounded-xl p-3 flex flex-row gap-3">
