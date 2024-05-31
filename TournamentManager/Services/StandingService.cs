@@ -48,6 +48,8 @@ namespace TournamentManager.Services
             {
                 IStandingManager scopedProcessingService =
                     scope.ServiceProvider.GetRequiredService<IStandingManager>();
+                ILogUpdate logUpdate =
+                    scope.ServiceProvider.GetRequiredService<ILogUpdate>();
 
                 var buffer = new byte[1024*8];
 
@@ -64,9 +66,9 @@ namespace TournamentManager.Services
                             Score score = Deserialize<Score>(mes);
                             scopedProcessingService.AddStanding(score);
                         }
-                        catch
+                        catch(Exception ex)
                         {
-
+                            logUpdate.OnLogUpdate(new LogUpdateDTO() { Exception = ex.Message, Message = "Error parsing score from itg" });
                         }
                     }
 
