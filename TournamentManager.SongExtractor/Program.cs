@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using TournamentManager.DbModels;
 
 namespace TournamentManager.SongExtractor
 {
@@ -8,27 +7,13 @@ namespace TournamentManager.SongExtractor
         public static Song GetSongFromSSC(string pack, string fileName)
         {
             string[] lines = File.ReadAllLines(fileName);
-            string title = "";
-            string subtitle = "";
+            string title = Path.GetDirectoryName(fileName).Split("\\").Last();
+
 
             string difficulty = "";
 
             foreach (string line in lines)
             {
-                if (line.Contains("#TITLE:"))
-                {
-                    title = line.Split(":")[1];
-
-                    title = title.Remove(title.Length - 1);
-                }
-
-                if (line.Contains("#SUBTITLE:"))
-                {
-                    subtitle = line.Split(":")[1];
-
-                    subtitle = subtitle.Remove(subtitle.Length - 1);
-                }
-
                 if (line.Contains("#METER:"))
                 {
                     difficulty = line.Split(":")[1];
@@ -36,7 +21,7 @@ namespace TournamentManager.SongExtractor
                     break;
                 }
             }
-            title = title + " " + subtitle;
+            
             return new Song()
             {
                 Title = title.Trim(),
@@ -48,31 +33,18 @@ namespace TournamentManager.SongExtractor
         public static Song GetSongFromSM(string pack, string fileName)
         {
             string[] lines = File.ReadAllLines(fileName);
-            string title = "";
+            string title = Path.GetDirectoryName(fileName).Split("\\").Last();
             string difficulty = "";
-            string subtitle = "";
+            
             for (int i = 0; i < lines.Length; i++)
             {
-                if (lines[i].Contains("#TITLE:"))
-                {
-                    title = lines[i].Split(":")[1];
-
-                    title = title.Remove(title.Length - 1);
-                }
-
-                if (lines[i].Contains("#SUBTITLE:"))
-                {
-                    subtitle = lines[i].Split(":")[1];
-
-                    subtitle = subtitle.Remove(subtitle.Length - 1);
-                }
                 if (lines[i].Contains("Challenge:") || lines[i].Contains("Hard:") || lines[i].Contains("Medium:") || lines[i].Contains("Easy:"))
                 {
                     difficulty = lines[i + 1].Split(":")[0].Trim();
                     break;
                 }
             }
-            title = title + " " + subtitle;
+            
             return new Song()
             {
                 Title = title.Trim(),
@@ -108,7 +80,7 @@ namespace TournamentManager.SongExtractor
                     }
                 }
             }
-
+            
             return canzoncine;
         }
 
