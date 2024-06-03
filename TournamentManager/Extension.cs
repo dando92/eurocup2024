@@ -7,6 +7,11 @@ namespace TournamentManager
 {
     public static class Extension
     {
+        public static void Update(this IMatchUpdate remote, Match activeMatch)
+        {
+            remote.OnMatchUpdate(new MatchUpdateDTO() { MatchId = activeMatch.Id, PhaseId = activeMatch.PhaseId, DivisionId = activeMatch.Phase.DivisionId }).Wait();
+        }
+        
         public static void LogMessage(this ILogUpdate remoteLogger, string message)
         {
             remoteLogger.OnLogUpdate(new LogUpdateDTO() { Message = message }).Wait();

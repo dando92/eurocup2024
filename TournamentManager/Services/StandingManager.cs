@@ -116,6 +116,7 @@ namespace TournamentManager.Services
             {
                 _logHub.LogMessage($"Add standing: {standing.PlayerId} Song: {standing.SongId}");
                 _standingRepo.Add(standing);
+                _logHub.LogMessage($"Add to round: {standing.PlayerId} Song: {standing.SongId}");
                 round.Standings.Add(standing);
 
                 if ((round.Standings.Count >= activeMatch.PlayerInMatches.Count) && (!activeMatch.IsManualMatch))
@@ -133,7 +134,7 @@ namespace TournamentManager.Services
                     }
                 }
 
-                _hub?.OnMatchUpdate(new MatchUpdateDTO() { MatchId = activeMatch.Id, PhaseId = activeMatch.PhaseId, DivisionId = activeMatch.Phase.DivisionId });
+                _hub?.Update(activeMatch);
             }
             catch(Exception ex)
             {
@@ -220,7 +221,7 @@ namespace TournamentManager.Services
                         _standingRepo.Update(standing);
                     }
                 }
-                _hub?.OnMatchUpdate(new MatchUpdateDTO() { MatchId = activeMatch.Id, PhaseId = activeMatch.PhaseId, DivisionId = activeMatch.Phase.DivisionId });
+                _hub?.Update(activeMatch);
             }
             catch (Exception ex)
             {

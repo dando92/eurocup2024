@@ -42,7 +42,7 @@ namespace TournamentManager.Services
         public void SetActiveMatch(Match match)
         {
             _cache.SetActiveMatch(match);
-            _hub?.OnMatchUpdate(new MatchUpdateDTO() { MatchId = match.Id, PhaseId = match.PhaseId, DivisionId = match.Phase.DivisionId });
+            _hub?.Update(match);
         }
 
         public Match AddMatch(string matchName, string notes, string subtitle, int[] playerIds, int phaseId, bool isManualMatch)
