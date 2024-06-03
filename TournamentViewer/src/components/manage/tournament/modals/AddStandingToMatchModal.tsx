@@ -13,6 +13,7 @@ type AddStandingToMatchModalProps = {
     playerId: number,
     songId: number,
     percentage: number,
+    score: number,
     isFailed: boolean
   ) => void;
 };
@@ -36,6 +37,7 @@ export default function AddStandingToMatchModal({
       playerId,
       songId,
       Number.parseFloat(percentage.replace(",", ".")),
+      Number.parseInt(score),
       isFailed
     );
     onClose();

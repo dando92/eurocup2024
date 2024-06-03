@@ -73,6 +73,7 @@ type MatchTableProps = {
     playerId: number,
     songId: number,
     percentage: number,
+    score: number,
     isFailed: boolean
   ) => void;
   onEditMatchNotes: (matchId: number, notes: string) => void;

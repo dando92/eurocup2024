@@ -21,7 +21,6 @@ export function useMatches(phaseId: number) {
     try {
       const item = await MatchesApi.getActiveMatch();
       dispatch({ type: "onSetActiveMatch", payload: item });
-      
     } catch (error) {
       console.error("Error getting active match:", error);
       throw new Error("Unable to get active match.");
@@ -179,6 +178,7 @@ export function useMatches(phaseId: number) {
     playerId: number,
     songId: number,
     percentage: number,
+    score: number,
     isFailed: boolean
   ) {
     try {
@@ -186,6 +186,7 @@ export function useMatches(phaseId: number) {
         playerId,
         songId,
         percentage,
+        score,
         isFailed,
       });
       dispatch({ type: "onAddStandingToMatch", payload: item });
@@ -213,9 +214,21 @@ export function useMatches(phaseId: number) {
     }
   }
 
-  async function editStandingFromMatch(songId: number, playerId: number, percentage: number, score: number, isFailed: boolean) {
+  async function editStandingFromMatch(
+    songId: number,
+    playerId: number,
+    percentage: number,
+    score: number,
+    isFailed: boolean
+  ) {
     try {
-      const item = await MatchesApi.editStandingForPlayerFromActiveMatch(songId, playerId, percentage, score, isFailed);
+      const item = await MatchesApi.editStandingForPlayerFromActiveMatch(
+        songId,
+        playerId,
+        percentage,
+        score,
+        isFailed
+      );
       dispatch({ type: "onEditStandingFromMatch", payload: item });
     } catch (error) {
       toast.error("Error editing standings for player from match.");

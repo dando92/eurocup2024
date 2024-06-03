@@ -34,5 +34,6 @@ export interface AddStandingToMatchRequest {
   playerId: number;
   songId: number;
   percentage: number;
+  score: number;
   isFailed: boolean;
 }

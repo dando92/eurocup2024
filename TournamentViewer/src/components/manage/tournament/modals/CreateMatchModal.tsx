@@ -94,6 +94,7 @@ export default function CreateMatchModal({
       matchName: matchName,
       subtitle: subtitle,
       group: selectedGroupName,
+      isManualMatch: isManualMatch,
       levels: selectedSongDifficulties.join(","),
       playerIds: selectedPlayers.map((p) => p.id),
     } as CreateMatchRequest;
