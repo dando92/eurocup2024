@@ -24,6 +24,8 @@ import { toast } from "react-toastify";
 import EditMatchNotesModal from "./modals/EditMatchNotesModal";
 import { Log } from "../../../models/Log";
 import LogViewer from "../../layout/LogViewer";
+import { Tab } from "@headlessui/react";
+import { classNames } from "../../../pages/ManagePage";
 
 type MatchTableProps = {
   division: Division;
@@ -312,151 +314,193 @@ export default function MatchTable({
           </div>
         )}
       </div>
-      <div className="flex flex-row gap-3">
-        <div
-          style={{ minWidth: match.songs.length * 200 }}
-          className={`shadow-lg overflow-auto ${controls ? "w-4/5" : 'w-full'} lg:min-w-fit`}
-        >
-          <div
-            className={`grid grid-cols-${
-              match.songs.length + 2
-            } w-full bg-lower rounded-t-lg`}
-            style={{
-              gridTemplateColumns: `repeat(${match.songs.length + 2}, 1fr)`,
-            }}
-          >
-            <div className=" border-blue-400 p-2">
-              <div className="text-center font-bold text-blue-800"></div>
-            </div>
-            {match.songs.map((song, i) => (
-              <div key={i} className="border-x border-blue-400 p-2">
-                <div className="text-center font-bold text-blue-100">
-                  {song.title}{" "}
-                  {controls && isActive && (
-                    <>
-                      <button
-                        onClick={() => {
-                          setEditSongId(song.id);
-                          setAddSongToMatchModalOpen(true);
-                        }}
-                        className="ml-3"
-                        title="Change round song"
-                      >
-                        <FontAwesomeIcon icon={faRefresh} />
-                      </button>
-                    </>
-                  )}
-                </div>
-              </div>
-            ))}
-            <div className=" p-2">
-              <div className="text-center font-bold text-blue-100">
-                Total Points
-              </div>
-            </div>
-          </div>
-
-          {sortedPlayers.map((player, i) => (
-            <div
-              key={i}
-              className={`grid grid-cols-${
-                match.songs.length + 2
-              } w-full odd:bg-white even:bg-gray-50`}
-              style={{
-                gridTemplateColumns: `repeat(${match.songs.length + 2}, 1fr)`,
-              }}
+      <div className="flex flex-col gap-3">
+        <Tab.Group>
+          <Tab.List className="flex flex-row gap-10 border-b mt-5">
+            <Tab
+              className={({ selected }) =>
+                classNames(
+                  "py-2 px-4 text-lg",
+                  selected
+                    ? "border-b-2 border-blue-500 font-bold text-blue-500"
+                    : "text-gray-500"
+                )
+              }
             >
-              <div className="border border-gray-300 p-2">
-                <div className="text-center font-semibold text-gray-700">
-                  {player.name}
-                </div>
-              </div>
-              {match.songs.map((song, j) => {
-                const key = `${player.id}-${song.id}`;
-                const scoreData = scoreTable[key];
-                return (
-                  <div key={j} className="border border-gray-300 p-2">
-                    <div className="text-center  justify-center flex flex-row gap-3 items-center text-gray-600">
-                      <p
-                        className={`${
-                          scoreData?.isFailed
-                            ? "text-red-500 font-bold"
-                            : "text-black"
-                        }`}
-                      >
-                        {scoreData
-                          ? `${scoreData.score} (${scoreData.percentage}%) ${
-                              scoreData.isFailed ? "F" : ""
-                            }`
-                          : "-"}
-                        {controls && isActive && scoreData && (
+              Match
+            </Tab>
+            {controls && <Tab
+              className={({ selected }) =>
+                classNames(
+                  "py-2 px-4 text-lg",
+                  selected
+                    ? "border-b-2 border-blue-500 font-bold text-blue-500"
+                    : "text-gray-500"
+                )
+              }
+            >
+              Errors & Logs
+            </Tab>}
+          </Tab.List>
+          <Tab.Panels className="mt-3">
+            <Tab.Panel>
+              <div
+                style={{ minWidth: match.songs.length * 200 }}
+                className={`shadow-lg overflow-auto lg:min-w-fit`}
+              >
+                <div
+                  className={`grid grid-cols-${
+                    match.songs.length + 2
+                  } w-full bg-lower rounded-t-lg`}
+                  style={{
+                    gridTemplateColumns: `repeat(${
+                      match.songs.length + 2
+                    }, 1fr)`,
+                  }}
+                >
+                  <div className=" border-blue-400 p-2">
+                    <div className="text-center font-bold text-blue-800"></div>
+                  </div>
+                  {match.songs.map((song, i) => (
+                    <div key={i} className="border-x border-blue-400 p-2">
+                      <div className="text-center font-bold text-blue-100">
+                        {song.title}{" "}
+                        {controls && isActive && (
                           <>
                             <button
-                              title="Edit standing manually"
-                              className="text-xs ml-3 text-blu"
-                            >
-                              <FontAwesomeIcon icon={faPencil} />
-                            </button>
-                            <button
-                              title="Delete this standing"
-                              className="text-xs ml-3 text-red-500"
                               onClick={() => {
-                                if (
-                                  window.confirm(
-                                    "Are you sure you want to delete this standing?"
-                                  )
-                                ) {
-                                  onDeleteStanding(player.id, song.id);
-                                }
+                                setEditSongId(song.id);
+                                setAddSongToMatchModalOpen(true);
                               }}
+                              className="ml-3"
+                              title="Change round song"
                             >
-                              <FontAwesomeIcon icon={faTrash} />
+                              <FontAwesomeIcon icon={faRefresh} />
                             </button>
                           </>
                         )}
-                      </p>
-
-                      {!scoreData && controls && isActive && (
-                        <button
-                          title="Manually add score"
-                          className="text-green-700"
-                          onClick={() => {
-                            setAddStandingToMatchModalOpen(true);
-                            setSongIdPlayerId({
-                              playerId: player.id,
-                              songId: song.id,
-                              playerName: player.name,
-                              songTitle: song.title,
-                            });
-                          }}
-                        >
-                          <FontAwesomeIcon icon={faPlus} />
-                        </button>
-                      )}
+                      </div>
+                    </div>
+                  ))}
+                  <div className=" p-2">
+                    <div className="text-center font-bold text-blue-100">
+                      Total Points
                     </div>
                   </div>
-                );
-              })}
-              <div className="border border-gray-300 p-2">
-                <div className="text-center text-gray-600">
-                  {match.rounds
-                    .map((round) =>
-                      round.standings.find((s) => s.playerId === player.id)
-                    )
-                    .reduce((acc, standing) => {
-                      if (standing) {
-                        return acc + standing.score;
-                      }
-                      return acc;
-                    }, 0)}
                 </div>
+
+                {sortedPlayers.map((player, i) => (
+                  <div
+                    key={i}
+                    className={`grid grid-cols-${
+                      match.songs.length + 2
+                    } w-full odd:bg-white even:bg-gray-50`}
+                    style={{
+                      gridTemplateColumns: `repeat(${
+                        match.songs.length + 2
+                      }, 1fr)`,
+                    }}
+                  >
+                    <div className="border border-gray-300 p-2">
+                      <div className="text-center font-semibold text-gray-700">
+                        {player.name}
+                      </div>
+                    </div>
+                    {match.songs.map((song, j) => {
+                      const key = `${player.id}-${song.id}`;
+                      const scoreData = scoreTable[key];
+                      return (
+                        <div key={j} className="border border-gray-300 p-2">
+                          <div className="text-center  justify-center flex flex-row gap-3 items-center text-gray-600">
+                            <p
+                              className={`${
+                                scoreData?.isFailed
+                                  ? "text-red-500 font-bold"
+                                  : "text-black"
+                              }`}
+                            >
+                              {scoreData
+                                ? `${scoreData.score} (${
+                                    scoreData.percentage
+                                  }%) ${scoreData.isFailed ? "F" : ""}`
+                                : "-"}
+                              {controls && isActive && scoreData && (
+                                <>
+                                  <button
+                                    title="Edit standing manually"
+                                    className="text-xs ml-3 text-blu"
+                                  >
+                                    <FontAwesomeIcon icon={faPencil} />
+                                  </button>
+                                  <button
+                                    title="Delete this standing"
+                                    className="text-xs ml-3 text-red-500"
+                                    onClick={() => {
+                                      if (
+                                        window.confirm(
+                                          "Are you sure you want to delete this standing?"
+                                        )
+                                      ) {
+                                        onDeleteStanding(player.id, song.id);
+                                      }
+                                    }}
+                                  >
+                                    <FontAwesomeIcon icon={faTrash} />
+                                  </button>
+                                </>
+                              )}
+                            </p>
+
+                            {!scoreData && controls && isActive && (
+                              <button
+                                title="Manually add score"
+                                className="text-green-700"
+                                onClick={() => {
+                                  setAddStandingToMatchModalOpen(true);
+                                  setSongIdPlayerId({
+                                    playerId: player.id,
+                                    songId: song.id,
+                                    playerName: player.name,
+                                    songTitle: song.title,
+                                  });
+                                }}
+                              >
+                                <FontAwesomeIcon icon={faPlus} />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                    <div className="border border-gray-300 p-2">
+                      <div className="text-center text-gray-600">
+                        {match.rounds
+                          .map((round) =>
+                            round.standings.find(
+                              (s) => s.playerId === player.id
+                            )
+                          )
+                          .reduce((acc, standing) => {
+                            if (standing) {
+                              return acc + standing.score;
+                            }
+                            return acc;
+                          }, 0)}
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>
-          ))}
-        </div>
-        {controls && <div>
-          <LogViewer logs={logs} />
-        </div>}
+            </Tab.Panel>
+            <Tab.Panel>
+              {controls && (
+                <div>
+                  <LogViewer logs={logs} />
+                </div>
+              )}
+            </Tab.Panel>
+          </Tab.Panels>
+        </Tab.Group>
       </div>
     </div>
   );

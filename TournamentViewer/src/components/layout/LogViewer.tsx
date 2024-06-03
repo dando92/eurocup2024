@@ -7,7 +7,7 @@ type LogViewerProps = {
 export default function LogViewer({ logs }: LogViewerProps) {
   return (
     <div>
-      <h2>Logs&Errors</h2>
+      {logs.length === 0 && <p>No logs to display</p>}
       <ul className="ml-5 list-disc flex flex-col gap-1">
         {logs.map((log, index) => (
           <li key={index}>
