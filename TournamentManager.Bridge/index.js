@@ -11,8 +11,8 @@ const dotenv = require("dotenv");
 const env = process.env.NODE_ENV;
 
 // use .env if production, .env.development if development
-const envFile = env === "production" ? ".env" : ".env.development";
-
+const envFile = env === "production" || env === "test"  ? ".env" : ".env.development";
+const testMode = env === "test";
 dotenv.config({ path: path.resolve(__dirname, envFile) });
 
 const WS_URL = process.env.WS_URL;
@@ -109,8 +109,7 @@ const processMessage = async (address, msg, isFinalScore, isFinalMarathonScore) 
   if (isFinalScore || isFinalMarathonScore) {
     const json = JSON.stringify(scoreData);
     const filename = sanitize(
-      `${Date.now()}_${scoreData.song.replace("/", "_")}_${
-        scoreData.playerName
+      `${Date.now()}_${scoreData.song.replace("/", "_")}_${scoreData.playerName
       }.json`
     );
     const filePath = path.join(".", "scores", filename);
@@ -132,26 +131,26 @@ const processMessage = async (address, msg, isFinalScore, isFinalMarathonScore) 
   }
 };
 
-var setup_web_socket = function(){
-    console.log('try connect');
-    ws = new WebSocket(WS_URL);
-    ws.on('open', function() {
-        console.log('socket open');
-        isWsConnected = true;
-    });
-    ws.on('error', function() {
-    });
-    ws.on('close', function() {
-        if(isWsConnected) {
-          console.log('socket close');
-          isWsConnected = false;
-        }
+var setup_web_socket = function () {
+  console.log('try connect');
+  ws = new WebSocket(WS_URL);
+  ws.on('open', function () {
+    console.log('socket open');
+    isWsConnected = true;
+  });
+  ws.on('error', function () {
+  });
+  ws.on('close', function () {
+    if (isWsConnected) {
+      console.log('socket close');
+      isWsConnected = false;
+    }
 
-        setTimeout(setup_web_socket, RECONNECT_INTERVAL);
-    });
+    setTimeout(setup_web_socket, RECONNECT_INTERVAL);
+  });
 };
 
-var setup_udp_server = function(){
+var setup_udp_server = function () {
   udpServer = dgram.createSocket({ type: "udp4", reuseAddr: true });
   udpServer.on("message", async (buffer, rinfo) => {
     // we are interested only in score messages
@@ -175,14 +174,14 @@ var setup_udp_server = function(){
       console.error(`ERROR: couldn't process message '${scoreMessage}'`, e);
     }
   });
-  
+
   udpServer.bind(SYNCSTART_UDP_PORT);
 }
 
 
 // Poll in 5 second intervals and send scores
 async function waitAndSendScores() {
-  setTimeout(async function() {
+  setTimeout(async function () {
     const queueLength = scoreSendingQueue.length;
 
     // Send accumulated scores to google sheets
@@ -207,6 +206,28 @@ async function waitAndSendScores() {
   }, 5000);
 }
 
+async function testScoreSend() {
+  if (testMode) {
+    console.log("TestModeActive!");
+    const directoryPath = './test';
+    fs.readdir(directoryPath, (err, files) => {
+      if (err) {
+        console.error('Error reading directory:', err);
+        return;
+      }
+      files.forEach((file) => {
+        if(file != "scores_go_here") {
+          const filePath = `${directoryPath}/${file}`;
+          console.log(filePath);
+          const data = fs.readFileSync(filePath,
+            { encoding: 'utf8', flag: 'r' });
+            scoreSendingQueue.push(data);
+        }
+      });
+    });
+  }
+}
+
 console.log("Starting TournamentManager.Bridge!");
 waitAndSendScores();
 
@@ -216,3 +237,4 @@ setup_web_socket();
 console.log("SYNCSTART_UDP_PORT:", SYNCSTART_UDP_PORT);
 setup_udp_server();
 
+testScoreSend();
