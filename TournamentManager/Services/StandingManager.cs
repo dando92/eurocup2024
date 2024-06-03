@@ -115,7 +115,7 @@ namespace TournamentManager.Services
             try
             {
                 _logHub.LogMessage($"Add standing: {standing.PlayerId} Song: {standing.SongId}");
-                _standingRepo.Add(standing);
+                // _standingRepo.Add(standing);
                 _logHub.LogMessage($"Add to round: {standing.PlayerId} Song: {standing.SongId}");
                 round.Standings.Add(standing);
 
@@ -126,13 +126,15 @@ namespace TournamentManager.Services
                         _logHub.LogMessage("Standing recalc...");
                         round.Standings.Recalc();
 
-                        foreach (var recalcStanding in round.Standings)
-                        {
-                            _logHub.LogMessage($"Updating standing Player: {standing.PlayerId} Song: {standing.SongId}");
-                            _standingRepo.Update(recalcStanding);
-                        }
+                        //foreach (var recalcStanding in round.Standings)
+                        //{
+                        //    _logHub.LogMessage($"Updating standing Player: {standing.PlayerId} Song: {standing.SongId}");
+                        //     _standingRepo.Update(recalcStanding);
+                        //}
                     }
                 }
+
+                _standingRepo.Save();
 
                 _hub?.Update(activeMatch);
             }
