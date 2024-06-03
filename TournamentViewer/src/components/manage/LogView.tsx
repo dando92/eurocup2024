@@ -1,4 +1,5 @@
-import { Log } from "./tournament/MatchTable";
+import { Log } from "../../models/Log";
+
 
 type LogViewProps = { logs: Log[] };
 
