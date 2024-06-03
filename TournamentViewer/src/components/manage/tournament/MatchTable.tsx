@@ -315,7 +315,7 @@ export default function MatchTable({
       <div className="flex flex-row gap-3">
         <div
           style={{ minWidth: match.songs.length * 200 }}
-          className={`shadow-lg overflow-auto w-4/5 lg:min-w-fit`}
+          className={`shadow-lg overflow-auto ${controls ? "w-4/5" : 'w-full'} lg:min-w-fit`}
         >
           <div
             className={`grid grid-cols-${
@@ -454,9 +454,9 @@ export default function MatchTable({
             </div>
           ))}
         </div>
-        <div>
+        {controls && <div>
           <LogViewer logs={logs} />
-        </div>
+        </div>}
       </div>
     </div>
   );
