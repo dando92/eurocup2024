@@ -10,9 +10,10 @@ const dotenv = require("dotenv");
 
 const env = process.env.NODE_ENV;
 
+
 // use .env if production, .env.development if development
-const envFile = env === "production" || env === "test"  ? ".env" : ".env.development";
-const testMode = env === "test";
+const envFile = env === "production" ? ".env" : ".env.development";
+const testMode = process.env.TEST_MODE === "true";
 dotenv.config({ path: path.resolve(__dirname, envFile) });
 
 const WS_URL = process.env.WS_URL;

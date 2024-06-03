@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "cross-env NODE_ENV=test node index.js",
-    "dev": "cross-env NODE_ENV=development node index.js",
-    "start": "cross-env NODE_ENV=production node index.js"
+    "test": "cross-env NODE_ENV=production TEST_MODE=true node index.js",
+	"testdev": "cross-env NODE_ENV=development TEST_MODE=true node index.js",
+    "dev": "cross-env NODE_ENV=development TEST_MODE=false node index.js",
+    "start": "cross-env NODE_ENV=production TEST_MODE=false node index.js"
   },
   "keywords": [],
   "author": "",
