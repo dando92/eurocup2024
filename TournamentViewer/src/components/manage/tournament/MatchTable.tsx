@@ -168,16 +168,16 @@ export default function MatchTable({
           })
           .build();
 
-        errConn.on("OnLogUpdate", ({ message, exception }: Log) => {
-          console.log(message, exception);
+        errConn.on("OnLogUpdate", ({ message, error }: Log) => {
+          console.log(message, error);
 
-          exception ? toast.error(`Error: ${message} - ${exception}`, {
+          error ? toast.error(`Error: ${message} - ${error}`, {
             autoClose: false,
           }) : toast.info(message);
 
           setLogs((prevLogs) => [
             ...prevLogs,
-            { message, exception, timestamp: new Date().toISOString() },
+            { message, error: error, timestamp: new Date().toISOString() },
           ]);
         });
 

@@ -12,7 +12,7 @@ export default function LogView({logs}: LogViewProps) {
           <div key={i} className="w-full border bg-gray-200 p-2 rounded-lg">
             <div className="text-red-800 font-bold flex flex-row gap-2 items-center">
               <span>{log.message}</span>
-              <span>{log.exception}</span>
+              <span>{log.error}</span>
             </div>
           </div>
         ))}
