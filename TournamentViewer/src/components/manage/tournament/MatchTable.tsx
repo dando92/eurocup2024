@@ -171,9 +171,9 @@ export default function MatchTable({
         errConn.on("OnLogUpdate", ({ message, error }: Log) => {
           console.log(message, error);
 
-          error ? toast.error(`Error: ${message} - ${error}`, {
+          error && toast.error(`Error: ${message} - ${error}`, {
             autoClose: false,
-          }) : toast.info(message);
+          }) 
 
           setLogs((prevLogs) => [
             ...prevLogs,
