@@ -17,6 +17,12 @@ dotenv.config({ path: path.resolve(__dirname, envFile) });
 
 const WS_URL = process.env.WS_URL;
 
+// create "scores" directory if it doesn't exist
+const scoresDir = path.join(".", "scores");
+if (!fs.existsSync(scoresDir)) {
+  fs.mkdirSync(scoresDir);
+}
+
 var isWsConnected = false;
 var udpServer;
 var ws;
