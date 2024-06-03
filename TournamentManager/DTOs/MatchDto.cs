@@ -9,6 +9,7 @@ namespace TournamentManager.DTOs
         public string Name { get; set; }
         public string Subtitle { get; set; }
         public string Notes { get; set; }
+        public bool IsManualMatch { get; set; }
         public ICollection<Song> Songs { get; set; }
         public ICollection<Player> Players { get; set; }
         public ICollection<Round> Rounds { get; set; }

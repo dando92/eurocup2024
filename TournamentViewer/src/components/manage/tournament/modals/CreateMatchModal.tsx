@@ -29,6 +29,7 @@ export default function CreateMatchModal({
 
   const [matchName, setMatchName] = useState<string>("");
   const [subtitle, setSubtitle] = useState<string>("");
+  const [isManualMatch, setIsManualMatch] = useState<boolean>(false);
 
   const [selectedPlayers, setSelectedPlayers] = useState<Player[]>([]);
 
@@ -128,6 +129,14 @@ export default function CreateMatchModal({
             value={subtitle}
             onChange={(e) => setSubtitle(e.target.value)}
             placeholder="Type subtitle"
+          />
+        </div>
+        <div>
+          <h3>Manual match</h3>
+          <input
+            type="checkbox"
+            checked={isManualMatch}
+            onChange={(e) => setIsManualMatch(e.target.checked)}
           />
         </div>
         <div className="w-full">

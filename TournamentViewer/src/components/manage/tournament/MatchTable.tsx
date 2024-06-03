@@ -253,6 +253,7 @@ export default function MatchTable({
         <AddStandingToMatchModal
           open={addStandingToMatchModalOpen}
           playerId={songIdPlayerId.playerId}
+          isManualMatch={match.isManualMatch}
           songId={songIdPlayerId.songId}
           playerName={songIdPlayerId.playerName}
           songTitle={songIdPlayerId.songTitle}

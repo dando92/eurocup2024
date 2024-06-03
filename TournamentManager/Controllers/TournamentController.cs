@@ -10,7 +10,7 @@ namespace TournamentManager.Controllers
     [Route("ws")]
     [ApiController]
     public class TournamentController : ControllerBase
-    {        
+    {
         private readonly ITournamentCache _cache;
         private IStandingManager _standingManager;
         private readonly IMatchManager _matchManager;
@@ -38,7 +38,7 @@ namespace TournamentManager.Controllers
         [HttpPost("editStanding")]
         public IActionResult EditStanding(PostEditStanding request)
         {
-            bool edited = _standingManager.EditStanding(request.PlayerId, request.SongId, request.Percentage, request.Score);
+            var edited = _standingManager.EditStanding(request.PlayerId, request.SongId, request.Percentage, request.Score);
 
             if (edited)
                 return Ok(GetMatchDtoFromId(_cache.ActiveMatch));
@@ -49,7 +49,7 @@ namespace TournamentManager.Controllers
         [HttpDelete("deleteStanding/{playerId}/{songId}")]
         public IActionResult DeleteStandingForPlayer(int playerId, int songId)
         {
-            bool removed = _standingManager.DeleteStanding(playerId, songId);
+            var removed = _standingManager.DeleteStanding(playerId, songId);
 
             if (removed)
                 return Ok(GetMatchDtoFromId(_cache.ActiveMatch));
@@ -67,7 +67,7 @@ namespace TournamentManager.Controllers
         public IActionResult EditMatchSong(PostEditSongToMatch request)
         {
             _matchManager.RemoveSongFromMatch(request.MatchId, request.EditSongId);
-            
+
             return AddSongToMatch(request);
         }
 
@@ -85,7 +85,7 @@ namespace TournamentManager.Controllers
         [HttpPost("addMatch")]
         public IActionResult AddMatch(PostAddMatch request)
         {
-            Match match = _matchManager.AddMatch(request.MatchName, request.Notes, request.Subtitle, request.PlayerIds, request.PhaseId, request.IsManualMatch);
+            var match = _matchManager.AddMatch(request.MatchName, request.Notes, request.Subtitle, request.PlayerIds, request.PhaseId, request.IsManualMatch);
 
             if (request.SongIds != null)
                 _matchManager.AddSongsToMatch(match, request.SongIds.ToArray());
@@ -106,7 +106,7 @@ namespace TournamentManager.Controllers
                 return NotFound();
 
             _matchManager.SetActiveMatch(activeMatch);
-            
+
             return Ok(GetMatchDtoFromId(_cache.ActiveMatch));
         }
 
@@ -122,7 +122,7 @@ namespace TournamentManager.Controllers
         [HttpPost("addStanding")]
         public IActionResult AddStanding(Standing request)
         {
-            bool added = _standingManager.AddStanding(request);
+            var added = _standingManager.AddStanding(request);
 
             if (added)
                 return Ok(GetMatchDtoFromId(_cache.ActiveMatch));
@@ -146,6 +146,7 @@ namespace TournamentManager.Controllers
                 Name = match.Name,
                 Subtitle = match.Subtitle,
                 Notes = match.Notes,
+                IsManualMatch = match.IsManualMatch,
                 Players = match.PlayerInMatches.Select(p => p.Player).ToList(),
                 Songs = match.SongInMatches.Select(s => s.Song).ToList(),
                 Rounds = match.Rounds.ToList()
@@ -165,6 +166,7 @@ namespace TournamentManager.Controllers
                 Name = match.Name,
                 Subtitle = match.Subtitle,
                 Notes = match.Notes,
+                IsManualMatch = match.IsManualMatch,
                 Players = match.PlayerInMatches.Select(p => p.Player).ToList(),
                 Songs = match.SongInMatches.Select(s => s.Song).ToList(),
                 Rounds = match.Rounds.ToList()
