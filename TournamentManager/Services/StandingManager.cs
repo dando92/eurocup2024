@@ -48,10 +48,10 @@ namespace TournamentManager.Services
             //Player or song not registered, do nothing
             if (song == null || player == null)
             {
-                _logHub.LogError("No song or player found for standing");
+                _logHub.LogError($"No song or player found for standing {song.Title} - {player.Name}");
                 return false;
             }
-                
+            
             Standing standing = new Standing()
             {
                 Percentage = double.Parse(score.FormattedScore, CultureInfo.InvariantCulture),
@@ -61,8 +61,8 @@ namespace TournamentManager.Services
             };
 
             Standing duplicate = _standingRepo
-               .GetAll(false)
-               .Where(s => s.PlayerId == standing.PlayerId && s.SongId == standing.PlayerId)
+               .GetAll()
+               .Where(s => s.PlayerId == standing.PlayerId && s.SongId == standing.SongId)
                .FirstOrDefault();
 
             if (duplicate != null)

@@ -9,12 +9,12 @@ namespace TournamentManager
     {
         public static void LogMessage(this ILogUpdate remoteLogger, string message)
         {
-            remoteLogger.OnLogUpdate(new LogUpdateDTO() { Message = message });//.Wait();
+            remoteLogger.OnLogUpdate(new LogUpdateDTO() { Message = message }).Wait();
         }
 
         public static void LogError(this ILogUpdate remoteLogger, string error)
         {
-            remoteLogger.OnLogUpdate(new LogUpdateDTO() { Error = error });//.Wait();
+            remoteLogger.OnLogUpdate(new LogUpdateDTO() { Error = error }).Wait();
         }
 
         public static IEnumerable<string> ListGroups(this List<Song> songs)

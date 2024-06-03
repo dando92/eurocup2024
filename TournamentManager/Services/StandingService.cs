@@ -64,9 +64,6 @@ namespace TournamentManager.Services
                             using (IServiceScope standinManagerScope = _serviceScopeFactory.CreateScope())
                             {
                                 IStandingManager scopedProcessingService = standinManagerScope.ServiceProvider.GetRequiredService<IStandingManager>();
-
-                                logUpdate.LogMessage($"Processing request[{res.Count}] - {mes.Replace("\r\n", string.Empty)}");
-                                
                                 scopedProcessingService.AddStanding(score);
                             }
                         }
