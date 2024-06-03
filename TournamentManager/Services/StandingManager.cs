@@ -60,7 +60,7 @@ namespace TournamentManager.Services
             };
 
             Standing duplicate = _standingRepo
-               .GetAll()
+               .GetAll(false)
                .Where(s => s.PlayerId == standing.PlayerId && s.SongId == standing.PlayerId)
                .FirstOrDefault();
 

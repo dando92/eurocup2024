@@ -182,7 +182,7 @@ namespace TournamentManager.Services
         public IQueryable<Match> GetMatchFromId(int matchId)
         {
             return _matchRepo
-                .GetAll()
+                .GetAll(false)
                 .Include(m => m.Phase)
                 .Include(m => m.Rounds)
                     .ThenInclude(m => m.Standings)
