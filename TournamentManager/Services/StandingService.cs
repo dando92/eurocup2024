@@ -44,33 +44,38 @@ namespace TournamentManager.Services
         {
             CancellationTokenSource source = new CancellationTokenSource();
 
-            var buffer = new byte[1024 * 8];
+            var buffer = new byte[1024];
 
-            while (!source.IsCancellationRequested)
+            using (IServiceScope logScope = _serviceScopeFactory.CreateScope())
             {
-                var res = await client.ReceiveAsync(buffer, source.Token);
-
-                if (res.MessageType == WebSocketMessageType.Text)
+                ILogUpdate logUpdate = logScope.ServiceProvider.GetRequiredService<ILogUpdate>();
+      
+                while (!source.IsCancellationRequested)
                 {
+                    var res = await client.ReceiveAsync(buffer, source.Token);
 
-                    using (IServiceScope scope = _serviceScopeFactory.CreateScope())
+                    if (res.MessageType == WebSocketMessageType.Text)
                     {
-                        IStandingManager scopedProcessingService =
-                            scope.ServiceProvider.GetRequiredService<IStandingManager>();
-                        ILogUpdate logUpdate =
-                            scope.ServiceProvider.GetRequiredService<ILogUpdate>();
-
                         try
                         {
                             var mes = Encoding.UTF8.GetString(buffer, 0, res.Count);
-
                             Score score = Deserialize<Score>(mes);
-                            scopedProcessingService.AddStanding(score);
+
+                            using (IServiceScope standinManagerScope = _serviceScopeFactory.CreateScope())
+                            {
+                                IStandingManager scopedProcessingService = standinManagerScope.ServiceProvider.GetRequiredService<IStandingManager>();
+
+                                logUpdate.LogMessage($"Processing request[{res.Count}] - {mes.Replace("\r\n", string.Empty)}");
+                                
+                                scopedProcessingService.AddStanding(score);
+                            }
                         }
                         catch (Exception ex)
                         {
-                            logUpdate.OnLogUpdate(new LogUpdateDTO() { Exception = ex.Message, Message = "Error parsing score from itg" });
+                            logUpdate.LogError($"Error parsing score from itg, drop connection - {ex.ToString()} " );
+                            source.Cancel();
                         }
+
                     }
                 }
             }

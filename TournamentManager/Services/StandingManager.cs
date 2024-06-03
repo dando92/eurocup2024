@@ -2,6 +2,7 @@
 using System.Linq;
 using TournamentManager.Contexts;
 using TournamentManager.DbModels;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TournamentManager.Services
 {
@@ -47,7 +48,7 @@ namespace TournamentManager.Services
             //Player or song not registered, do nothing
             if (song == null || player == null)
             {
-                _logHub.OnLogUpdate(new LogUpdateDTO() { Message = "No song or player found for standing" });
+                _logHub.LogError("No song or player found for standing");
                 return false;
             }
                 
@@ -66,7 +67,7 @@ namespace TournamentManager.Services
 
             if (duplicate != null)
             {
-                _logHub.OnLogUpdate(new LogUpdateDTO() { Message = $"duplicate found for {song.Title} - {player.Name}" });
+                _logHub.LogError($"duplicate found for {song.Title} - {player.Name}");
                 return false;
             }
                 
@@ -79,13 +80,13 @@ namespace TournamentManager.Services
 
             if (activeMatch == null)
             {
-                _logHub.OnLogUpdate(new LogUpdateDTO() { Message = $"No active match during standing push" });
+                _logHub.LogError($"No active match during standing push");
                 return false;
             }
                 
             if (standing.SongId == 0 || standing.PlayerId == 0)
             {
-                _logHub.OnLogUpdate(new LogUpdateDTO() { Message = "No song or player found for standing" });
+                _logHub.LogError("No song or player found for standing");
                 return false;
             }
                 
@@ -93,7 +94,7 @@ namespace TournamentManager.Services
 
             if (round == null)
             {
-                _logHub.OnLogUpdate(new LogUpdateDTO() { Message = "Round not found for active match" });
+                _logHub.LogError("Round not found for active match" );
                 return false;
             }
                 
@@ -107,30 +108,37 @@ namespace TournamentManager.Services
 
             if (round.Standings.Where(s => s.PlayerId == standing.PlayerId && s.SongId == standing.SongId).Count() > 0)
             {
-                _logHub.OnLogUpdate(new LogUpdateDTO() { Message = "Skip standing, duplicate" });
+                _logHub.LogError("Skip standing, duplicate");
                 return false;
             }
 
             try
             {
+                _logHub.LogMessage($"Add standing: {standing.PlayerId} Song: {standing.SongId}");
                 _standingRepo.Add(standing);
                 round.Standings.Add(standing);
 
-                if (round.Standings.Count >= activeMatch.PlayerInMatches.Count)
+                if ((round.Standings.Count >= activeMatch.PlayerInMatches.Count) && (!activeMatch.IsManualMatch))
                 {
                     if (!activeMatch.IsManualMatch)
                     {
+                        _logHub.LogMessage("Standing recalc...");
                         round.Standings.Recalc();
 
                         foreach (var recalcStanding in round.Standings)
+                        {
+                            _logHub.LogMessage($"Updating standing Player: {standing.PlayerId} Song: {standing.SongId}");
                             _standingRepo.Update(recalcStanding);
+                        }
                     }
                 }
+
                 _hub?.OnMatchUpdate(new MatchUpdateDTO() { MatchId = activeMatch.Id, PhaseId = activeMatch.PhaseId, DivisionId = activeMatch.Phase.DivisionId });
             }
             catch(Exception ex)
             {
-                _logHub.OnLogUpdate(new LogUpdateDTO() { Exception = ex.Message });
+                _logHub.LogError(ex.ToString());
+                return false;
             }
 
             return true;
@@ -142,15 +150,15 @@ namespace TournamentManager.Services
 
             if (GetActiveMatch() == null)
             {
-                _logHub.OnLogUpdate(new LogUpdateDTO() { Message = $"No active match during standing edit" });
+                _logHub.LogError($"No active match during standing edit");
                 return edited;
             }
                 
             Round round = GetRoundBySongId(songId);
 
             if (round == null)
-            { 
-                _logHub.OnLogUpdate(new LogUpdateDTO() { Message = "Round not found for active match" });
+            {
+                _logHub.LogError("Round not found for active match");
                 return edited;
             }
 
@@ -171,7 +179,8 @@ namespace TournamentManager.Services
             }
             catch (Exception ex)
             {
-                _logHub.OnLogUpdate(new LogUpdateDTO() { Exception = ex.Message });
+                _logHub.LogError(ex.ToString());
+                return false;
             }
 
             return edited;
@@ -183,7 +192,7 @@ namespace TournamentManager.Services
             Match activeMatch = GetActiveMatch();
             if (activeMatch == null)
             {
-                _logHub.OnLogUpdate(new LogUpdateDTO() { Message = $"No active match during standing edit" });
+                _logHub.LogError($"No active match during standing edit");
                 return removed;
             }
 
@@ -191,7 +200,7 @@ namespace TournamentManager.Services
 
             if (round == null)
             {
-                _logHub.OnLogUpdate(new LogUpdateDTO() { Message = "Round not found for active match" });
+                _logHub.LogError("Round not found for active match");
                 return removed;
             }
 
@@ -215,7 +224,8 @@ namespace TournamentManager.Services
             }
             catch (Exception ex)
             {
-                _logHub.OnLogUpdate(new LogUpdateDTO() { Exception = ex.Message });
+                _logHub.LogError(ex.Message);
+                return false;
             }
 
             return removed;
