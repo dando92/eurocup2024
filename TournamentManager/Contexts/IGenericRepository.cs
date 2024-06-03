@@ -9,5 +9,6 @@
         void Update(T entity);
         void DeleteById(int id);
         void Save();
+        void SaveWithRetry(int maxRetries = 3, int delay = 500);
     }
 }

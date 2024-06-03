@@ -134,7 +134,7 @@ namespace TournamentManager.Services
                     }
                 }
 
-                _standingRepo.Save();
+                _standingRepo.SaveWithRetry();
 
                 _hub?.Update(activeMatch);
             }

@@ -59,5 +59,29 @@ namespace TournamentManager.Contexts
         {
             _databaseContext.SaveChanges();
         }
+
+        public void SaveWithRetry(int maxRetries = 3, int delay = 500)
+        {
+            bool saveFailed;
+            int retries = 0;
+
+            do
+            {
+                saveFailed = false;
+
+                try
+                {
+                    _databaseContext.SaveChanges();
+                }
+                catch (DbUpdateException ex)
+                {
+                    saveFailed = true;
+                    retries++;
+                    if (retries > maxRetries)
+                        throw;
+                    System.Threading.Thread.Sleep(delay);
+                }
+            } while (saveFailed);
+        }
     }
 }
