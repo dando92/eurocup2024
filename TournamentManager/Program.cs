@@ -18,7 +18,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<TournamentDbContext>(options =>
 {
     var exeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-    options.UseSqlite($"Data Source={exeDir}/DB/db.db");
+    options.UseSqlite($"Data Source={exeDir}/DB/db.db;Pooling=false");
 });
 
 builder.Services.AddSignalR();
