@@ -52,6 +52,8 @@ namespace TournamentManager.Controllers
             };
 
             _repo.Add(match);
+            
+            _repo.Save();
 
             return Ok(match);
         }
@@ -84,7 +86,7 @@ namespace TournamentManager.Controllers
         public IActionResult DeleteMatch(int id)
         {
             _repo.DeleteById(id);
-
+            _repo.Save();
             return Ok();
         }
     }

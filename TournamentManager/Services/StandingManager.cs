@@ -134,7 +134,7 @@ namespace TournamentManager.Services
                     }
                 }
 
-                _standingRepo.SaveWithRetry();
+                _standingRepo.Save();
 
                 _hub?.Update(activeMatch);
             }
@@ -174,11 +174,14 @@ namespace TournamentManager.Services
                         standing.Percentage = percentage;
                         standing.Score = score;
 
-                        _standingRepo.Update(standing);
+                        //_standingRepo.Update(standing);
 
                         edited = true;
                     }
                 }
+
+                if(edited)
+                    _standingRepo.Save();
             }
             catch (Exception ex)
             {
@@ -220,9 +223,11 @@ namespace TournamentManager.Services
                     else
                     {
                         standing.Score = 0;
-                        _standingRepo.Update(standing);
+                        //_standingRepo.Update(standing);
                     }
                 }
+                _standingRepo.Save();
+
                 _hub?.Update(activeMatch);
             }
             catch (Exception ex)

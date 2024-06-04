@@ -29,7 +29,7 @@ namespace TournamentManager.Controllers
                 });
 
             _repo.AddRange(_players);
-
+            _repo.Save();
             return Ok(_players);
         }
 
@@ -42,7 +42,7 @@ namespace TournamentManager.Controllers
             };
             _repo.Add(player);
 
-
+            _repo.Save();
             return Ok(player);
         }
 
@@ -58,7 +58,7 @@ namespace TournamentManager.Controllers
 
             player.Name = request.Name;
 
-            _repo.Update(player);
+            _repo.Save();
 
             return Ok(player);
         }
@@ -75,7 +75,7 @@ namespace TournamentManager.Controllers
 
             player.Name = request.Name;
 
-            _repo.Update(player);
+            _repo.Save();
 
             return Ok(player);
         }
@@ -84,7 +84,7 @@ namespace TournamentManager.Controllers
         public IActionResult DeletePlayer(int id)
         {
             _repo.DeleteById(id);
-
+            _repo.Save();
             return Ok();
         }
     }

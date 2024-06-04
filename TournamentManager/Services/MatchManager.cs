@@ -53,6 +53,8 @@ namespace TournamentManager.Services
 
             _matchRepo.Add(newMatch);
 
+            _matchRepo.Save();
+
             return newMatch;
         }
 
@@ -70,9 +72,6 @@ namespace TournamentManager.Services
             _roundRepo.DeleteById(round.Id);
 
             _roundRepo.Save();
-
-            //TODO: match is tracked, might remove
-            _matchRepo.Update(match);
         }
 
         public void RemoveSongFromMatch(int matchId, int songId)
@@ -99,14 +98,15 @@ namespace TournamentManager.Services
         {
             foreach (var songId in songIds)
                 AddSongToMatch(match, songId);
+
+            _matchRepo.Save();
         }
 
         public void AddRandomSongsToMatch(Match match, int divisionId, string group, string levels)
         {
-            List<int> songIds = _roller.RollSongs(divisionId, group, levels);
+            int[] songIds = _roller.RollSongs(divisionId, group, levels).ToArray();
 
-            foreach (var songId in songIds)
-                AddSongToMatch(match, songId);
+            AddSongsToMatch(match, songIds);
         }
 
         public void AddRandomSongsToMatch(int matchId, int divisionId, string group, string levels)
@@ -122,11 +122,6 @@ namespace TournamentManager.Services
         protected void AddSongToMatch(Match match, int songId)
         {
             _roundRepo.Add(CreateRound(match, songId));
-        }
-
-        protected void AddRandomSongToMatch(Match match, int divisionId, string group, string level)
-        {
-            AddSongToMatch(match, _roller.RollSong(divisionId, group, int.Parse(level)));
         }
 
         private Match CreateMatch(string matchName, string notes, string subTitle, int[] players, bool isManualMatch)

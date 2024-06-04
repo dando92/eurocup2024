@@ -48,7 +48,7 @@ namespace TournamentManager.Controllers
             };
 
             _repo.Add(phase);
-
+            _repo.Save();
             return Ok(phase);
         }
 
@@ -64,7 +64,7 @@ namespace TournamentManager.Controllers
 
             phase.Name = request.Name;
 
-            _repo.Update(phase);
+            _repo.Save();
 
             return Ok(phase);
         }
@@ -81,7 +81,7 @@ namespace TournamentManager.Controllers
 
             phase.Name = request.Name;
 
-            _repo.Update(phase);
+            _repo.Save();
 
             return Ok(phase);
         }
@@ -90,7 +90,7 @@ namespace TournamentManager.Controllers
         public IActionResult DeletePhase(int id)
         {
             _repo.DeleteById(id);
-
+            _repo.Save();
             return Ok();
         }
     }

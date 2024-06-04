@@ -11,7 +11,7 @@ namespace TournamentManager.Controllers
     [ApiController]
     public class DivisionsController(IGenericRepository<Division> divisionRepo, IGenericRepository<Phase> phaseRepo, IGenericRepository<Match> matchRepo, IGenericRepository<Round> roundRepo) : ControllerBase
     {
-        private readonly IGenericRepository<Division> _divisionRepo = divisionRepo;
+        private readonly IGenericRepository<Division> _repo = divisionRepo;
         private readonly IGenericRepository<Phase> _phaseRepo = phaseRepo;
         private readonly IGenericRepository<Match> _matchRepo = matchRepo;
         private readonly IGenericRepository<Round> _roundRepo = roundRepo;
@@ -19,13 +19,13 @@ namespace TournamentManager.Controllers
         [HttpGet]
         public IActionResult ListDivision()
         {
-            return Ok(_divisionRepo.GetAll());
+            return Ok(_repo.GetAll());
         }
 
         [HttpGet("{id}")]
         public IActionResult GetDivision(int id)
         {
-            var division = _divisionRepo.GetById(id);
+            var division = _repo.GetById(id);
 
             if (division == null)
             {
@@ -38,7 +38,7 @@ namespace TournamentManager.Controllers
         [HttpGet("{id}/phases")]
         public IActionResult ListPhases(int id)
         {
-            return Ok(_divisionRepo.GetAll().Include(d => d.Phases).FirstOrDefault(d=>d.Id == id).Phases);
+            return Ok(_repo.GetAll().Include(d => d.Phases).FirstOrDefault(d=>d.Id == id).Phases);
         }
 
         [HttpPost]
@@ -49,15 +49,15 @@ namespace TournamentManager.Controllers
                 Name = request.Name
             };
 
-            _divisionRepo.Add(division);
-
+            _repo.Add(division);
+            _repo.Save();
             return Ok(division);
         }
 
         [HttpPut("{id}")]
         public IActionResult UpdateDivision(int id, [FromBody] PostDivisionRequest request)
         {
-            var division = _divisionRepo.GetById(id);
+            var division = _repo.GetById(id);
 
             if (division == null)
             {
@@ -66,7 +66,7 @@ namespace TournamentManager.Controllers
 
             division.Name = request.Name;
 
-            _divisionRepo.Update(division);
+            _repo.Save();
 
             return Ok(division);
         }
@@ -74,10 +74,11 @@ namespace TournamentManager.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteDivision(int id)
         {
-            _divisionRepo.DeleteById(id);
+            _repo.DeleteById(id);
+            
+            _repo.Save();
 
             return Ok();
         }
-
     }
 }

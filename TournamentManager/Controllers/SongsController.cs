@@ -37,7 +37,7 @@ namespace TournamentManager.Controllers
                 });
 
             _repo.AddRange(_players);
-
+            _repo.Save();
             return Ok(_players);
         }
 
@@ -52,7 +52,7 @@ namespace TournamentManager.Controllers
             };
 
             _repo.Add(song);
-
+            _repo.Save();
             return Ok(song);
         }
 
@@ -70,7 +70,7 @@ namespace TournamentManager.Controllers
             song.Difficulty = request.Difficulty;
             song.Group = request.Group;
 
-            _repo.Update(song);
+            _repo.Save();
 
             return Ok(song);
         }
@@ -100,7 +100,7 @@ namespace TournamentManager.Controllers
                 song.Group = request.Group;
             }
 
-            _repo.Update(song);
+            _repo.Save();
 
             return Ok(song);
         }
@@ -109,7 +109,7 @@ namespace TournamentManager.Controllers
         public IActionResult DeleteSong(int id)
         {
             _repo.DeleteById(id);
-
+            _repo.Save();
             return Ok();
         }
     }

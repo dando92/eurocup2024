@@ -16,13 +16,11 @@ namespace TournamentManager.Contexts
         public void Add(T entity)
         {
             _dbSet.Add(entity);
-            Save();
         }
 
         public void AddRange(ICollection<T> entities)
         {
             _dbSet.AddRange(entities);
-            Save();
         }
 
         public void DeleteById(int id)
@@ -30,10 +28,7 @@ namespace TournamentManager.Contexts
             var entityToDelete = _dbSet.Find(id);
 
             if (entityToDelete != null)
-            {
                 _dbSet.Remove(entityToDelete);
-                Save();
-            }
         }
 
         public T GetById(int id)
@@ -52,15 +47,9 @@ namespace TournamentManager.Contexts
         public void Update(T entity)
         {
             _dbSet.Update(entity);
-            Save();
         }
 
-        public void Save()
-        {
-            _databaseContext.SaveChanges();
-        }
-
-        public void SaveWithRetry(int maxRetries = 3, int delay = 500)
+        public void Save(int maxRetries = 3, int delay = 100)
         {
             bool saveFailed;
             int retries = 0;

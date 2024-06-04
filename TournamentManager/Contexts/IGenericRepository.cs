@@ -8,7 +8,6 @@
         IQueryable<T> GetAll(bool tracked = true);
         void Update(T entity);
         void DeleteById(int id);
-        void Save();
-        void SaveWithRetry(int maxRetries = 3, int delay = 500);
+        void Save(int maxRetries = 3, int delay = 100);
     }
 }
