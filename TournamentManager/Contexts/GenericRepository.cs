@@ -49,7 +49,7 @@ namespace TournamentManager.Contexts
             _dbSet.Update(entity);
         }
 
-        public void Save(int maxRetries = 3, int delay = 100)
+        public void Save(int maxRetries = 5, int delay = 100)
         {
             bool saveFailed;
             int retries = 0;
