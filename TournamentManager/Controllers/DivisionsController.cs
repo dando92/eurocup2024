@@ -36,7 +36,7 @@ namespace TournamentManager.Controllers
             if (division == null)
                 return NotFound();
 
-            return Ok();
+            return Ok(division);
         }
 
         [HttpGet("{id}/phases")]
