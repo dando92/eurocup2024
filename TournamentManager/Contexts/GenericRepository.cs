@@ -64,6 +64,8 @@ namespace TournamentManager.Contexts
                 }
                 catch (DbUpdateException ex)
                 {
+                    Console.WriteLine("Retry");
+
                     saveFailed = true;
                     retries++;
                     if (retries > maxRetries)

@@ -9,11 +9,13 @@ namespace TournamentManager.Services
     {
         private RequestDelegate next;
 
+        private readonly Scheduler _scheduler;
         private IServiceScopeFactory _serviceScopeFactory;
-        public StandingService(RequestDelegate _next, IServiceScopeFactory serviceScopeFactory)
+        public StandingService(RequestDelegate _next, IServiceScopeFactory serviceScopeFactory, Scheduler scheduler)
         {
             this.next = _next;
             _serviceScopeFactory = serviceScopeFactory;
+            _scheduler = scheduler;
         }
 
         public async Task Invoke(HttpContext context)
@@ -64,7 +66,11 @@ namespace TournamentManager.Services
                             using (IServiceScope standinManagerScope = _serviceScopeFactory.CreateScope())
                             {
                                 IStandingManager scopedProcessingService = standinManagerScope.ServiceProvider.GetRequiredService<IStandingManager>();
-                                scopedProcessingService.AddStanding(score);
+                                
+                                _scheduler.Schedule((token) =>
+                                {
+                                    token.SetResult(scopedProcessingService.AddStanding(score));
+                                }).WaitResult<bool>();
                             }
                         }
                         catch (Exception ex)

@@ -1,72 +1,92 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TournamentManager.Contexts;
 using TournamentManager.DbModels;
 using TournamentManager.Requests;
+using TournamentManager.Services;
 
 namespace TournamentManager.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DivisionsController(IGenericRepository<Division> divisionRepo, IGenericRepository<Phase> phaseRepo, IGenericRepository<Match> matchRepo, IGenericRepository<Round> roundRepo) : ControllerBase
+    public class DivisionsController(Scheduler scheduler, IGenericRepository<Division> divisionRepo, IGenericRepository<Phase> phaseRepo, IGenericRepository<Match> matchRepo, IGenericRepository<Round> roundRepo) : ControllerBase
     {
+        private readonly Scheduler _scheduler = scheduler;
         private readonly IGenericRepository<Division> _repo = divisionRepo;
-        private readonly IGenericRepository<Phase> _phaseRepo = phaseRepo;
-        private readonly IGenericRepository<Match> _matchRepo = matchRepo;
-        private readonly IGenericRepository<Round> _roundRepo = roundRepo;
 
         [HttpGet]
         public IActionResult ListDivision()
         {
-            return Ok(_repo.GetAll());
+            var divisions = _scheduler.Schedule((token) =>
+            {
+                token.SetResult(_repo.GetAll().ToList());
+            }).WaitResult<List<Division>>();
+
+            return Ok(divisions);
         }
 
         [HttpGet("{id}")]
         public IActionResult GetDivision(int id)
         {
-            var division = _repo.GetById(id);
+            var division = _scheduler.Schedule((token) =>
+            {
+                token.SetResult(_repo.GetById(id));
+            }).WaitResult<Division>();
 
             if (division == null)
-            {
                 return NotFound();
-            }
 
-            return Ok(division);
+            return Ok();
         }
 
         [HttpGet("{id}/phases")]
         public IActionResult ListPhases(int id)
         {
-            return Ok(_repo.GetAll().Include(d => d.Phases).FirstOrDefault(d=>d.Id == id).Phases);
+            var phases = _scheduler.Schedule((token) =>
+            {
+                var res = _repo.GetAll().Include(d => d.Phases).FirstOrDefault(d => d.Id == id).Phases.ToList();
+                token.SetResult(res);
+            }).WaitResult<List<Phase>>();
+
+            return Ok(phases);
         }
 
         [HttpPost]
         public IActionResult AddDivision([FromBody] PostDivisionRequest request)
         {
-            var division = new Division
+            var division = _scheduler.Schedule((executionToken) =>
             {
-                Name = request.Name
-            };
+                var division = new Division
+                {
+                    Name = request.Name
+                };
 
-            _repo.Add(division);
-            _repo.Save();
+                _repo.Add(division);
+                _repo.Save();
+                executionToken.SetResult(division);
+            }).WaitResult<Division>();
+
             return Ok(division);
         }
 
         [HttpPut("{id}")]
         public IActionResult UpdateDivision(int id, [FromBody] PostDivisionRequest request)
         {
-            var division = _repo.GetById(id);
+            var division = _scheduler.Schedule((token) =>
+            {
+                var division = _repo.GetById(id);
+
+                if (division == null)
+                    return;
+
+                division.Name = request.Name;
+
+                _repo.Save();
+                token.SetResult(division);
+            }).WaitResult<Division>();
 
             if (division == null)
-            {
                 return NotFound();
-            }
-
-            division.Name = request.Name;
-
-            _repo.Save();
 
             return Ok(division);
         }
@@ -74,9 +94,12 @@ namespace TournamentManager.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteDivision(int id)
         {
-            _repo.DeleteById(id);
-            
-            _repo.Save();
+            _scheduler.Schedule((token) =>
+            {
+                _repo.DeleteById(id);
+
+                _repo.Save();
+            }).Wait();
 
             return Ok();
         }

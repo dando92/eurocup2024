@@ -24,6 +24,7 @@ builder.Services.AddDbContext<TournamentDbContext>(options =>
 builder.Services.AddSignalR();
 
 builder.Services
+    .AddSingleton<Scheduler>()
     .AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>))
     .AddScoped<IMatchManager, MatchManager>()
     .AddScoped<IStandingManager, StandingManager>()

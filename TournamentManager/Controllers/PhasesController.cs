@@ -1,33 +1,41 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNet.SignalR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TournamentManager.Contexts;
 using TournamentManager.DbModels;
 using TournamentManager.Requests;
+using TournamentManager.Services;
 
 namespace TournamentManager.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PhasesController(IGenericRepository<Phase> repo) : ControllerBase
+    public class PhasesController(Scheduler scheduler, IGenericRepository<Phase> repo) : ControllerBase
     {
+        private readonly Scheduler _scheduler = scheduler;
         private readonly IGenericRepository<Phase> _repo = repo;
 
         [HttpGet]
         public IActionResult ListPhase()
         {
-            return Ok(_repo.GetAll());
+            var phases = _scheduler.Schedule((token) =>
+            {
+                token.SetResult(_repo.GetAll().ToList());
+            }).WaitResult<List<Phase>>();
+
+            return Ok(phases);
         }
 
         [HttpGet("{id}")]
         public IActionResult GetPhase(int id)
         {
-            var phase = _repo.GetById(id);
+            var phase = _scheduler.Schedule((token) =>
+            {
+                token.SetResult(_repo.GetById(id));
+            }).WaitResult<Phase>();
 
             if (phase == null)
-            {
                 return NotFound();
-            }
 
             return Ok(phase);
         }
@@ -35,7 +43,12 @@ namespace TournamentManager.Controllers
         [HttpGet("{id}/matches")]
         public IActionResult GetPhaseMatches(int id)
         {
-            return Ok(_repo.GetAll().Include(p => p.Matches).FirstOrDefault(p => p.Id == id)?.Matches);
+            var matches = _scheduler.Schedule((token) =>
+            {
+                token.SetResult(_repo.GetAll().Include(p => p.Matches).FirstOrDefault(p => p.Id == id)?.Matches.ToList());
+            }).WaitResult<List<Match>>();
+
+            return Ok(matches);
         }
 
         [HttpPost]
@@ -47,41 +60,31 @@ namespace TournamentManager.Controllers
                 Name = request.Name
             };
 
-            _repo.Add(phase);
-            _repo.Save();
+            _scheduler.Schedule((token) =>
+            {
+                _repo.Add(phase);
+                _repo.Save();
+            }).Wait();
+
             return Ok(phase);
         }
 
         [HttpPut("{id}")]
         public IActionResult UpdatePhase(int id, [FromBody] PostPhaseRequest request)
         {
-            var phase = _repo.GetById(id);
+            var phase = _scheduler.Schedule((token) =>
+            {
+                var phase = _repo.GetById(id);
+
+                if (phase == null)
+                    return;
+
+                phase.Name = request.Name;
+                token.SetResult(phase);
+            }).WaitResult<Phase>();
 
             if (phase == null)
-            {
                 return NotFound();
-            }
-
-            phase.Name = request.Name;
-
-            _repo.Save();
-
-            return Ok(phase);
-        }
-
-        [HttpPatch("{id}")]
-        public IActionResult UpdatePhasePartial(int id, [FromBody] PostPhaseRequest request)
-        {
-            var phase = _repo.GetById(id);
-
-            if (phase == null)
-            {
-                return NotFound();
-            }
-
-            phase.Name = request.Name;
-
-            _repo.Save();
 
             return Ok(phase);
         }
@@ -89,8 +92,12 @@ namespace TournamentManager.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeletePhase(int id)
         {
-            _repo.DeleteById(id);
-            _repo.Save();
+            _scheduler.Schedule((token) =>
+            {
+                _repo.DeleteById(id);
+                _repo.Save();
+            }).Wait();
+
             return Ok();
         }
     }

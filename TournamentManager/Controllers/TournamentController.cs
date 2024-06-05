@@ -11,17 +11,20 @@ namespace TournamentManager.Controllers
     [ApiController]
     public class TournamentController : ControllerBase
     {
+        private readonly Scheduler _scheduler;
         private readonly ITournamentCache _cache;
         private IStandingManager _standingManager;
         private readonly IMatchManager _matchManager;
 
         public TournamentController(ITournamentCache cache,
             IStandingManager standingManager,
-            IMatchManager matchManager)
+            IMatchManager matchManager,
+            Scheduler scheduler)
         {
             _standingManager = standingManager;
             _cache = cache;
             _matchManager = matchManager;
+            _scheduler = scheduler;
         }
 
         [HttpGet("matches/{id}")]
@@ -38,8 +41,11 @@ namespace TournamentManager.Controllers
         [HttpPost("editStanding")]
         public IActionResult EditStanding(PostEditStanding request)
         {
-            var edited = _standingManager.EditStanding(request.PlayerId, request.SongId, request.Percentage, request.Score);
-
+            var edited = _scheduler.Schedule((token) => 
+            {
+                token.SetResult(_standingManager.EditStanding(request.PlayerId, request.SongId, request.Percentage, request.Score));
+            }).WaitResult<bool>();
+            
             if (edited)
                 return Ok(GetMatchDtoFromId(_cache.ActiveMatch));
             else
@@ -49,7 +55,10 @@ namespace TournamentManager.Controllers
         [HttpDelete("deleteStanding/{playerId}/{songId}")]
         public IActionResult DeleteStandingForPlayer(int playerId, int songId)
         {
-            var removed = _standingManager.DeleteStanding(playerId, songId);
+            var removed = _scheduler.Schedule((token) =>
+            {
+                token.SetResult(_standingManager.DeleteStanding(playerId, songId));
+            }).WaitResult<bool>();
 
             if (removed)
                 return Ok(GetMatchDtoFromId(_cache.ActiveMatch));
@@ -66,7 +75,10 @@ namespace TournamentManager.Controllers
         [HttpPost("editMatchSong")]
         public IActionResult EditMatchSong(PostEditSongToMatch request)
         {
-            _matchManager.RemoveSongFromMatch(request.MatchId, request.EditSongId);
+            _scheduler.Schedule((token) =>
+            {
+                _matchManager.RemoveSongFromMatch(request.MatchId, request.EditSongId);
+            }).Wait();
 
             return AddSongToMatch(request);
         }
@@ -74,10 +86,13 @@ namespace TournamentManager.Controllers
         [HttpPost("addSongToMatch")]
         public IActionResult AddSongToMatch(PostAddSongToMatch request)
         {
-            if (request.SongId != 0)
-                _matchManager.AddSongsToMatch(request.MatchId, [request.SongId]);
-            else if (request.Level != null)
-                _matchManager.AddRandomSongsToMatch(request.MatchId, request.DivisionId, request.Group, request.Level);
+            _scheduler.Schedule((token) =>
+            {
+                if (request.SongId != 0)
+                    _matchManager.AddSongsToMatch(request.MatchId, [request.SongId]);
+                else if (request.Level != null)
+                    _matchManager.AddRandomSongsToMatch(request.MatchId, request.DivisionId, request.Group, request.Level);
+            }).Wait();
 
             return Ok(GetMatchDtoFromId(_cache.ActiveMatch));
         }
@@ -85,14 +100,20 @@ namespace TournamentManager.Controllers
         [HttpPost("addMatch")]
         public IActionResult AddMatch(PostAddMatch request)
         {
-            var match = _matchManager.AddMatch(request.MatchName, request.Notes, request.Subtitle, request.PlayerIds, request.PhaseId, request.IsManualMatch);
-
-            if (request.SongIds != null)
-                _matchManager.AddSongsToMatch(match, request.SongIds.ToArray());
-            else if (request.Levels != null)
+            var match = _scheduler.Schedule((token) =>
             {
-                _matchManager.AddRandomSongsToMatch(match, request.DivisionId, request.Group, request.Levels);
-            }
+                var match = _matchManager.AddMatch(request.MatchName, request.Notes, request.Subtitle, request.PlayerIds, request.PhaseId, request.IsManualMatch);
+                
+                if (request.SongIds != null)
+                    _matchManager.AddSongsToMatch(match, request.SongIds.ToArray());
+                else if (request.Levels != null)
+                {
+                    _matchManager.AddRandomSongsToMatch(match, request.DivisionId, request.Group, request.Levels);
+                }
+
+                token.SetResult(match);
+
+            }).WaitResult<Match>();
 
             return Ok(GetMatchDtoFromId(match.Id));
         }
@@ -100,7 +121,10 @@ namespace TournamentManager.Controllers
         [HttpPost("setActiveMatch")]
         public IActionResult SetActiveMatch([FromBody] PostActiveMatchRequest request)
         {
-            var activeMatch = _matchManager.GetMatchFromId(request.MatchId).FirstOrDefault();
+            var activeMatch = _scheduler.Schedule((token) =>
+            {
+                token.SetResult(_matchManager.GetMatchFromId(request.MatchId).FirstOrDefault());
+            }).WaitResult<Match>();
 
             if (activeMatch == null)
                 return NotFound();
@@ -122,7 +146,10 @@ namespace TournamentManager.Controllers
         [HttpPost("addStanding")]
         public IActionResult AddStanding(Standing request)
         {
-            var added = _standingManager.AddStanding(request);
+            var added = _scheduler.Schedule((token) =>
+            {
+                token.SetResult(_standingManager.AddStanding(request));
+            }).WaitResult<bool>();
 
             if (added)
                 return Ok(GetMatchDtoFromId(_cache.ActiveMatch));
@@ -132,9 +159,15 @@ namespace TournamentManager.Controllers
 
         private MatchDto GetMatchDtoFromId(int matchId)
         {
-            var match = _matchManager.GetMatchFromId(matchId).FirstOrDefault();
+            return _scheduler.Schedule((token) =>
+            {
+                var match = _matchManager.GetMatchFromId(matchId).FirstOrDefault();
+                
+                if (match == null)
+                    return;
 
-            return GetMatchDto(match);
+                token.SetResult(GetMatchDto(match));
+            }).WaitResult<MatchDto>();
         }
 
         private MatchDto GetMatchDto(Match match)
@@ -157,22 +190,25 @@ namespace TournamentManager.Controllers
 
         private List<MatchDto> GetMatchesDtoFromPhaseId(int phaseId)
         {
-            var matches = _matchManager.GetMatchesFromPhaseId(phaseId);
-
-            var matchesDto = matches.Select(match => new MatchDto
+            return _scheduler.Schedule((token) =>
             {
-                Id = match.Id,
-                PhaseId = match.PhaseId,
-                Name = match.Name,
-                Subtitle = match.Subtitle,
-                Notes = match.Notes,
-                IsManualMatch = match.IsManualMatch,
-                Players = match.PlayerInMatches.Select(p => p.Player).ToList(),
-                Songs = match.SongInMatches.Select(s => s.Song).ToList(),
-                Rounds = match.Rounds.ToList()
-            }).ToList();
+                var matches = _matchManager.GetMatchesFromPhaseId(phaseId).ToList();
 
-            return matchesDto;
+                var matchesDto = matches.Select(match => new MatchDto
+                {
+                    Id = match.Id,
+                    PhaseId = match.PhaseId,
+                    Name = match.Name,
+                    Subtitle = match.Subtitle,
+                    Notes = match.Notes,
+                    IsManualMatch = match.IsManualMatch,
+                    Players = match.PlayerInMatches.Select(p => p.Player).ToList(),
+                    Songs = match.SongInMatches.Select(s => s.Song).ToList(),
+                    Rounds = match.Rounds.ToList()
+                }).ToList();
+                
+                token.SetResult(matchesDto);
+            }).WaitResult<List<MatchDto>>();
         }
 
     }

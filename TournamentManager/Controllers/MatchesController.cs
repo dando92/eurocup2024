@@ -3,30 +3,38 @@ using Microsoft.EntityFrameworkCore;
 using TournamentManager.Contexts;
 using TournamentManager.DbModels;
 using TournamentManager.Requests;
+using TournamentManager.Services;
 
 namespace TournamentManager.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MatchesController(IGenericRepository<Match> repo) : ControllerBase
+    public class MatchesController(Scheduler scheduler, IGenericRepository<Match> repo) : ControllerBase
     {
+        private readonly Scheduler _scheduler = scheduler;
         private readonly IGenericRepository<Match> _repo = repo;
 
         [HttpGet]
         public IActionResult ListMatches()
         {
-            return Ok(_repo.GetAll());
+            var matches = _scheduler.Schedule((token) =>
+            {
+                token.SetResult(_repo.GetAll().ToList());
+            }).WaitResult<List<Match>>();
+            
+            return Ok(matches);
         }
 
         [HttpGet("{id}")]
         public IActionResult GetMatch(int id)
         {
-            var match = _repo.GetById(id);
+            var match = _scheduler.Schedule((token) =>
+            {
+                token.SetResult(_repo.GetById(id));
+            }).WaitResult<Match>();
 
             if (match == null)
-            {
                 return NotFound();
-            }
 
             return Ok(match);
         }
@@ -34,10 +42,13 @@ namespace TournamentManager.Controllers
         [HttpGet("{id}/rounds")]
         public IActionResult ListRounds(int id)
         {
-            var rounds = _repo.GetAll()
+            var rounds = _scheduler.Schedule((token) =>
+            {
+                token.SetResult(_repo.GetAll()
                 .Include(m => m.Rounds)
                     .ThenInclude(r => r.Standings)
-                .FirstOrDefault(m => m.Id == id)?.Rounds;
+                .FirstOrDefault(m => m.Id == id)?.Rounds);
+            }).WaitResult<List<Round>>();
 
             return Ok(rounds);
         }
@@ -51,9 +62,11 @@ namespace TournamentManager.Controllers
                 PhaseId = request.MatchId,
             };
 
-            _repo.Add(match);
-            
-            _repo.Save();
+            _scheduler.Schedule((token) =>
+            {
+                _repo.Add(match);
+                _repo.Save();
+            }).Wait();
 
             return Ok(match);
         }
@@ -61,23 +74,26 @@ namespace TournamentManager.Controllers
         [HttpPut]
         public IActionResult UpdateMatch([FromBody] PostMatchRequest request)
         {
-            var match = _repo.GetAll().Where(m => m.Id == request.MatchId).FirstOrDefault();
-
-            if (match == null)
+            var match = _scheduler.Schedule((token) =>
             {
+                var match = _repo.GetAll().Where(m => m.Id == request.MatchId).FirstOrDefault();
+
+                if (request.Name != null)
+                    match.Name = request.Name;
+
+                if (request.Subtitle != null)
+                    match.Subtitle = request.Subtitle;
+
+                if (request.Notes != null)
+                    match.Notes = request.Notes;
+
+                _repo.Save();
+                token.SetResult(match);
+
+            }).WaitResult<Match>();
+            
+            if (match == null)
                 return NotFound();
-            }
-
-            if (request.Name != null)
-                match.Name = request.Name;
-
-            if (request.Subtitle != null)
-                match.Subtitle = request.Subtitle;
-
-            if (request.Notes != null)
-                match.Notes = request.Notes;
-
-            _repo.Save();
 
             return Ok(match);
         }
@@ -85,8 +101,12 @@ namespace TournamentManager.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteMatch(int id)
         {
-            _repo.DeleteById(id);
-            _repo.Save();
+            _scheduler.Schedule((token) =>
+            {
+                _repo.DeleteById(id);
+                _repo.Save();
+            }).Wait();
+
             return Ok();
         }
     }
