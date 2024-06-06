@@ -27,18 +27,31 @@ namespace TournamentManager.Controllers
             var security = Configuration.GetSection("Security").Get<Security>();
             StringValues apiKeys = context.HttpContext.Request.Headers["Authorization"];
             bool found = false;
-            if (apiKeys.Any())
+
+            if (security.ApiKeys == null)
             {
-                foreach (var apikey in apiKeys)
+                found = true;
+            }
+            else
+            {
+                if (security.ApiKeys.Length > 0)
                 {
-                    if (security.ApiKeys.Contains(apikey))
+                    if (apiKeys.Any())
                     {
-                        found = true;
-                        break;
+                        foreach (var apikey in apiKeys)
+                        {
+                            if (security.ApiKeys.Contains(apikey))
+                            {
+                                found = true;
+                                break;
+                            }
+                        }
                     }
                 }
-
+                else
+                    found = true;
             }
+
             if (!found)
                 context.Result = new UnauthorizedResult();
         }
