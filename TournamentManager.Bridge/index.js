@@ -24,9 +24,9 @@ if (!fs.existsSync(scoresDir)) {
   fs.mkdirSync(scoresDir);
 }
 
-var isWsConnected = false;
 var udpServer;
-var ws;
+var singleScoreChangeSocket = {};
+var finalScoreChangeSocket = {};
 let scoreSendingQueue = [];
 
 const parseMessage = msg => {
@@ -105,10 +105,12 @@ const processMessage = async (address, msg, isFinalScore, isFinalMarathonScore) 
   const parsedMessage = parseMessage(msg);
   const scoreKey = `${address} ${parsedMessage.playerNumber}`;
   const scoreData = Object.assign({}, parsedMessage, { id: scoreKey });
-
+  
+  const json = JSON.stringify(scoreData);
+  
   // write json file for final score & final marathon score
   if (isFinalScore || isFinalMarathonScore) {
-    const json = JSON.stringify(scoreData);
+    
     const filename = sanitize(
       `${Date.now()}_${scoreData.song.replace("/", "_")}_${scoreData.playerName
       }.json`
@@ -129,25 +131,45 @@ const processMessage = async (address, msg, isFinalScore, isFinalMarathonScore) 
     // Store score in queue
     console.log(`Storing score: ${scoreData.song} - player: ${scoreData.playerName}`);
     scoreSendingQueue.push(json);
+  } else {
+	  if(isConnected(singleScoreChangeSocket)){
+		  singleScoreChangeSocket.send(json);
+	  }
   }
 };
+var isConnected = function(ws){
+	return ws && ws.readyState !== WebSocket.CLOSED;
+}
 
-var setup_web_socket = function () {
-  console.log('try connect');
-  ws = new WebSocket(WS_URL);
-  ws.on('open', function () {
-    console.log('socket open');
-    isWsConnected = true;
+var setup_score_ws = function (route) {
+  var url = WS_URL.concat('/', route);
+  console.log('try connect ', url);
+  singleScoreChangeSocket = new WebSocket(url);
+  singleScoreChangeSocket.on('open', function () {
+    console.log('socket open', url);
   });
-  ws.on('error', function () {
+  singleScoreChangeSocket.on('error', function () {
   });
-  ws.on('close', function () {
-    if (isWsConnected) {
-      console.log('socket close');
-      isWsConnected = false;
-    }
+  singleScoreChangeSocket.on('close', function () {
+      console.log('socket close', url);
+	  
+    setTimeout(function() { setup_score_ws(route); }, RECONNECT_INTERVAL);
+  });
+};
 
-    setTimeout(setup_web_socket, RECONNECT_INTERVAL);
+var setup_final_score_ws = function (route) {
+  var url = WS_URL.concat('/', route);
+  console.log('try connect ', url);
+  finalScoreChangeSocket = new WebSocket(url);
+  finalScoreChangeSocket.on('open', function () {
+    console.log('socket open', url);
+  });
+  finalScoreChangeSocket.on('error', function () {
+  });
+  finalScoreChangeSocket.on('close', function () {
+      console.log('socket close', url);
+	  
+    setTimeout(function() { setup_final_score_ws(route); }, RECONNECT_INTERVAL);
   });
 };
 
@@ -155,10 +177,11 @@ var setup_udp_server = function () {
   udpServer = dgram.createSocket({ type: "udp4", reuseAddr: true });
   udpServer.on("message", async (buffer, rinfo) => {
     // we are interested only in score messages
+	const isScoreChangedMessage = buffer[0] === 0x02;
     const isFinalScoreMessage = buffer[0] === 0x05;
     const isFinalMarathonScoreMessage = buffer[0] === 0x06;
 
-    if (!isFinalScoreMessage && !isFinalMarathonScoreMessage) {
+    if (!isFinalScoreMessage && !isFinalMarathonScoreMessage && !isScoreChangedMessage) {
       return;
     }
 
@@ -186,12 +209,12 @@ async function waitAndSendScores() {
     const queueLength = scoreSendingQueue.length;
 
     // Send accumulated scores to google sheets
-    if (queueLength > 0 && isWsConnected) {
+    if (queueLength > 0 && isConnected(finalScoreChangeSocket)) {
       try {
         for (let i = 0; i < queueLength; i++) {
           var json = scoreSendingQueue[i];
           console.log("Sending score to server");
-          ws.send(json);
+          finalScoreChangeSocket.send(json);
         }
 
         for (let i = 0; i < queueLength; i++) {
@@ -232,8 +255,8 @@ async function testScoreSend() {
 console.log("Starting TournamentManager.Bridge!");
 waitAndSendScores();
 
-console.log("WEBSOCKET_URL:", WS_URL);
-setup_web_socket();
+setup_final_score_ws("ws");
+setup_score_ws("scoreChange");
 
 console.log("SYNCSTART_UDP_PORT:", SYNCSTART_UDP_PORT);
 setup_udp_server();

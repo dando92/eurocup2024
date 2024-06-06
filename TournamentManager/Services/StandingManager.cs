@@ -48,7 +48,7 @@ namespace TournamentManager.Services
             //Player or song not registered, do nothing
             if (song == null || player == null)
             {
-                _logHub.LogError($"No song or player found for standing {song.Title} - {player.Name}");
+                _logHub.LogError($"No song or player found for standing {score.Song} - {score.PlayerName}");
                 return false;
             }
             
