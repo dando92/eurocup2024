@@ -54,6 +54,7 @@ namespace TournamentManager.Controllers
         }
 
         [HttpPost]
+        [TypeFilter(typeof(AuthorizationFilterAttribute))]
         public IActionResult AddMatch([FromBody] PostMatchRequest request)
         {
             var match = new Match
@@ -72,6 +73,7 @@ namespace TournamentManager.Controllers
         }
 
         [HttpPut]
+        [TypeFilter(typeof(AuthorizationFilterAttribute))]
         public IActionResult UpdateMatch([FromBody] PostMatchRequest request)
         {
             var match = _scheduler.Schedule((token) =>
@@ -99,6 +101,7 @@ namespace TournamentManager.Controllers
         }
 
         [HttpDelete("{id}")]
+        [TypeFilter(typeof(AuthorizationFilterAttribute))]
         public IActionResult DeleteMatch(int id)
         {
             _scheduler.Schedule((token) =>

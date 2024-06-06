@@ -26,6 +26,7 @@ namespace TournamentManager.Controllers
         }
 
         [HttpPost("addBatchPlayer")]
+        [TypeFilter(typeof(AuthorizationFilterAttribute))]
         public IActionResult AddBatchPlayer([FromBody] PostBatchPlayerRequest request)
         {
             List<Player> players = new List<Player>();
@@ -46,6 +47,7 @@ namespace TournamentManager.Controllers
         }
 
         [HttpPost]
+        [TypeFilter(typeof(AuthorizationFilterAttribute))]
         public IActionResult AddPlayer([FromBody] PostPlayerRequest request)
         {
             var player = new Player
@@ -63,6 +65,7 @@ namespace TournamentManager.Controllers
         }
 
         [HttpPut("{id}")]
+        [TypeFilter(typeof(AuthorizationFilterAttribute))]
         public IActionResult UpdatePlayer(int id, [FromBody] PostPlayerRequest request)
         {
             var player = _scheduler.Schedule((token) =>
@@ -85,6 +88,7 @@ namespace TournamentManager.Controllers
         }
 
         [HttpDelete("{id}")]
+        [TypeFilter(typeof(AuthorizationFilterAttribute))]
         public IActionResult DeletePlayer(int id)
         {
             _scheduler.Schedule((token) =>

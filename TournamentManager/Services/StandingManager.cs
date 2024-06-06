@@ -222,8 +222,8 @@ namespace TournamentManager.Services
                     }
                     else
                     {
-                        standing.Score = 0;
-                        //_standingRepo.Update(standing);
+                        if(!activeMatch.IsManualMatch)
+                            standing.Score = 0;
                     }
                 }
                 _standingRepo.Save();

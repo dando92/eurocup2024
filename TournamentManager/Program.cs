@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using System.Net.WebSockets;
-using System.Net;
+
 using System.Reflection;
 using TournamentManager.Contexts;
 using TournamentManager.Services;
-using TournamentManager;
+
+using TournamentManager.Controllers;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,7 @@ builder.Services
     .AddScoped<ISongRoller, SongRoller>()
     .AddScoped<IMatchUpdate, NotificationHub>()
     .AddScoped<ILogUpdate, NotificationHub>()
+    .AddScoped<AuthorizationFilterAttribute>()
     .AddSingleton<ITournamentCache, TournamentCache>();
 
 // cors

@@ -36,6 +36,7 @@ namespace TournamentManager.Controllers
         }
 
         [HttpPost("AddBatchSongs")]
+        [TypeFilter(typeof(AuthorizationFilterAttribute))]
         public IActionResult AddBatchSongs([FromBody] PostBatchSongRequest request)
         {
             var songs = new List<Song>();
@@ -58,6 +59,7 @@ namespace TournamentManager.Controllers
         }
 
         [HttpPost]
+        [TypeFilter(typeof(AuthorizationFilterAttribute))]
         public IActionResult AddSong([FromBody] PostSongRequest request)
         {
             var song = new Song
@@ -101,6 +103,7 @@ namespace TournamentManager.Controllers
         }
 
         [HttpPatch("{id}")]
+        [TypeFilter(typeof(AuthorizationFilterAttribute))]
         public IActionResult UpdateSongPartial(int id, [FromBody] PostSongRequest request)
         {
             var song = _scheduler.Schedule((token) =>

@@ -39,6 +39,7 @@ namespace TournamentManager.Controllers
         }
 
         [HttpPost("editStanding")]
+        [TypeFilter(typeof(AuthorizationFilterAttribute))]
         public IActionResult EditStanding(PostEditStanding request)
         {
             var edited = _scheduler.Schedule((token) => 
@@ -53,6 +54,7 @@ namespace TournamentManager.Controllers
         }
 
         [HttpDelete("deleteStanding/{playerId}/{songId}")]
+        [TypeFilter(typeof(AuthorizationFilterAttribute))]
         public IActionResult DeleteStandingForPlayer(int playerId, int songId)
         {
             var removed = _scheduler.Schedule((token) =>
@@ -73,6 +75,7 @@ namespace TournamentManager.Controllers
         }
 
         [HttpPost("editMatchSong")]
+        [TypeFilter(typeof(AuthorizationFilterAttribute))]
         public IActionResult EditMatchSong(PostEditSongToMatch request)
         {
             _scheduler.Schedule((token) =>
@@ -84,6 +87,7 @@ namespace TournamentManager.Controllers
         }
 
         [HttpPost("addSongToMatch")]
+        [TypeFilter(typeof(AuthorizationFilterAttribute))]
         public IActionResult AddSongToMatch(PostAddSongToMatch request)
         {
             _scheduler.Schedule((token) =>
@@ -98,6 +102,7 @@ namespace TournamentManager.Controllers
         }
 
         [HttpPost("addMatch")]
+        [TypeFilter(typeof(AuthorizationFilterAttribute))]
         public IActionResult AddMatch(PostAddMatch request)
         {
             var match = _scheduler.Schedule((token) =>
@@ -119,6 +124,7 @@ namespace TournamentManager.Controllers
         }
 
         [HttpPost("setActiveMatch")]
+        [TypeFilter(typeof(AuthorizationFilterAttribute))]
         public IActionResult SetActiveMatch([FromBody] PostActiveMatchRequest request)
         {
             var activeMatch = _scheduler.Schedule((token) =>
@@ -144,6 +150,7 @@ namespace TournamentManager.Controllers
         }
 
         [HttpPost("addStanding")]
+        [TypeFilter(typeof(AuthorizationFilterAttribute))]
         public IActionResult AddStanding(Standing request)
         {
             var added = _scheduler.Schedule((token) =>

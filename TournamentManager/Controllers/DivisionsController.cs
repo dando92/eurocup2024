@@ -52,6 +52,7 @@ namespace TournamentManager.Controllers
         }
 
         [HttpPost]
+        [TypeFilter(typeof(AuthorizationFilterAttribute))]
         public IActionResult AddDivision([FromBody] PostDivisionRequest request)
         {
             var division = _scheduler.Schedule((executionToken) =>
@@ -70,6 +71,7 @@ namespace TournamentManager.Controllers
         }
 
         [HttpPut("{id}")]
+        [TypeFilter(typeof(AuthorizationFilterAttribute))]
         public IActionResult UpdateDivision(int id, [FromBody] PostDivisionRequest request)
         {
             var division = _scheduler.Schedule((token) =>
@@ -92,6 +94,7 @@ namespace TournamentManager.Controllers
         }
 
         [HttpDelete("{id}")]
+        [TypeFilter(typeof(AuthorizationFilterAttribute))]
         public IActionResult DeleteDivision(int id)
         {
             _scheduler.Schedule((token) =>

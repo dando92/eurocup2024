@@ -52,6 +52,7 @@ namespace TournamentManager.Controllers
         }
 
         [HttpPost]
+        [TypeFilter(typeof(AuthorizationFilterAttribute))]
         public IActionResult AddPhase([FromBody] PostPhaseRequest request)
         {
             var phase = new Phase
@@ -70,6 +71,7 @@ namespace TournamentManager.Controllers
         }
 
         [HttpPut("{id}")]
+        [TypeFilter(typeof(AuthorizationFilterAttribute))]
         public IActionResult UpdatePhase(int id, [FromBody] PostPhaseRequest request)
         {
             var phase = _scheduler.Schedule((token) =>
@@ -90,6 +92,7 @@ namespace TournamentManager.Controllers
         }
 
         [HttpDelete("{id}")]
+        [TypeFilter(typeof(AuthorizationFilterAttribute))]
         public IActionResult DeletePhase(int id)
         {
             _scheduler.Schedule((token) =>
