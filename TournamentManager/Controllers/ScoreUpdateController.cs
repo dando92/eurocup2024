@@ -79,7 +79,7 @@ namespace TournamentManager.Controllers
                             else
                                 _scoreByPlayer[score.PlayerName] = score;
 
-                            scoreUpdate.OnScoreUpdate(new ScoreUpdateDTO() { Json = mes });
+                            scoreUpdate.OnScoreUpdate(new ScoreUpdateDTO() { Score = score });
                         }
                         catch (Exception ex)
                         {

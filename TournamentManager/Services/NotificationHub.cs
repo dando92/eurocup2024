@@ -5,7 +5,7 @@ namespace TournamentManager.Services
 {
     public class ScoreUpdateDTO
     {
-        public string Json { get; set; }
+        public Score Score { get; set; }
     }
 
     public class ScoreUpdateHub : Hub<IScoreUpdate>
