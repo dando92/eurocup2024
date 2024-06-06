@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Http.Logging;
 using TournamentManager.Contexts;
+using TournamentManager.Controllers;
 using TournamentManager.DbModels;
 using TournamentManager.Services;
 
@@ -7,6 +8,15 @@ namespace TournamentManager
 {
     public static class Extension
     {
+        public static IServiceCollection AddCommands(this IServiceCollection services)
+        {
+            services
+                .AddTransient<GetDivisionById>()
+                .AddTransient<GetListDivisionCommand>();
+            
+            return services;
+        }
+
         public static void Update(this IMatchUpdate remote, Match activeMatch)
         {
             remote.OnMatchUpdate(new MatchUpdateDTO() { MatchId = activeMatch.Id, PhaseId = activeMatch.PhaseId, DivisionId = activeMatch.Phase.DivisionId }).Wait();

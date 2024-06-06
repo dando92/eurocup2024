@@ -5,6 +5,7 @@ using TournamentManager.Contexts;
 using TournamentManager.Services;
 
 using TournamentManager.Controllers;
+using TournamentManager;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +28,9 @@ builder.Services.AddSignalR();
 builder.Services
     .AddSingleton<Scheduler>()
     .AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>))
+    .AddCommands()
+    .AddScoped<ICommandFactory, CommandFactory>()
+    .AddScoped<IGenericRepository, GenericRepository>()
     .AddScoped<IMatchManager, MatchManager>()
     .AddScoped<IStandingManager, StandingManager>()
     .AddScoped<ISongRoller, SongRoller>()
