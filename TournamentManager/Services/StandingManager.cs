@@ -252,7 +252,7 @@ namespace TournamentManager.Services
 
         private Match GetActiveMatch()
         {
-            return _matchManager.GetMatchFromId(_cache.ActiveMatch).First();
+            return _matchManager.GetMatchFromId(_cache.ActiveMatch)?.First();
         }
     }
 }

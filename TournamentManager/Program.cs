@@ -48,6 +48,8 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+app.UseWebSockets();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -69,8 +71,5 @@ app.UseEndpoints(endpoints =>
     endpoints.MapHub<MatchUpdateHub>("/matchUpdateHub");
     endpoints.MapHub<LogUpdateHub>("/logUpdateHub");
 });
-
-app.UseWebSockets();
-app.UseMiddleware<StandingService>();
 
 app.Run();

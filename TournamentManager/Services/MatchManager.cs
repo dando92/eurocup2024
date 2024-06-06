@@ -176,6 +176,9 @@ namespace TournamentManager.Services
 
         public IQueryable<Match> GetMatchFromId(int matchId)
         {
+            if (matchId == 0)
+                return null;
+
             return _matchRepo
                 .GetAll()
                 .Include(m => m.Phase)

@@ -1,32 +1,33 @@
 ﻿using System.Net.WebSockets;
-using System.Text.Json.Serialization;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using System.Text;
+using Microsoft.AspNetCore.Mvc;
+using TournamentManager.Services;
 
-namespace TournamentManager.Services
+namespace TournamentManager.Controllers
 {
-    public class StandingService
+    public class StandingController : ControllerBase
     {
-        private RequestDelegate next;
-
         private readonly Scheduler _scheduler;
         private IServiceScopeFactory _serviceScopeFactory;
-        public StandingService(RequestDelegate _next, IServiceScopeFactory serviceScopeFactory, Scheduler scheduler)
+        public StandingController(IServiceScopeFactory serviceScopeFactory, Scheduler scheduler)
         {
-            this.next = _next;
             _serviceScopeFactory = serviceScopeFactory;
             _scheduler = scheduler;
         }
 
-        public async Task Invoke(HttpContext context)
+        //[Route("/ws")]
+        [HttpGet("/ws")]
+        public async Task Get()
         {
-            if (!context.WebSockets.IsWebSocketRequest)
+            if (!HttpContext.WebSockets.IsWebSocketRequest)
             {
                 return;
             }
-            var socket = await context.WebSockets.AcceptWebSocketAsync();
+            var socket = await HttpContext.WebSockets.AcceptWebSocketAsync();
             await RunAsync(socket);
         }
+
 
         private async Task RunAsync(WebSocket socket)
         {
@@ -45,13 +46,12 @@ namespace TournamentManager.Services
         private async Task Receive(WebSocket client)
         {
             CancellationTokenSource source = new CancellationTokenSource();
-
             var buffer = new byte[1024];
 
             using (IServiceScope logScope = _serviceScopeFactory.CreateScope())
             {
                 ILogUpdate logUpdate = logScope.ServiceProvider.GetRequiredService<ILogUpdate>();
-      
+
                 while (!source.IsCancellationRequested)
                 {
                     var res = await client.ReceiveAsync(buffer, source.Token);
@@ -66,7 +66,7 @@ namespace TournamentManager.Services
                             using (IServiceScope standinManagerScope = _serviceScopeFactory.CreateScope())
                             {
                                 IStandingManager scopedProcessingService = standinManagerScope.ServiceProvider.GetRequiredService<IStandingManager>();
-                                
+
                                 _scheduler.Schedule((token) =>
                                 {
                                     token.SetResult(scopedProcessingService.AddStanding(score));
@@ -75,7 +75,7 @@ namespace TournamentManager.Services
                         }
                         catch (Exception ex)
                         {
-                            logUpdate.LogError($"Error parsing score from itg, drop connection - {ex.ToString()} " );
+                            logUpdate.LogError($"Error parsing score from itg, drop connection - {ex.ToString()} ");
                             source.Cancel();
                         }
 
