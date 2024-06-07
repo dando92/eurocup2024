@@ -9,7 +9,6 @@ import { RawScore } from "../../models/RawScore";
 export default function LiveScores() {
   const [, setScoreUpdateConnection] = useState<HubConnection | null>(null);
   const [scores, setScores] = useState<RawScore[]>([]);
-  const [song, setSong] = useState<string | null>(null);
 
   useEffect(() => {
     const conn = new HubConnectionBuilder()
