@@ -54,8 +54,8 @@ namespace TournamentManager.Tests
             Assert.AreEqual(standings[3].Percentage, 11);
             Assert.AreEqual(standings[0].Score, 4);
             Assert.AreEqual(standings[1].Score, 4);
-            Assert.AreEqual(standings[2].Score, 3);
-            Assert.AreEqual(standings[3].Score, 3);
+            Assert.AreEqual(standings[2].Score, 2);
+            Assert.AreEqual(standings[3].Score, 2);
         }
 
         [TestMethod]
@@ -94,6 +94,5 @@ namespace TournamentManager.Tests
             Assert.AreEqual(standings[0].Score, 2);
             Assert.AreEqual(standings[1].Score, 2);
         }
-
     }
 }

@@ -75,9 +75,9 @@ namespace TournamentManager
 
         public static List<Standing> Recalc(this ICollection<Standing> standings)
         {
-            int failed = standings.Count(s => s.IsFailed);
-            int maxPoints = standings.Count - failed;
+            int maxPoints = standings.Count;
             var orderedStandings = standings.Where(s => !s.IsFailed).OrderByDescending(s => s.Percentage).ToList();
+            int tieCount = 0;
 
             for (int i = 0; i < orderedStandings.Count; i++)
             {
@@ -86,7 +86,17 @@ namespace TournamentManager
                 if (i + 1 < orderedStandings.Count)
                 {
                     if (orderedStandings[i].Percentage > orderedStandings[i + 1].Percentage)
+                    {
+                        if(tieCount > 0)
+                        {
+                            maxPoints -= tieCount;
+                            tieCount = 0;
+                        }
+                        
                         maxPoints--;
+                    }
+                    else if (orderedStandings[i].Percentage == orderedStandings[i + 1].Percentage)
+                        tieCount++;
                 }
             }
 
