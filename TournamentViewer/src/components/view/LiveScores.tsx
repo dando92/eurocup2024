@@ -63,8 +63,8 @@ export default function LiveScores() {
             <div
               key={score.score.playerName}
               className={`${
-                score.score.isFailed ? "bg-red-800 " : "bg-upper "
-              } text-white flex flex-col lg:flex-row justify-between lg:items-center gap-3 bg-upper p-3 m-3`}
+                score.score.life === 0 ? "bg-red-800 " : "bg-upper "
+              } text-white flex flex-col lg:flex-row justify-between lg:items-center gap-3 p-3 m-3`}
             >
               <div className="flex flex-col">
                 <span className="text-xl font-bold">
