@@ -3,7 +3,7 @@ import {
   HubConnection,
   HubConnectionBuilder,
 } from "@microsoft/signalr";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { RawScore } from "../../models/RawScore";
 
 export default function LiveScores() {
@@ -19,7 +19,6 @@ export default function LiveScores() {
       .build();
 
     conn.on("OnScoreUpdate", (msg: RawScore) => {
-      // on every score update, add the score to the list of scores, and overwrite score of the same player
       setScores((prev) => {
         const newScores = prev.filter(
           (score) => score.score.playerName !== msg.score.playerName
@@ -37,93 +36,82 @@ export default function LiveScores() {
     return () => {
       conn.stop();
     };
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const sortedScores = useMemo(() => {
+    return scores.sort((a, b) => {
+      const scoreA = +a.score.formattedScore;
+      const scoreB = +b.score.formattedScore;
+
+      if (a.score.isFailed && !b.score.isFailed) return 1;
+      if (!a.score.isFailed && b.score.isFailed) return -1;
+      return scoreB - scoreA;
+    });
+  }, [scores]);
 
   if (scores.length === 0) return <></>;
 
   return (
-    <div>
-      <h2>Now playing: {scores[0].score.song.split("/")[1]}</h2>
-      <div className="grid grid-cols-1 lg:grid-cols-2">
-        {scores
-          .sort((a, b) => {
-            const scoreA = +a.score.formattedScore;
-            const scoreB = +b.score.formattedScore;
-
-            // group by isFailed, then by score
-            if (a.score.isFailed && !b.score.isFailed) return 1;
-            if (!a.score.isFailed && b.score.isFailed) return -1;
-            if (scoreA < scoreB) return 1;
-            if (scoreA > scoreB) return -1;
-            return 0;
-          })
-          .map((score, idx) => (
-            <div
-              key={score.score.playerName}
-              className={`${
-                score.score.life === 0 ? "bg-red-800 " : "bg-upper "
-              } text-white flex flex-col lg:flex-row justify-between lg:items-center gap-3 p-3 m-3`}
-            >
-              <div className="flex flex-col">
-                <span className="text-xl font-bold">
-                  #{idx + 1} {score.score.playerName}
-                </span>
-
-                <div
-                  className="bg-inherit h-2 mb-3 w-full"
-                  style={{ position: "relative" }}
-                >
-                  <div
-                    className={`${
-                      score.score.life === 1 ? "bg-white" : "bg-lower"
-                    } animate-pulse h-2`}
-                    style={{
-                      width: `${score.score.life * 100}%`,
-                      position: "absolute",
-                    }}
-                  ></div>
-                </div>
-                <div className="lg:ml-auto flex overflow-hidden flex-row gap-3">
-                  {score.score.tapNote.W0 > 0 && (
-                    <span style={{ color: "lightblue" }}>
-                      {score.score.tapNote.W0 + score.score.tapNote.W1}f
-                    </span>
-                  )}
-
-                  {score.score.tapNote.W2 > 0 && (
-                    <span style={{ color: "yellow" }}>
-                      {score.score.tapNote.W2}e
-                    </span>
-                  )}
-                  {score.score.tapNote.W3 > 0 && (
-                    <span style={{ color: "lightgreen" }}>
-                      {score.score.tapNote.W3}g
-                    </span>
-                  )}
-                  {score.score.tapNote.W4 > 0 && (
-                    <span style={{ color: "pink" }}>
-                      {score.score.tapNote.W4}d
-                    </span>
-                  )}
-                  {score.score.tapNote.W5 > 0 && (
-                    <span style={{ color: "orange" }}>
-                      {score.score.tapNote.W5}wo
-                    </span>
-                  )}
-                  {score.score.tapNote.miss > 0 && (
-                    <span style={{ color: "red" }}>
-                      {score.score.tapNote.miss}m
-                    </span>
-                  )}
-                </div>
-              </div>
-              <span className="lg:ml-3 font-bold text-xl">
+    <div className="text-bianco w-auto">
+      <h2 className="text-blu">
+        Now playing: {sortedScores[0].score.song.split("/")[1]}
+      </h2>
+      <div className="grid my-2 border-b pb-2 grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-1">
+        {sortedScores.map((score, idx) => (
+          <div
+            key={score.score.playerName}
+            className={`flex flex-col items-start p-2  rounded-md shadow-md transition-transform transform ${
+              score.score.isFailed ? "bg-red-900" : "bg-upper"
+            }`}
+          >
+            <div className="flex flex-row justify-between w-full">
+              <span className="text-xl text-white">
+                <span className="italic">#{idx + 1}</span>{" "}
+                <span className="font-bold">{score.score.playerName}</span>
+              </span>
+              <span className="font-bold text-xl text-white">
                 {score.score.formattedScore}%
               </span>
             </div>
-          ))}
+            <div className="relative w-full h-2 my-2 bg-grigio rounded-md overflow-hidden">
+              <div
+                className={`absolute top-0 left-0 h-full transition-all ${
+                  score.score.life === 1 ? "bg-green-500" : score.score.life < 0.2 ? "bg-red-500" : "bg-lower"
+                }`}
+                style={{ width: `${score.score.life * 100}%` }}
+              ></div>
+            </div>
+            <div className="flex flex-wrap gap-1  text-bianco">
+              {score.score.tapNote.W0 > 0 && (
+                <span>{score.score.tapNote.W0}f</span>
+              )}
+              {score.score.tapNote.W1 > 0 && (
+                <span>{score.score.tapNote.W1}f</span>
+              )}
+              {score.score.tapNote.W2 > 0 && (
+                <span className="text-giallo">{score.score.tapNote.W2}e</span>
+              )}
+              {score.score.tapNote.W3 > 0 && (
+                <span className="text-green-500">
+                  {score.score.tapNote.W3}g
+                </span>
+              )}
+              {score.score.tapNote.W4 > 0 && (
+                <span className="text-pink-500">{score.score.tapNote.W4}d</span>
+              )}
+              {score.score.tapNote.W5 > 0 && (
+                <span className="text-orange-500">
+                  {score.score.tapNote.W5}wo
+                </span>
+              )}
+              {score.score.tapNote.miss > 0 && (
+                <span className="text-red-500">
+                  {score.score.tapNote.miss}m
+                </span>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
