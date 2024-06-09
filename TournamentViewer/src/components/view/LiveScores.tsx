@@ -61,27 +61,20 @@ export default function LiveScores() {
           <div
             key={score.score.playerName}
             className={`flex flex-col items-start p-2  rounded-md shadow-md transition-transform transform ${
-              score.score.isFailed ? "bg-red-900" : "bg-upper"
+              score.score.isFailed ? "bg-red-900" : "bg-upper"} ${idx === 0 ? "text-yellow-500" : "text-white"}
             }`}
           >
-            <div className="flex flex-row justify-between w-full">
-              <span className="text-xl text-white">
+            <div className="flex flex-row gap-5 justify-between items-end w-full">
+              <span className="text-xl">
                 <span className="italic">#{idx + 1}</span>{" "}
                 <span className="font-bold">{score.score.playerName}</span>
               </span>
-              <span className="font-bold text-xl text-white">
+
+              <span className=" font-bold text-xl">
                 {score.score.formattedScore}%
               </span>
             </div>
-            <div className="relative w-full h-2 my-2 bg-grigio rounded-md overflow-hidden">
-              <div
-                className={`absolute top-0 left-0 h-full transition-all ${
-                  score.score.life === 1 ? "bg-green-500" : score.score.life < 0.2 ? "bg-red-500" : "bg-lower"
-                }`}
-                style={{ width: `${score.score.life * 100}%` }}
-              ></div>
-            </div>
-            <div className="flex flex-wrap gap-1  text-bianco">
+            <div className=" flex text-xs text-ellipsis flex-wrap gap-1  text-bianco">
               {score.score.tapNote.W0 > 0 && (
                 <span>{score.score.tapNote.W0}f</span>
               )}
@@ -109,6 +102,18 @@ export default function LiveScores() {
                   {score.score.tapNote.miss}m
                 </span>
               )}
+            </div>
+            <div className="relative w-full h-2 my-2 bg-grigio rounded-md overflow-hidden">
+              <div
+                className={`absolute top-0 left-0 h-full transition-all ${
+                  score.score.life === 1
+                    ? "bg-green-500"
+                    : score.score.life < 0.2
+                    ? "bg-red-500"
+                    : "bg-lower"
+                }`}
+                style={{ width: `${score.score.life * 100}%` }}
+              ></div>
             </div>
           </div>
         ))}
