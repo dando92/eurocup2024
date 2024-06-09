@@ -71,7 +71,7 @@ export default function LivePhase() {
 
   return (
     <div>
-      <LiveScores />
+      {import.meta.env.VITE_PUBLIC_ENABLE_LIVE_SCORES === "true" && <LiveScores />}
       {loading && <p>Loading...</p>}
       {!loading && !activeMatch && <p>No match in progress. Stay tuned!</p>}
       {division && phase && activeMatch && (
