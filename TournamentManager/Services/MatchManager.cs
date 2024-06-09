@@ -72,6 +72,7 @@ namespace TournamentManager.Services
             _roundRepo.DeleteById(round.Id);
 
             _roundRepo.Save();
+            _hub?.Update(match);
         }
 
         public void RemoveSongFromMatch(int matchId, int songId)
@@ -100,6 +101,7 @@ namespace TournamentManager.Services
                 AddSongToMatch(match, songId);
 
             _matchRepo.Save();
+            _hub?.Update(match);
         }
 
         public void AddRandomSongsToMatch(Match match, int divisionId, string group, string levels)
