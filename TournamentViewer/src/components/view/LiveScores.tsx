@@ -61,7 +61,8 @@ export default function LiveScores() {
           <div
             key={score.score.playerName}
             className={`flex flex-col items-start p-2  rounded-md shadow-md transition-transform transform ${
-              score.score.isFailed ? "bg-red-900" : "bg-upper"} ${idx === 0 ? "text-yellow-500" : "text-white"}
+              score.score.isFailed ? "bg-red-900" : "bg-upper"
+            } ${idx === 0 ? "text-yellow-500 animate-first-place" : "text-white"
             }`}
           >
             <div className="flex flex-row gap-5 justify-between items-end w-full">
@@ -76,7 +77,7 @@ export default function LiveScores() {
             </div>
             <div className=" flex text-xs text-ellipsis flex-wrap gap-1  text-bianco">
               {score.score.tapNote.W0 > 0 && (
-                <span>{score.score.tapNote.W0}f</span>
+                <span className="text-blue-200">{score.score.tapNote.W0}f</span>
               )}
               {score.score.tapNote.W1 > 0 && (
                 <span>{score.score.tapNote.W1}f</span>
