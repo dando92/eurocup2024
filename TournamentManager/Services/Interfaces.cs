@@ -26,6 +26,11 @@ namespace TournamentManager.Services
         Task OnLogUpdate(LogUpdateDTO log);
     }
 
+    public interface IScoreUpdate
+    {
+        Task OnScoreUpdate(ScoreUpdateDTO score);
+    }
+
     public interface ITournamentCache
     {
         int ActiveMatch { get; }

@@ -32,6 +32,7 @@ builder.Services
     .AddScoped<ISongRoller, SongRoller>()
     .AddScoped<IMatchUpdate, NotificationHub>()
     .AddScoped<ILogUpdate, NotificationHub>()
+    .AddScoped<IScoreUpdate, NotificationHub>()
     .AddScoped<AuthorizationFilterAttribute>()
     .AddSingleton<ITournamentCache, TournamentCache>();
 
@@ -70,6 +71,7 @@ app.UseEndpoints(endpoints =>
     endpoints.MapControllers();
     endpoints.MapHub<MatchUpdateHub>("/matchUpdateHub");
     endpoints.MapHub<LogUpdateHub>("/logUpdateHub");
+    endpoints.MapHub<ScoreUpdateHub>("/scoreUpdateHub");
 });
 
 app.Run();

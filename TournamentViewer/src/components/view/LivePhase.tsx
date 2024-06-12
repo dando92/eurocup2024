@@ -10,6 +10,7 @@ import {
   HubConnection,
   HubConnectionBuilder,
 } from "@microsoft/signalr";
+import LiveScores from "./LiveScores";
 
 export default function LivePhase() {
   const [loading, setLoading] = useState(true);
@@ -52,7 +53,8 @@ export default function LivePhase() {
 
     conn.on("OnMatchUpdate", fetchData);
 
-    conn.start()
+    conn
+      .start()
       .then(() => {
         console.log("Now listening to match changes.");
       })
@@ -69,6 +71,7 @@ export default function LivePhase() {
 
   return (
     <div>
+      {import.meta.env.VITE_PUBLIC_ENABLE_LIVE_SCORES === "true" && <LiveScores />}
       {loading && <p>Loading...</p>}
       {!loading && !activeMatch && <p>No match in progress. Stay tuned!</p>}
       {division && phase && activeMatch && (
@@ -79,6 +82,7 @@ export default function LivePhase() {
           >
             {division.name}
           </h1>
+          
           <MatchesView
             showPastMatches={false}
             phaseId={phase.id}

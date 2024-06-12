@@ -13,3 +13,22 @@ h1, h2, h3 {
     font-family: "NeufreitEx", sans-serif;
     @apply text-middle
 }
+
+
+/* Create an animation on class animate-first-place that scales 95% to 105% */
+
+.animate-first-place {
+    animation: first-place .5s infinite;
+}
+
+@keyframes first-place {
+    0% {
+        transform: scale(0.998);
+    }
+    50% {
+        transform: scale(1.01);
+    }
+    100% {
+        transform: scale(0.998);
+    }
+}
