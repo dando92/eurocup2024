@@ -60,17 +60,6 @@ namespace TournamentManager.Services
                 IsFailed = score.IsFailed
             };
 
-            Standing duplicate = _standingRepo
-               .GetAll()
-               .Where(s => s.PlayerId == standing.PlayerId && s.SongId == standing.SongId)
-               .FirstOrDefault();
-
-            if (duplicate != null)
-            {
-                _logHub.LogError($"duplicate found for {song.Title} - {player.Name}");
-                return false;
-            }
-                
             return AddStanding(standing);
         }
 
