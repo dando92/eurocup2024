@@ -11,15 +11,12 @@ namespace TournamentManager.Controllers
     [ApiController]
     public class PlayersController(Scheduler scheduler, IGenericRepository<Player> repo) : ControllerBase
     {
-        Scheduler _scheduler = scheduler;
-        private readonly IGenericRepository<Player> _repo = repo;
-
         [HttpGet]
         public IActionResult ListAllPlayers()
         {
-            var players = _scheduler.Schedule((token) =>
+            var players = scheduler.Schedule((token) =>
             {
-                token.SetResult(_repo.GetAll().ToList());
+                token.SetResult(repo.GetAll().ToList());
             }).WaitResult<List<Player>>();
             
             return Ok(players);
@@ -37,14 +34,58 @@ namespace TournamentManager.Controllers
                     Name = p.Name
                 });
 
-            _scheduler.Schedule((token) =>
+            scheduler.Schedule((token) =>
             {
-                _repo.AddRange(players);
-                _repo.Save();
+                repo.AddRange(players);
+                repo.Save();
             }).Wait();
 
             return Ok(players);
         }
+
+        [HttpPost("{id}/assignToTeam/{teamId}")]
+        [TypeFilter(typeof(AuthorizationFilterAttribute))]
+        public IActionResult AssignPlayerToTeam(int id, int teamId)
+        {
+            var player = scheduler.Schedule((token) =>
+            {
+                var player = repo.GetById(id);
+                if (player == null)
+                    return;
+
+                player.TeamId = teamId;
+                repo.Save();
+                
+                token.SetResult(player);
+            }).WaitResult<Player>();
+
+            if (player == null)
+                return NotFound();
+
+            return Ok(player);
+        }
+        
+        [HttpPost("{id}/removeFromTeam")]
+        [TypeFilter(typeof(AuthorizationFilterAttribute))]
+        public IActionResult RemovePlayerFromTeam(int id)
+        {
+            var player = scheduler.Schedule((token) =>
+            {
+                var player = repo.GetById(id);
+                if (player == null)
+                    return;
+
+                player.TeamId = null;
+                repo.Save();
+                token.SetResult(player);
+            }).WaitResult<Player>();
+
+            if (player == null)
+                return NotFound();
+
+            return Ok(player);
+        }
+        
 
         [HttpPost]
         [TypeFilter(typeof(AuthorizationFilterAttribute))]
@@ -55,10 +96,10 @@ namespace TournamentManager.Controllers
                 Name = request.Name
             };
 
-            _scheduler.Schedule((token) =>
+            scheduler.Schedule((token) =>
             {
-                _repo.Add(player);
-                _repo.Save();
+                repo.Add(player);
+                repo.Save();
             }).Wait();
 
             return Ok(player);
@@ -68,16 +109,16 @@ namespace TournamentManager.Controllers
         [TypeFilter(typeof(AuthorizationFilterAttribute))]
         public IActionResult UpdatePlayer(int id, [FromBody] PostPlayerRequest request)
         {
-            var player = _scheduler.Schedule((token) =>
+            var player = scheduler.Schedule((token) =>
             {
-                var player = _repo.GetById(id);
+                var player = repo.GetById(id);
 
                 if (player == null)
                     return;
 
                 player.Name = request.Name;
 
-                _repo.Save();
+                repo.Save();
                 token.SetResult(player);
             }).WaitResult<Player>();
 
@@ -91,10 +132,10 @@ namespace TournamentManager.Controllers
         [TypeFilter(typeof(AuthorizationFilterAttribute))]
         public IActionResult DeletePlayer(int id)
         {
-            _scheduler.Schedule((token) =>
+            scheduler.Schedule((token) =>
             {
-                _repo.DeleteById(id);
-                _repo.Save();
+                repo.DeleteById(id);
+                repo.Save();
             }).Wait();
 
             return Ok();

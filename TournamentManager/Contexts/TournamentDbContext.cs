@@ -3,14 +3,13 @@ using TournamentManager.DbModels;
 
 namespace TournamentManager.Contexts
 {
-    public class TournamentDbContext : DbContext
+    public class TournamentDbContext(DbContextOptions<TournamentDbContext> options) : DbContext(options)
     {
-        public TournamentDbContext(DbContextOptions<TournamentDbContext> options) : base(options) { }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // give table names on every entity
             modelBuilder.Entity<Player>().ToTable("Players");
+            modelBuilder.Entity<Team>().ToTable("Teams");
             modelBuilder.Entity<Match>().ToTable("Matches");
             modelBuilder.Entity<Division>().ToTable("Divisions");
             modelBuilder.Entity<Phase>().ToTable("Phases");
@@ -22,6 +21,12 @@ namespace TournamentManager.Contexts
 
             modelBuilder.Entity<PlayerInMatch>()
                        .HasKey(pim => new { pim.PlayerId, pim.MatchId });
+            
+            
+            modelBuilder.Entity<Player>()
+                .HasOne(p => p.Team)
+                .WithMany(t => t.Players)
+                .HasForeignKey(p => p.TeamId);
 
             modelBuilder.Entity<PlayerInMatch>()
                 .HasOne(pim => pim.Player)

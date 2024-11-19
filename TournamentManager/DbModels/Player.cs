@@ -6,11 +6,16 @@ namespace TournamentManager.DbModels
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        
+        public int? TeamId { get; set; }
 
         [JsonIgnore]
         public ICollection<PlayerInMatch> PlayerInMatches { get; set; }
         [JsonIgnore]
         public ICollection<Standing> Standings { get; set; }
+        
+        [JsonIgnore]
+        public Team Team { get; set; }
     }
 
 }

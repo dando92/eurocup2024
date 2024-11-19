@@ -10,15 +10,12 @@ namespace TournamentManager.Controllers
     [ApiController]
     public class SongsController(Scheduler scheduler, IGenericRepository<Song> repo) : ControllerBase
     {
-        private readonly Scheduler _scheduler = scheduler;
-        private readonly IGenericRepository<Song> _repo = repo;
-
         [HttpGet]
         public IActionResult ListAllSongs()
         {
-            var songs = _scheduler.Schedule((token) =>
+            var songs = scheduler.Schedule((token) =>
             {
-                token.SetResult(_repo.GetAll().ToList());
+                token.SetResult(repo.GetAll().ToList());
             }).WaitResult<List<Song>>();
 
             return Ok(songs);
@@ -27,9 +24,9 @@ namespace TournamentManager.Controllers
         [HttpGet("groups")]
         public IActionResult ListAllGroups()
         {
-            var groups = _scheduler.Schedule((token) =>
+            var groups = scheduler.Schedule((token) =>
             {
-                token.SetResult(_repo.GetAll().ToList().ListGroups().ToList());
+                token.SetResult(repo.GetAll().ToList().ListGroups().ToList());
             }).WaitResult<List<string>>();
 
             return Ok(groups);
@@ -49,10 +46,10 @@ namespace TournamentManager.Controllers
                     Difficulty = song.Difficulty,
                 });
 
-            _scheduler.Schedule((token) =>
+            scheduler.Schedule((token) =>
             {
-                _repo.AddRange(songs);
-                _repo.Save();
+                repo.AddRange(songs);
+                repo.Save();
             }).Wait();
 
             return Ok(songs);
@@ -69,10 +66,10 @@ namespace TournamentManager.Controllers
                 Group = request.Group
             };
 
-            _scheduler.Schedule((token) =>
+            scheduler.Schedule((token) =>
             {
-                _repo.Add(song);
-                _repo.Save();
+                repo.Add(song);
+                repo.Save();
             }).Wait();
 
             return Ok(song);
@@ -81,9 +78,9 @@ namespace TournamentManager.Controllers
         [HttpPut("{id}")]
         public IActionResult UpdateSong(int id, [FromBody] PostSongRequest request)
         {
-            var song = _scheduler.Schedule((token) =>
+            var song = scheduler.Schedule((token) =>
             {
-                var song = _repo.GetById(id);
+                var song = repo.GetById(id);
 
                 if (song == null)
                     return;
@@ -92,7 +89,7 @@ namespace TournamentManager.Controllers
                 song.Difficulty = request.Difficulty;
                 song.Group = request.Group;
 
-                _repo.Save();
+                repo.Save();
                 token.SetResult(song);
             }).WaitResult<Song>();
             
@@ -106,9 +103,9 @@ namespace TournamentManager.Controllers
         [TypeFilter(typeof(AuthorizationFilterAttribute))]
         public IActionResult UpdateSongPartial(int id, [FromBody] PostSongRequest request)
         {
-            var song = _scheduler.Schedule((token) =>
+            var song = scheduler.Schedule((token) =>
             {
-                var song = _repo.GetById(id);
+                var song = repo.GetById(id);
 
                 if (song == null)
                     return;
@@ -128,7 +125,7 @@ namespace TournamentManager.Controllers
                     song.Group = request.Group;
                 }
 
-                _repo.Save();
+                repo.Save();
 
                 token.SetResult(song);
             }).WaitResult<Song>();
@@ -142,10 +139,10 @@ namespace TournamentManager.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteSong(int id)
         {
-            _scheduler.Schedule((token) =>
+            scheduler.Schedule((token) =>
             {
-                _repo.DeleteById(id);
-                _repo.Save();
+                repo.DeleteById(id);
+                repo.Save();
             }).Wait();
 
             return Ok();
