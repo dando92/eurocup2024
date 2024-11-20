@@ -27,7 +27,8 @@ public class TeamsController(Scheduler scheduler, IGenericRepository<Team> teams
     {
         var team = new Team
         {
-            Name = request.Name
+            Name = request.Name,
+            Score = 0
         };
 
         scheduler.Schedule((token) =>
