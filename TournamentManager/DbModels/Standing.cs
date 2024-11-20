@@ -11,5 +11,7 @@ namespace TournamentManager.DbModels
         public int RoundId { get; set; }
         public int Score { get; set; }
         public bool IsFailed { get; set; }
+
+        public Player Player { get; set; }
     }
 }
