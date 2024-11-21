@@ -93,23 +93,8 @@ namespace TournamentManager.Services
         {
             _matchScoreCalculator.Recalc(standings);
 
-            var matches = _matchRepo.GetAll();
-            
-            var teams = _teamRepo.GetAll();
-
-            foreach (var team in teams)
-                team.Score = 0;
-
-            foreach (var match in matches)
-            {
-                foreach(var round in match.Rounds)
-                {
-                    foreach (var standing in round.Standings)
-                    {
-                        standing.Player.Team.Score += standing.Score;
-                    }
-                }
-            }
+            foreach (var standing in standings)
+                standing.Player.Team.Score += standing.Score;
         }
     }
 }

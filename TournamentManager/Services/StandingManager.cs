@@ -157,9 +157,12 @@ namespace TournamentManager.Services
                 {
                     if (standing.PlayerId == playerdId && standing.SongId == songId)
                     {
+                        standing.Player.Team.Score -= standing.Score;
+
                         standing.Percentage = percentage;
                         standing.Score = score;
 
+                        standing.Player.Team.Score += standing.Score;
                         //_standingRepo.Update(standing);
 
                         edited = true;
@@ -200,6 +203,8 @@ namespace TournamentManager.Services
             {
                 foreach (var standing in round.Standings)
                 {
+                    standing.Player.Team.Score -= standing.Score;
+
                     if (standing.PlayerId == playerdId && standing.SongId == songId)
                     {
                         _standingRepo.DeleteById(standing.Id);
