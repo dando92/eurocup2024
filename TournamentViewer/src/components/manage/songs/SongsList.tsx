@@ -80,7 +80,7 @@ export default function SongsList() {
     <div>
       <div className="flex flex-col justify-start gap-3">
         <div className="flex flex-row gap-3">
-          <h2>Songs List</h2>
+          <h2 className="text-red-700">Songs List</h2>
           <button
             title={
               !selectedGroupName
@@ -147,8 +147,8 @@ export default function SongsList() {
                     onClick={() => setSelectedSongId(song.id)}
                     className={`${
                       selectedSongId === song.id
-                        ? "bg-middle text-white"
-                        : "hover:bg-lower hover:text-white"
+                        ? "bg-rossoTag text-white"
+                        : "hover:bg-rossoTag hover:text-white"
                     } cursor-pointer py-2 px-3 flex justify-between items-center gap-3 `}
                   >
                     <span>{song.title}</span>
@@ -191,20 +191,20 @@ export default function SongsList() {
 
 function SongItem({ song }: { song: Song }) {
   return (
-    <div>
-      <h3 className="text-2xl">Song Information</h3>
+    <div className="text-red-400">
+      <h3 className="text-2xl text-red-700">Song Information</h3>
       <div className="mt-2">
-        <h3>Title: </h3>
+        <h3 className=" text-red-700">Title: </h3>
         <span>{song.title}</span>
       </div>
       <div className="mt-2">
-        <h3>Difficulty: </h3>
+        <h3 className="text-red-700">Difficulty: </h3>
         <div className="flex flex-row items-center ml-1 gap-1">
           {[...Array(13)].map((_, i) => (
             <span
               key={i}
               className={`${
-                i+1 <= song.difficulty ? "bg-blu" : "bg-gray-300"
+                i+1 <= song.difficulty ? "bg-red-500" : "bg-gray-300"
               } h-4 rounded-sm w-2 `}
             ></span>
           ))}
@@ -212,7 +212,7 @@ function SongItem({ song }: { song: Song }) {
           <span className="ml-2 font-bold">{song.difficulty}</span>
         </div>
       </div>
-      <h3 className="mt-3">Player Scores</h3>
+      <h3 className="mt-3 text-red-700">Player Scores</h3>
       <p>No scores on record for this song.</p>
     </div>
   );

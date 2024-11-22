@@ -50,7 +50,7 @@ export default function DivisionList({ onDivisionSelect, controls = false }: Div
     }
   };
   return (
-    <div className="flex flex-row gap-3">
+    <div className="flex flex-row gap-3 text-black">
       <Select
         className="min-w-[300px]"
         placeholder="Select division"

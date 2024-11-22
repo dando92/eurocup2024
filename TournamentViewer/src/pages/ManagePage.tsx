@@ -24,7 +24,7 @@ export default function ManagePage() {
 
   return (
     <div>
-      <h1 className="text-3xl text-center">Tournament settings</h1>
+      <h1 className="text-3xl text-center text-red-500">Tournament settings</h1>
       <div className="flex flex-row justify-center items-center gap-3">
         {apiKey.length === 0 ? (
           <div className="text-red-500 flex flex-row gap-3 items-center font-bold">
@@ -45,7 +45,7 @@ export default function ManagePage() {
               localStorage.setItem("apiKey", ak);
             }
           }}
-          className="bg-blue-500 text-white p-2 rounded-lg"
+          className="bg-red-500 text-white p-2 rounded-lg"
         >
           Set API Key
         </button>
@@ -57,7 +57,7 @@ export default function ManagePage() {
               classNames(
                 "py-2 px-4 text-lg",
                 selected
-                  ? "border-b-2 border-blue-500 font-bold text-blue-500"
+                  ? "border-b-2 border-red-500 font-bold text-red-500"
                   : "text-gray-500"
               )
             }
@@ -69,7 +69,7 @@ export default function ManagePage() {
               classNames(
                 "py-2 px-4 text-lg",
                 selected
-                  ? "border-b-2 border-blue-500 font-bold text-blue-500"
+                  ? "border-b-2 border-red-500 font-bold text-red-500"
                   : "text-gray-500"
               )
             }
@@ -81,7 +81,7 @@ export default function ManagePage() {
               classNames(
                 "py-2 px-4 text-lg",
                 selected
-                  ? "border-b-2 border-blue-500 font-bold text-blue-500"
+                  ? "border-b-2 border-red-500 font-bold text-red-500"
                   : "text-gray-500"
               )
             }

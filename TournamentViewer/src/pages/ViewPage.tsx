@@ -7,7 +7,7 @@ import TournamentSettings from "../components/manage/tournament/TournamentSettin
 
 export default function ViewPage() {
   return (
-    <div className="">
+    <div className=" text-white">
       <h1 className="text-3xl text-center text-rossoTag">TagTeamTournament 2024</h1>
       <Tab.Group>
         <Tab.List className="flex flex-row gap-10 border-b mt-5">

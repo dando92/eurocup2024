@@ -90,9 +90,9 @@ export default function PlayersList() {
 
     return (
         <div>
-            <div className="flex flex-col justify-start gap-3">
-                <div className="flex flex-row gap-3">
-                    <h2>Players List</h2>
+            <div className="flex flex-col justify-start gap-3 ">
+                <div className="flex flex-row gap-3 ">
+                    <h2 className="text-red-700">Players List</h2>
                     <button
                         onClick={createPlayer}
                         title="Add new player"
@@ -124,8 +124,8 @@ export default function PlayersList() {
                                         onClick={() => setSelectedPlayerId(player.id)}
                                         className={`${
                                             selectedPlayerId === player.id
-                                                ? "bg-middle text-white"
-                                                : "hover:bg-lower hover:text-white"
+                                                ? "bg-rossoTag text-white"
+                                                : "hover:bg-red-700 hover:text-white"
                                         } cursor-pointer py-2 px-3 flex justify-between items-center gap-3 `}
                                     >
                                         <span>{player.name}</span>
@@ -175,8 +175,8 @@ function PlayerItem({player, teams, addToTeam, removeFromTeam, createTeam, delet
     deleteTeam: (teamId: number) => void
 }) {
     return (
-        <div className={'flex flex-col gap-2'}>
-            <h3 className="text-2xl">Player Information</h3>
+        <div className={'flex flex-col gap-2 text-red-400'}>
+            <h3 className="text-2xl text-red-700">Player Information</h3>
             <div>
                 <span>Name: </span>
                 <span>{player.name}</span>
@@ -204,7 +204,7 @@ function PlayerItem({player, teams, addToTeam, removeFromTeam, createTeam, delet
                 <button onClick={() => removeFromTeam(player.id)}><FontAwesomeIcon icon={faMinus}/></button>
                 <button onClick={() => deleteTeam(player.teamId as number)}><FontAwesomeIcon icon={faTrash}/></button>
             </div>
-            <h3 className="mt-3">Player Scores</h3>
+            <h3 className="mt-3 text-red-700">Player Scores</h3>
             <p>No scores on record for this player.</p>
         </div>
     );

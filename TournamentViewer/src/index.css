@@ -4,8 +4,13 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+    
+}
+
 body {
     font-family: "dinpro", sans-serif;
+    background-color: #110000
     
 }
 
