@@ -7,8 +7,8 @@ import TournamentSettings from "../components/manage/tournament/TournamentSettin
 
 export default function ViewPage() {
   return (
-    <div>
-      <h1 className="text-3xl text-center">In The Groove Eurocup 2024</h1>
+    <div className="">
+      <h1 className="text-3xl text-center text-rossoTag">TagTeamTournament 2024</h1>
       <Tab.Group>
         <Tab.List className="flex flex-row gap-10 border-b mt-5">
           <Tab
@@ -16,7 +16,7 @@ export default function ViewPage() {
               classNames(
                 "py-2 px-4 text-lg",
                 selected
-                  ? "border-b-2 border-blue-500 font-bold text-blue-500"
+                  ? "border-b-2 border-blue-500 font-bold text-red-500"
                   : "text-gray-500"
               )
             }
@@ -34,7 +34,7 @@ export default function ViewPage() {
               classNames(
                 "py-2 px-4 text-lg",
                 selected
-                  ? "border-b-2 border-blue-500 font-bold text-blue-500"
+                  ? "border-b-2 border-blue-500 font-bold text-red-500"
                   : "text-gray-500"
               )
             }

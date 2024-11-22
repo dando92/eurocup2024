@@ -21,9 +21,9 @@ export default function TournamentSettings({
   return (
     <div>
       <div className="flex flex-col justify-start gap-3">
-        <div className="flex flex-row gap-3">
-          <h2>
-            {controls ? "Configure your tournament" : "History of Eurocup 2024"}
+        <div className="flex flex-row gap-3 ">
+          <h2 className="text-red-700">
+            {controls ? "Configure your tournament" : "History of TagTeamTournament 2024"}
             !
           </h2>
         </div>

@@ -17,6 +17,7 @@ export default {
         upper: '#0E1928',
         grigioQualifica: '#444443',
         gialloQualifica: '#FFC505',
+        rossoTag: '#CE2B37',
       }
     },
   },
