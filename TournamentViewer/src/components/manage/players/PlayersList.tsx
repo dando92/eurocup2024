@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect,  useState} from "react";
 import {Player} from "../../../models/Player";
 import axios from "axios";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -24,6 +24,7 @@ export default function PlayersList() {
             setTeams(response.data.sort((a, b) => a.name.localeCompare(b.name)));
         });
     }, []);
+
 
     const getSelectedPlayer = () => {
         return players.find((p) => p.id === selectedPlayerId);
