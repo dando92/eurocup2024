@@ -90,4 +90,20 @@ public class TeamsController(Scheduler scheduler, IGenericRepository<Team> teams
 
         return Ok();
     }
+
+    [HttpGet("{id}")] 
+    public IActionResult GetTeamById(int id)
+    {
+        var team = scheduler.Schedule((token) =>
+        {
+            token.SetResult(teamsRepo.GetById(id));
+        }).WaitResult<Team>();
+        
+        if (team == null)
+        {
+            return NotFound();       
+        }
+        
+        return Ok(team);
+    }
 }
