@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Http.Logging;
-using TournamentManager.Contexts;
+﻿using TournamentManager.Contexts;
 using TournamentManager.DbModels;
 using TournamentManager.Services;
 
@@ -9,9 +8,12 @@ namespace TournamentManager
     {
         public static void Update(this IMatchUpdate remote, Match activeMatch)
         {
+            if (activeMatch.Phase == null)
+                return;
+
             remote.OnMatchUpdate(new MatchUpdateDTO() { MatchId = activeMatch.Id, PhaseId = activeMatch.PhaseId, DivisionId = activeMatch.Phase.DivisionId }).Wait();
         }
-        
+
         public static void LogMessage(this ILogUpdate remoteLogger, string message)
         {
             remoteLogger.OnLogUpdate(new LogUpdateDTO() { Message = message }).Wait();
@@ -23,7 +25,7 @@ namespace TournamentManager
         }
 
         public static IEnumerable<string> ListGroups(this List<Song> songs)
-        { 
+        {
             return songs.Select(s => s.Group).Distinct();
         }
 
@@ -45,7 +47,7 @@ namespace TournamentManager
         public static List<int> GetAvailableSong(this IGenericRepository<Song> songRepository, Division division, int level, string group)
         {
             List<int> availableSongs = new List<int>();
-            List<int> allSongs = songRepository.GetAll().Where(s => (group == null || (group!=null && s.Group == group)) && s.Difficulty == level).Select(s => s.Id).ToList();
+            List<int> allSongs = songRepository.GetAll().Where(s => (group == null || (group != null && s.Group == group)) && s.Difficulty == level).Select(s => s.Id).ToList();
             List<int> bannedSongs = division.GetBannedSongs();
 
             foreach (int s in allSongs)
@@ -53,7 +55,7 @@ namespace TournamentManager
                 if (!bannedSongs.Contains(s))
                     availableSongs.Add(s);
             }
-            
+
             return availableSongs;
         }
 
