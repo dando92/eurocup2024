@@ -80,7 +80,7 @@ export default function SongsList() {
     <div>
       <div className="flex flex-col justify-start gap-3">
         <div className="flex flex-row gap-3">
-          <h2 className="text-red-700">Songs List</h2>
+          <h2 className="text-rossoTesto">Songs List</h2>
           <button
             title={
               !selectedGroupName
@@ -168,7 +168,7 @@ export default function SongsList() {
               songs.filter((s) =>
                 s.title.toLowerCase().includes(search.toLowerCase())
               ).length === 0 && (
-                <div className="text-center py-2 text-red-500">
+                <div className="text-center py-2 text-rossoTesto">
                   No song found
                 </div>
               )}
@@ -192,19 +192,19 @@ export default function SongsList() {
 function SongItem({ song }: { song: Song }) {
   return (
     <div className="text-red-400">
-      <h3 className="text-2xl text-red-700">Song Information</h3>
+      <h3 className="text-2xl text-rossoTesto">Song Information</h3>
       <div className="mt-2">
-        <h3 className=" text-red-700">Title: </h3>
+        <h3 className=" text-rossoTesto">Title: </h3>
         <span>{song.title}</span>
       </div>
       <div className="mt-2">
-        <h3 className="text-red-700">Difficulty: </h3>
+        <h3 className="text-rossoTesto">Difficulty: </h3>
         <div className="flex flex-row items-center ml-1 gap-1">
           {[...Array(13)].map((_, i) => (
             <span
               key={i}
               className={`${
-                i+1 <= song.difficulty ? "bg-red-500" : "bg-gray-300"
+                i+1 <= song.difficulty ? "bg-rossoTesto" : "bg-gray-300"
               } h-4 rounded-sm w-2 `}
             ></span>
           ))}
@@ -212,7 +212,7 @@ function SongItem({ song }: { song: Song }) {
           <span className="ml-2 font-bold">{song.difficulty}</span>
         </div>
       </div>
-      <h3 className="mt-3 text-red-700">Player Scores</h3>
+      <h3 className="mt-3 text-rossoTesto">Player Scores</h3>
       <p>No scores on record for this song.</p>
     </div>
   );

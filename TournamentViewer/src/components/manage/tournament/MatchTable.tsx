@@ -215,12 +215,12 @@ export default function MatchTable({
     <div className="flex flex-col w-full p-4 my-3 rounded-lg">
       <div className="flex flex-row mb-6 justify-center items-center">
         <div>
-          <h2 className="text-center text-4xl font-bold text-blue-600">
+          <h2 className="text-center text-4xl font-bold text-blue-200">
             <div className="flex flex-row justify-center items-center gap-3">
               {isActive && (
                 <FontAwesomeIcon
                   icon={faCircle}
-                  className="text-red-800 text-xs animate-pulse"
+                  className="text-green-200 text-xs animate-pulse"
                 />
               )}
               <span className="text-xl">{match.name}</span>
@@ -236,7 +236,7 @@ export default function MatchTable({
             </div>
           </h2>
           {match.subtitle && (
-            <p className="text-sm font-normal text-blu flex flex-row items-center gap-1">
+            <p className="text-sm font-normal text-rossoTesto flex flex-row items-center gap-1">
               <FontAwesomeIcon icon={faInfoCircle} />
               {match.subtitle}
             </p>
@@ -351,18 +351,18 @@ export default function MatchTable({
                 <div
                   className={`grid grid-cols-${
                     match.songs.length + 2
-                  } w-full bg-lower rounded-t-lg`}
+                  } w-full bg-rossoTesto rounded-t-lg`}
                   style={{
                     gridTemplateColumns: `repeat(${
                       match.songs.length + 2
                     }, 1fr)`,
                   }}
                 >
-                  <div className=" border-blue-400 p-2">
-                    <div className="text-center font-bold text-blue-800"></div>
+                  <div className=" border-rossoTag p-2">
+                    <div className="text-center font-bold text-rossoTag"></div>
                   </div>
                   {match.songs.map((song, i) => (
-                    <div key={i} className="border-x border-blue-400 p-2">
+                    <div key={i} className="border-x border-rossoTag p-2">
                       <div className="text-center font-bold text-blue-100">
                         {song.title}{" "}
                         {controls && isActive && (
