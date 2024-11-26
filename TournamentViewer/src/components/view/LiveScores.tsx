@@ -7,6 +7,7 @@ import { useEffect, useState, useMemo } from "react";
 import { RawScore } from "../../models/RawScore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
+import {MOCK_SCORES} from "../../mocks/MockScores.ts";
 
 export default function LiveScores() {
   const [, setScoreUpdateConnection] = useState<HubConnection | null>(null);
@@ -52,29 +53,30 @@ export default function LiveScores() {
     });
   }, [scores]);
 
-  if (scores.length === 0) return <></>;
+  //if (scores.length === 0) return <></>;
 
   return (
     <div className="text-bianco w-auto">
       <div className="flex flex-row gap-3 items-center">
-        <h2 className="text-blu">
-          Now playing: {sortedScores[0].score.song.split("/")[1]}
+        <h2 className="text-rossoTesto">
+          Now playing: {sortedScores[0]?.score.song.split("/")[1]}
         </h2>
         <div>
           <button
             onClick={() => setShowJudgements((prev) => !prev)}
-            className="text-bianco bg-blu p-0.5 text-xs rounded-md"
+            className="text-bianco bg-rossoTesto p-0.5 text-xs rounded-md"
           >
             {showJudgements ? "Hide" : "Show"} judgements
           </button>
         </div>
       </div>
       <div className="grid my-2 border-b pb-2  grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-1">
-        {sortedScores.map((score, idx) => (
+        {MOCK_SCORES.map((score, idx) => (
           <div
             key={score.score.playerName}
+
             className={`flex flex-col items-start p-2  rounded-md shadow-md transition-transform transform ${
-              score.score.isFailed ? "bg-red-900" : "bg-upper"
+              score.score.isFailed ? "bg-red-300 opacity-50" : "bg-red-800"
             } ${
               idx === 0 ? "text-yellow-300 animate-first-place" : "text-white"
             }`}
@@ -127,7 +129,7 @@ export default function LiveScores() {
                       ? "bg-green-500"
                       : score.score.life < 0.2
                       ? "bg-red-500"
-                      : "bg-lower"
+                      : "bg-blue-500"
                   }`}
                   style={{ width: `${score.score.life * 100}%` }}
                 ></div>
