@@ -67,7 +67,7 @@ const parseMessage = msg => {
   return {
     song,
     playerNumber: parseInt(playerNumber, 10),
-    playerName,
+    playerName: playerName.split("~ Team")[0].trim(),
     actualDancePoints: parseInt(actualDancePoints, 10),
     currentPossibleDancePoints: parseInt(currentPossibleDancePoints, 10),
     possibleDancePoints: parseInt(possibleDancePoints, 10),

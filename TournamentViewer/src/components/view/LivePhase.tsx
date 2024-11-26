@@ -77,8 +77,8 @@ export default function LivePhase() {
       {division && phase && activeMatch && (
         <div>
           <h1
-            className="text-center text-7xl text-lower font-bold"
-            style={{ fontFamily: "rocket, sans-serif" }}
+            className="text-center text-7xl text-rossoTesto font-bold"
+
           >
             {division.name}
           </h1>

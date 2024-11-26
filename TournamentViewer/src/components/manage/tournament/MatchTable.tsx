@@ -215,7 +215,7 @@ export default function MatchTable({
     <div className="flex flex-col w-full p-4 my-3 rounded-lg">
       <div className="flex flex-row mb-6 justify-center items-center">
         <div>
-          <h2 className="text-center text-4xl font-bold text-blue-200">
+          <h2 className="text-center text-4xl font-bold text-rossoTesto">
             <div className="flex flex-row justify-center items-center gap-3">
               {isActive && (
                 <FontAwesomeIcon
