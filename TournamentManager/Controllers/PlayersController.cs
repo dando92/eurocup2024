@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Numerics;
 using TournamentManager.Contexts;
 using TournamentManager.DbModels;
 using TournamentManager.Requests;
@@ -18,7 +17,7 @@ namespace TournamentManager.Controllers
             {
                 token.SetResult(repo.GetAll().ToList());
             }).WaitResult<List<Player>>();
-            
+
             return Ok(players);
         }
 
@@ -31,7 +30,8 @@ namespace TournamentManager.Controllers
             foreach (PostPlayerRequest p in request.Players)
                 players.Add(new Player
                 {
-                    Name = p.Name
+                    Name = p.Name,
+                    Score = 0
                 });
 
             scheduler.Schedule((token) =>
@@ -55,7 +55,7 @@ namespace TournamentManager.Controllers
 
                 player.TeamId = teamId;
                 repo.Save();
-                
+
                 token.SetResult(player);
             }).WaitResult<Player>();
 
@@ -64,7 +64,7 @@ namespace TournamentManager.Controllers
 
             return Ok(player);
         }
-        
+
         [HttpPost("{id}/removeFromTeam")]
         [TypeFilter(typeof(AuthorizationFilterAttribute))]
         public IActionResult RemovePlayerFromTeam(int id)
@@ -85,7 +85,7 @@ namespace TournamentManager.Controllers
 
             return Ok(player);
         }
-        
+
 
         [HttpPost]
         [TypeFilter(typeof(AuthorizationFilterAttribute))]
@@ -93,7 +93,8 @@ namespace TournamentManager.Controllers
         {
             var player = new Player
             {
-                Name = request.Name
+                Name = request.Name,
+                Score = 0
             };
 
             scheduler.Schedule((token) =>
