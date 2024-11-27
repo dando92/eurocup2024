@@ -29,7 +29,7 @@ export function matchesReducer(state: MatchesState, action: MatchesActions) {
       return {
         ...state,
         matches: state.matches.map((match) =>
-          match.id === payload[0] ? { ...match, notes: payload[1] } : match
+          match.id === payload[0] ? { ...match, notes: payload[1] } : match,
         ),
         activeMatch:
           state.activeMatch?.id === payload[0]
@@ -52,7 +52,7 @@ export function matchesReducer(state: MatchesState, action: MatchesActions) {
       return {
         ...state,
         matches: state.matches.map((match) =>
-          match.id === payload.id ? payload : match
+          match.id === payload.id ? payload : match,
         ),
         activeMatch: payload,
       };
@@ -60,7 +60,7 @@ export function matchesReducer(state: MatchesState, action: MatchesActions) {
       return {
         ...state,
         matches: state.matches.map((match) =>
-          match.id === payload.id ? payload : match
+          match.id === payload.id ? payload : match,
         ),
         activeMatch: payload,
       };
@@ -68,7 +68,7 @@ export function matchesReducer(state: MatchesState, action: MatchesActions) {
       return {
         ...state,
         matches: state.matches.map((match) =>
-          match.id === payload.id ? payload : match
+          match.id === payload.id ? payload : match,
         ),
         activeMatch: payload,
       };
@@ -76,7 +76,7 @@ export function matchesReducer(state: MatchesState, action: MatchesActions) {
       return {
         ...state,
         matches: state.matches.map((match) =>
-          match.id === payload.id ? payload : match
+          match.id === payload.id ? payload : match,
         ),
         activeMatch: payload,
       };

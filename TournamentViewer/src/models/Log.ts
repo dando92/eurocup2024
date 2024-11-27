@@ -1,5 +1,5 @@
 export interface Log {
-    message: string;
-    error: string;
-    timestamp: string;
+  message: string;
+  error: string;
+  timestamp: string;
 }

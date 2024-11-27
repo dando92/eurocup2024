@@ -71,18 +71,17 @@ export default function LivePhase() {
 
   return (
     <div>
-      {import.meta.env.VITE_PUBLIC_ENABLE_LIVE_SCORES === "true" && <LiveScores />}
+      {import.meta.env.VITE_PUBLIC_ENABLE_LIVE_SCORES === "true" && (
+        <LiveScores />
+      )}
       {loading && <p>Loading...</p>}
       {!loading && !activeMatch && <p>No match in progress. Stay tuned!</p>}
       {division && phase && activeMatch && (
         <div>
-          <h1
-            className="text-center text-7xl text-rossoTesto font-bold"
-
-          >
+          <h1 className="text-center text-7xl text-rossoTesto font-bold">
             {division.name}
           </h1>
-          
+
           <MatchesView
             showPastMatches={false}
             phaseId={phase.id}

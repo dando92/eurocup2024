@@ -1,9 +1,8 @@
 import { Log } from "../../models/Log";
 
-
 type LogViewProps = { logs: Log[] };
 
-export default function LogView({logs}: LogViewProps) {
+export default function LogView({ logs }: LogViewProps) {
   return (
     <div>
       <h1 className="text-center text-3xl text-lower">Logs</h1>

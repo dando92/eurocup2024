@@ -69,23 +69,29 @@ export default function PhaseList({
             : null
         }
       />
-      {controls && <><button
-        onClick={createPhase}
-        className="text-green-700"
-        title="Create new division"
-      >
-        <FontAwesomeIcon icon={faPlus} />
-      </button>
-      <button
-        onClick={deletePhase}
-        className="text-red-700 disabled:text-red-200"
-        disabled={selectedPhaseId === -1}
-        title={
-          selectedPhaseId === -1 ? "plz select phase to delete" : "Delete phase"
-        }
-      >
-        <FontAwesomeIcon icon={faTrash} />
-      </button></>}
+      {controls && (
+        <>
+          <button
+            onClick={createPhase}
+            className="text-green-700"
+            title="Create new division"
+          >
+            <FontAwesomeIcon icon={faPlus} />
+          </button>
+          <button
+            onClick={deletePhase}
+            className="text-red-700 disabled:text-red-200"
+            disabled={selectedPhaseId === -1}
+            title={
+              selectedPhaseId === -1
+                ? "plz select phase to delete"
+                : "Delete phase"
+            }
+          >
+            <FontAwesomeIcon icon={faTrash} />
+          </button>
+        </>
+      )}
     </div>
   );
 }

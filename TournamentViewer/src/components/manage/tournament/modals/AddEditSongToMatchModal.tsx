@@ -16,13 +16,13 @@ type AddSongToMatchModalProps = {
     phaseId: number,
     matchId: number,
     group: string,
-    level: string
+    level: string,
   ) => void;
   onAddSongToMatchBySongId: (
     divisionId: number,
     phaseId: number,
     matchId: number,
-    songId: number
+    songId: number,
   ) => void;
   onEditSongToMatchByRoll: (
     divisionId: number,
@@ -30,14 +30,14 @@ type AddSongToMatchModalProps = {
     matchId: number,
     group: string,
     level: string,
-    editSongId: number
+    editSongId: number,
   ) => void;
   onEditSongToMatchBySongId: (
     divisionId: number,
     phaseId: number,
     matchId: number,
     songId: number,
-    editSongId: number
+    editSongId: number,
   ) => void;
 };
 
@@ -94,14 +94,14 @@ export default function AddEditSongToMatchModal({
             matchId,
             selectedGroupName,
             difficultyInput,
-            songId
+            songId,
           )
         : onAddSongToMatchByRoll(
             divisionId,
             phaseId,
             matchId,
             selectedGroupName,
-            difficultyInput
+            difficultyInput,
           );
 
       onClose();
@@ -116,13 +116,13 @@ export default function AddEditSongToMatchModal({
             phaseId,
             matchId,
             selectedSong.id,
-            songId
+            songId,
           )
         : onAddSongToMatchBySongId(
             divisionId,
             phaseId,
             matchId,
-            selectedSong.id
+            selectedSong.id,
           );
 
       onClose();

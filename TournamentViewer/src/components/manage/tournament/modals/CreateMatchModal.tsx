@@ -148,7 +148,7 @@ export default function CreateMatchModal({
             options={players.map((p) => ({ value: p.id, label: p.name }))}
             onChange={(e) => {
               setSelectedPlayers(
-                e.map((p) => players.find((pl) => pl.id === p.value)!)
+                e.map((p) => players.find((pl) => pl.id === p.value)!),
               );
             }}
             value={selectedPlayers.map((p) => ({ value: p.id, label: p.name }))}
@@ -215,8 +215,8 @@ export default function CreateMatchModal({
                         onClick={() =>
                           setSelectedSongDifficulties(
                             selectedSongDifficulties.filter(
-                              (_, index) => index !== i
-                            )
+                              (_, index) => index !== i,
+                            ),
                           )
                         }
                         className="text-red-700 text-sm"
@@ -257,7 +257,7 @@ export default function CreateMatchModal({
                 options={songs.map((s) => ({ value: s.id, label: s.title }))}
                 onChange={(e) => {
                   setSelectedSongs(
-                    e.map((s) => songs.find((song) => song.id === s.value)!)
+                    e.map((s) => songs.find((song) => song.id === s.value)!),
                   );
                 }}
                 value={selectedSongs.map((s) => ({

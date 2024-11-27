@@ -10,7 +10,10 @@ type DivisionListProps = {
   controls?: boolean;
 };
 
-export default function DivisionList({ onDivisionSelect, controls = false }: DivisionListProps) {
+export default function DivisionList({
+  onDivisionSelect,
+  controls = false,
+}: DivisionListProps) {
   const [divisions, setDivisions] = useState<Division[]>([]);
   const [selectedDivisionId, setSelectedDivisionId] = useState<number>(-1);
 
@@ -39,7 +42,7 @@ export default function DivisionList({ onDivisionSelect, controls = false }: Div
     ) {
       if (
         window.confirm(
-          "WARNING!! This action is irreversible. Are you really sure?"
+          "WARNING!! This action is irreversible. Are you really sure?",
         )
       ) {
         axios.delete(`divisions/${selectedDivisionId}`).then(() => {
@@ -56,9 +59,7 @@ export default function DivisionList({ onDivisionSelect, controls = false }: Div
         placeholder="Select division"
         options={divisions.map((d) => ({ value: d.id, label: d.name }))}
         onChange={(e) => {
-          onDivisionSelect(
-            divisions.find((d) => d.id === e?.value) ?? null
-          );
+          onDivisionSelect(divisions.find((d) => d.id === e?.value) ?? null);
           setSelectedDivisionId(e?.value ?? -1);
         }}
         value={
@@ -70,25 +71,29 @@ export default function DivisionList({ onDivisionSelect, controls = false }: Div
             : null
         }
       />
-      {controls && <><button
-        onClick={createDivision}
-        className="text-green-700"
-        title="Create new division"
-      >
-        <FontAwesomeIcon icon={faPlus} />
-      </button>
-      <button
-        onClick={deleteDivision}
-        className="text-red-700 disabled:text-red-200"
-        disabled={selectedDivisionId === -1}
-        title={
-          selectedDivisionId === -1
-            ? "plz select division to delete"
-            : "Delete division"
-        }
-      >
-        <FontAwesomeIcon icon={faTrash} />
-      </button></>}
+      {controls && (
+        <>
+          <button
+            onClick={createDivision}
+            className="text-green-700"
+            title="Create new division"
+          >
+            <FontAwesomeIcon icon={faPlus} />
+          </button>
+          <button
+            onClick={deleteDivision}
+            className="text-red-700 disabled:text-red-200"
+            disabled={selectedDivisionId === -1}
+            title={
+              selectedDivisionId === -1
+                ? "plz select division to delete"
+                : "Delete division"
+            }
+          >
+            <FontAwesomeIcon icon={faTrash} />
+          </button>
+        </>
+      )}
     </div>
   );
 }

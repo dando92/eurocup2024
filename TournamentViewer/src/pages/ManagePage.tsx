@@ -4,7 +4,10 @@ import SongsList from "../components/manage/songs/SongsList";
 import TournamentSettings from "../components/manage/tournament/TournamentSettings";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { faCheckCircle, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCheckCircle,
+  faTimesCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -25,12 +28,16 @@ export default function ManagePage() {
 
   return (
     <div>
-      <h1 className="text-3xl text-center text-rossoTesto">Tournament settings</h1>
+      <h1 className="text-3xl text-center text-rossoTesto">
+        Tournament settings
+      </h1>
       <div className="flex flex-row justify-center items-center gap-3">
         {apiKey.length === 0 ? (
           <div className="text-rossoTesto flex flex-row gap-3 items-center font-bold">
             <FontAwesomeIcon icon={faTimesCircle} />
-            <span>No API key set. Please add it to allow tournament editing.</span>
+            <span>
+              No API key set. Please add it to allow tournament editing.
+            </span>
           </div>
         ) : (
           <div className="text-green-500 flex flex-row gap-3 items-center font-bold">
@@ -40,7 +47,10 @@ export default function ManagePage() {
         )}
         <button
           onClick={() => {
-            const ak = prompt("Enter your API key", apiKey)?.toLocaleLowerCase();
+            const ak = prompt(
+              "Enter your API key",
+              apiKey,
+            )?.toLocaleLowerCase();
             if (ak) {
               setApiKey(ak);
               localStorage.setItem("apiKey", ak);
@@ -59,7 +69,7 @@ export default function ManagePage() {
                 "py-2 px-4 text-lg",
                 selected
                   ? "border-b-2 border-rossoTesto font-bold text-rossoTesto"
-                  : "text-gray-500"
+                  : "text-gray-500",
               )
             }
           >
@@ -71,7 +81,7 @@ export default function ManagePage() {
                 "py-2 px-4 text-lg",
                 selected
                   ? "border-b-2 border-rossoTesto font-bold text-rossoTesto"
-                  : "text-gray-500"
+                  : "text-gray-500",
               )
             }
           >
@@ -83,7 +93,7 @@ export default function ManagePage() {
                 "py-2 px-4 text-lg",
                 selected
                   ? "border-b-2 border-rossoTesto font-bold text-rossoTesto"
-                  : "text-gray-500"
+                  : "text-gray-500",
               )
             }
           >

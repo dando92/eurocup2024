@@ -53,7 +53,7 @@ export function useMatches(phaseId: number) {
   async function setActiveMatch(
     divisionId: number,
     phaseId: number,
-    matchId: number
+    matchId: number,
   ) {
     try {
       await MatchesApi.setActiveMatch({ divisionId, phaseId, matchId });
@@ -87,7 +87,7 @@ export function useMatches(phaseId: number) {
     phaseId: number,
     matchId: number,
     group: string,
-    level: string
+    level: string,
   ) {
     try {
       const item = await MatchesApi.addSongToActiveMatch({
@@ -111,7 +111,7 @@ export function useMatches(phaseId: number) {
     matchId: number,
     group: string,
     level: string,
-    editSongId: number
+    editSongId: number,
   ) {
     try {
       const item = await MatchesApi.editSongToActiveMatch({
@@ -134,7 +134,7 @@ export function useMatches(phaseId: number) {
     divisionId: number,
     phaseId: number,
     matchId: number,
-    songId: number
+    songId: number,
   ) {
     try {
       const item = await MatchesApi.addSongToActiveMatch({
@@ -156,7 +156,7 @@ export function useMatches(phaseId: number) {
     phaseId: number,
     matchId: number,
     songId: number,
-    editSongId: number
+    editSongId: number,
   ) {
     try {
       const item = await MatchesApi.editSongToActiveMatch({
@@ -179,7 +179,7 @@ export function useMatches(phaseId: number) {
     songId: number,
     percentage: number,
     score: number,
-    isFailed: boolean
+    isFailed: boolean,
   ) {
     try {
       const item = await MatchesApi.addStandingToActiveMatch({
@@ -199,12 +199,12 @@ export function useMatches(phaseId: number) {
 
   async function deleteStandingsForPlayerFromMatch(
     playerId: number,
-    songId: number
+    songId: number,
   ) {
     try {
       const item = await MatchesApi.deleteStandingsForPlayerFromActiveMatch(
         playerId,
-        songId
+        songId,
       );
       dispatch({ type: "onDeleteStandingFromMatch", payload: item });
     } catch (error) {
@@ -219,7 +219,7 @@ export function useMatches(phaseId: number) {
     playerId: number,
     percentage: number,
     score: number,
-    isFailed: boolean
+    isFailed: boolean,
   ) {
     try {
       const item = await MatchesApi.editStandingForPlayerFromActiveMatch(
@@ -227,7 +227,7 @@ export function useMatches(phaseId: number) {
         playerId,
         percentage,
         score,
-        isFailed
+        isFailed,
       );
       dispatch({ type: "onEditStandingFromMatch", payload: item });
     } catch (error) {

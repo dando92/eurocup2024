@@ -94,7 +94,9 @@ export default function MatchesView({
           </p>
         )}
         {showPastMatches && (
-          <h3 className="text-3xl text-rossoTesto  text-center">Past matches:</h3>
+          <h3 className="text-3xl text-rossoTesto  text-center">
+            Past matches:
+          </h3>
         )}
         {phase &&
           showPastMatches &&

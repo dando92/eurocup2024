@@ -166,7 +166,7 @@ export default function SongsList() {
               })}
             {search.length > 0 &&
               songs.filter((s) =>
-                s.title.toLowerCase().includes(search.toLowerCase())
+                s.title.toLowerCase().includes(search.toLowerCase()),
               ).length === 0 && (
                 <div className="text-center py-2 text-rossoTesto">
                   No song found
@@ -204,7 +204,7 @@ function SongItem({ song }: { song: Song }) {
             <span
               key={i}
               className={`${
-                i+1 <= song.difficulty ? "bg-rossoTesto" : "bg-gray-300"
+                i + 1 <= song.difficulty ? "bg-rossoTesto" : "bg-gray-300"
               } h-4 rounded-sm w-2 `}
             ></span>
           ))}

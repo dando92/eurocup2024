@@ -37,7 +37,7 @@ type MatchTableProps = {
   onSetActiveMatch: (
     divisionId: number,
     phaseId: number,
-    matchId: number
+    matchId: number,
   ) => void;
   onDeleteMatch: (matchId: number) => void;
   onAddSongToMatchByRoll: (
@@ -45,13 +45,13 @@ type MatchTableProps = {
     phaseId: number,
     matchId: number,
     group: string,
-    level: string
+    level: string,
   ) => void;
   onAddSongToMatchBySongId: (
     divisionId: number,
     phaseId: number,
     matchId: number,
-    songId: number
+    songId: number,
   ) => void;
   onEditSongToMatchByRoll: (
     divisionId: number,
@@ -59,21 +59,21 @@ type MatchTableProps = {
     matchId: number,
     group: string,
     level: string,
-    editSongId: number
+    editSongId: number,
   ) => void;
   onEditSongToMatchBySongId: (
     divisionId: number,
     phaseId: number,
     matchId: number,
     songId: number,
-    editSongId: number
+    editSongId: number,
   ) => void;
   onAddStandingToMatch: (
     playerId: number,
     songId: number,
     percentage: number,
     score: number,
-    isFailed: boolean
+    isFailed: boolean,
   ) => void;
   onEditMatchNotes: (matchId: number, notes: string) => void;
   onEditStanding: (
@@ -81,7 +81,7 @@ type MatchTableProps = {
     songId: number,
     percentage: number,
     score: number,
-    isFailed: boolean
+    isFailed: boolean,
   ) => void;
   onDeleteStanding: (playerId: number, songId: number) => void;
 };
@@ -125,10 +125,10 @@ export default function MatchTable({
   }>({ songId: 0, playerId: 0, playerName: "", songTitle: "" });
 
   const [scoreConnection, setScoreConnection] = useState<null | HubConnection>(
-    null
+    null,
   );
   const [errorConnection, setErrorConnection] = useState<null | HubConnection>(
-    null
+    null,
   );
 
   match.rounds.forEach((round) => {
@@ -171,9 +171,10 @@ export default function MatchTable({
         errConn.on("OnLogUpdate", ({ message, error }: Log) => {
           console.log(message, error);
 
-          error && toast.error(`Error: ${message} - ${error}`, {
-            autoClose: false,
-          }) 
+          error &&
+            toast.error(`Error: ${message} - ${error}`, {
+              autoClose: false,
+            });
 
           setLogs((prevLogs) => [
             ...prevLogs,
@@ -208,7 +209,7 @@ export default function MatchTable({
 
   // Sort players by total points
   const sortedPlayers = [...match.players].sort(
-    (a, b) => getTotalPoints(b.id) - getTotalPoints(a.id)
+    (a, b) => getTotalPoints(b.id) - getTotalPoints(a.id),
   );
 
   return (
@@ -323,24 +324,26 @@ export default function MatchTable({
                   "py-2 px-4 text-lg",
                   selected
                     ? "border-b-2 border-blue-500 font-bold text-blue-500"
-                    : "text-gray-500"
+                    : "text-gray-500",
                 )
               }
             >
               Match
             </Tab>
-            {controls && <Tab
-              className={({ selected }) =>
-                classNames(
-                  "py-2 px-4 text-lg",
-                  selected
-                    ? "border-b-2 border-blue-500 font-bold text-blue-500"
-                    : "text-gray-500"
-                )
-              }
-            >
-              Errors & Logs
-            </Tab>}
+            {controls && (
+              <Tab
+                className={({ selected }) =>
+                  classNames(
+                    "py-2 px-4 text-lg",
+                    selected
+                      ? "border-b-2 border-blue-500 font-bold text-blue-500"
+                      : "text-gray-500",
+                  )
+                }
+              >
+                Errors & Logs
+              </Tab>
+            )}
           </Tab.List>
           <Tab.Panels className="mt-3">
             <Tab.Panel>
@@ -438,7 +441,7 @@ export default function MatchTable({
                                     onClick={() => {
                                       if (
                                         window.confirm(
-                                          "Are you sure you want to delete this standing?"
+                                          "Are you sure you want to delete this standing?",
                                         )
                                       ) {
                                         onDeleteStanding(player.id, song.id);
@@ -477,8 +480,8 @@ export default function MatchTable({
                         {match.rounds
                           .map((round) =>
                             round.standings.find(
-                              (s) => s.playerId === player.id
-                            )
+                              (s) => s.playerId === player.id,
+                            ),
                           )
                           .reduce((acc, standing) => {
                             if (standing) {

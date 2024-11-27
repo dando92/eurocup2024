@@ -1,5 +1,5 @@
 export interface Player {
-    id: number;
-    name: string;
-    teamId?: number;
+  id: number;
+  name: string;
+  teamId?: number;
 }

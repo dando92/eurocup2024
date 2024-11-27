@@ -11,7 +11,7 @@ import {
 export async function listByPhase(phaseId: number): Promise<Match[]> {
   try {
     const response = await axios.get<Match[]>(
-      "tournament/expandphase/" + phaseId
+      "tournament/expandphase/" + phaseId,
     );
 
     return response.data;
@@ -44,7 +44,7 @@ export async function create(request: CreateMatchRequest): Promise<Match> {
 
 export async function editMatchNotes(
   matchId: number,
-  notes: string
+  notes: string,
 ): Promise<string> {
   try {
     const response = await axios.put<Match>("matches", {
@@ -60,7 +60,7 @@ export async function editMatchNotes(
 }
 
 export async function setActiveMatch(
-  request: SetActiveMatchRequest
+  request: SetActiveMatchRequest,
 ): Promise<void> {
   try {
     const response = await axios.post("tournament/setactivematch", request);
@@ -81,7 +81,7 @@ export async function deleteMatch(matchId: number): Promise<void> {
 }
 
 export async function addSongToActiveMatch(
-  request: AddSongToMatchRequest
+  request: AddSongToMatchRequest,
 ): Promise<Match> {
   try {
     const response = await axios.post("tournament/addsongtomatch", request);
@@ -103,7 +103,7 @@ export async function editSongToActiveMatch(request: EditSongToMatchRequest) {
 }
 
 export async function addStandingToActiveMatch(
-  request: AddStandingToMatchRequest
+  request: AddStandingToMatchRequest,
 ): Promise<Match> {
   try {
     const response = await axios.post("tournament/addstanding", request);
@@ -119,7 +119,7 @@ export async function editStandingForPlayerFromActiveMatch(
   playerId: number,
   percentage: number,
   score: number,
-  isFailed: boolean
+  isFailed: boolean,
 ): Promise<Match> {
   try {
     const response = await axios.put(`tournament/editstanding`, {
@@ -127,14 +127,14 @@ export async function editStandingForPlayerFromActiveMatch(
       playerId,
       percentage,
       score,
-      isFailed
+      isFailed,
     });
 
     return response.data;
   } catch (error) {
     console.error(
       "Error editing standings for player from active match:",
-      error
+      error,
     );
     throw new Error("Unable to edit standings for player from active match.");
   }
@@ -142,7 +142,7 @@ export async function editStandingForPlayerFromActiveMatch(
 
 export async function deleteStandingsForPlayerFromActiveMatch(
   playerId: number,
-  songId: number
+  songId: number,
 ): Promise<Match> {
   try {
     const response = await axios.delete(
@@ -153,7 +153,7 @@ export async function deleteStandingsForPlayerFromActiveMatch(
   } catch (error) {
     console.error(
       "Error deleting standings for player from active match:",
-      error
+      error,
     );
     throw new Error("Unable to delete standings for player from active match.");
   }
