@@ -188,6 +188,7 @@ namespace TournamentManager.Services
                     .ThenInclude(m => m.Standings)
                 .Include(m => m.PlayerInMatches)
                     .ThenInclude(p => p.Player)
+                        .ThenInclude(p => p.Team)
                 .Include(m => m.SongInMatches)
                     .ThenInclude(s => s.Song)
                 .Where(m => m.Id == matchId);

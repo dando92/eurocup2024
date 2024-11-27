@@ -110,6 +110,8 @@ namespace TournamentManager.Services
                 // _standingRepo.Add(standing);
                 _logHub.LogMessage($"Add to round: {standing.PlayerId} Song: {standing.SongId}");
                 round.Standings.Add(standing);
+                
+                _standingRepo.Save();
 
                 if ((round.Standings.Count >= activeMatch.PlayerInMatches.Count) && (!activeMatch.IsManualMatch))
                 {
@@ -119,8 +121,6 @@ namespace TournamentManager.Services
                         _calculator.Recalc(round.Standings);
                     }
                 }
-
-                _standingRepo.Save();
 
                 _hub?.Update(activeMatch);
             }
