@@ -9,6 +9,8 @@ namespace TournamentManager.DbModels
         public string Subtitle { get; set; }
         public string Notes { get; set; }
         public int PhaseId { get; set; }
+
+        public double Multiplier { get; set; } = 1;
         public bool IsManualMatch { get; set; }
 
         [JsonIgnore]
