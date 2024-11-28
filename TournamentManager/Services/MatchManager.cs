@@ -186,6 +186,8 @@ namespace TournamentManager.Services
                 .Include(m => m.Phase)
                 .Include(m => m.Rounds)
                     .ThenInclude(m => m.Standings)
+                        .ThenInclude(p => p.Player)
+                            .ThenInclude(p => p.Team)
                 .Include(m => m.PlayerInMatches)
                     .ThenInclude(p => p.Player)
                         .ThenInclude(p => p.Team)

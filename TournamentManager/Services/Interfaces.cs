@@ -46,6 +46,11 @@ namespace TournamentManager.Services
 
     public class MatchScoreCalculator : IScoreCalculator
     {
+        public MatchScoreCalculator()
+        {
+
+        }
+
         public void Recalc(ICollection<Standing> standings)
         {
             int maxPoints = standings.Count;
@@ -77,24 +82,48 @@ namespace TournamentManager.Services
 
     public class TeamScoreCalculator : IScoreCalculator
     {
-        IScoreCalculator _matchScoreCalculator;
-        IGenericRepository<Team> _teamRepo;
-        IGenericRepository<Match> _matchRepo;
-
-        public TeamScoreCalculator(IGenericRepository<Team> teamRepo, IGenericRepository<Match> matchRepo)
+        public TeamScoreCalculator()
         {
-            _teamRepo = teamRepo;
-            _matchRepo = matchRepo;
+        }
 
-            _matchScoreCalculator = new MatchScoreCalculator();
+        public void RecalcRound(ICollection<Standing> standings)
+        {
+            int disabledPlayers = standings.Count(s => s.IsFailed && s.Percentage == (double)-1);
+            int maxPoints = standings.Count - disabledPlayers;
+            var orderedStandings = standings.Where(s => !s.IsFailed).OrderByDescending(s => s.Percentage).ToList();
+            int tieCount = 0;
+
+            for (int i = 0; i < orderedStandings.Count; i++)
+            {
+                orderedStandings[i].Score = maxPoints;
+
+                if (i + 1 < orderedStandings.Count)
+                {
+                    if (orderedStandings[i].Percentage > orderedStandings[i + 1].Percentage)
+                    {
+                        if (tieCount > 0)
+                        {
+                            maxPoints -= tieCount;
+                            tieCount = 0;
+                        }
+
+                        maxPoints--;
+                    }
+                    else if (orderedStandings[i].Percentage == orderedStandings[i + 1].Percentage)
+                        tieCount++;
+                }
+            }
         }
 
         public void Recalc(ICollection<Standing> standings)
         {
-            _matchScoreCalculator.Recalc(standings);
+            RecalcRound(standings);
 
             foreach (var standing in standings)
+            {
+                standing.Player.Score += standing.Score;
                 standing.Player.Team.Score += standing.Score;
+            }
         }
     }
 }

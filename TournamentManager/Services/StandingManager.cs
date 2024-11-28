@@ -96,6 +96,7 @@ namespace TournamentManager.Services
             if (playerInActiveMatch == null || songInActiveMatch == null)
                 return false;
 
+            standing.Player = playerInActiveMatch.Player;
             standing.RoundId = round.Id;
 
             if (round.Standings.Where(s => s.PlayerId == standing.PlayerId && s.SongId == standing.SongId).Count() > 0)
@@ -111,8 +112,6 @@ namespace TournamentManager.Services
                 _logHub.LogMessage($"Add to round: {standing.PlayerId} Song: {standing.SongId}");
                 round.Standings.Add(standing);
                 
-                _standingRepo.Save();
-
                 if ((round.Standings.Count >= activeMatch.PlayerInMatches.Count) && (!activeMatch.IsManualMatch))
                 {
                     if (!activeMatch.IsManualMatch)
@@ -121,6 +120,8 @@ namespace TournamentManager.Services
                         _calculator.Recalc(round.Standings);
                     }
                 }
+                
+                _standingRepo.Save();
 
                 _hub?.Update(activeMatch);
             }
@@ -203,7 +204,11 @@ namespace TournamentManager.Services
             {
                 foreach (var standing in round.Standings)
                 {
-                    standing.Player.Team.Score -= standing.Score;
+                    if (!activeMatch.IsManualMatch)
+                    {
+                        standing.Player.Score -= standing.Score;
+                        standing.Player.Team.Score -= standing.Score;
+                    }
 
                     if (standing.PlayerId == playerdId && standing.SongId == songId)
                     {
