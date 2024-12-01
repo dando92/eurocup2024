@@ -4,6 +4,7 @@ export interface CreateMatchRequest {
   matchName: string;
   subtitle: string;
   isManualMatch: boolean;
+  multiplier: number;
   notes: string;
   group: string;
   levels: string;

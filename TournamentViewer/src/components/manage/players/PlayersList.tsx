@@ -160,7 +160,7 @@ export default function PlayersList() {
           </div>
           <div>
             {selectedPlayerId < 0 && (
-              <div>Select a player from the list to view informations.</div>
+              <div className={"text-rossoTesto"}>Select a player from the list to view informations.</div>
             )}
             {selectedPlayerId >= 0 && (
               <PlayerItem

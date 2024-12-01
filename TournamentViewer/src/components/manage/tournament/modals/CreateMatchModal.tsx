@@ -29,6 +29,7 @@ export default function CreateMatchModal({
 
   const [matchName, setMatchName] = useState<string>("");
   const [subtitle, setSubtitle] = useState<string>("");
+  const [multiplier, setMultiplier] = useState<number>(1);
   const [isManualMatch, setIsManualMatch] = useState<boolean>(false);
 
   const [selectedPlayers, setSelectedPlayers] = useState<Player[]>([]);
@@ -78,6 +79,7 @@ export default function CreateMatchModal({
       phaseId: phase.id,
       matchName: matchName,
       subtitle: subtitle,
+      multiplier: multiplier,
       group: selectedGroupName,
       isManualMatch: isManualMatch,
       songIds: selectedSongs.map((s) => s.id),
@@ -94,6 +96,7 @@ export default function CreateMatchModal({
       phaseId: phase.id,
       matchName: matchName,
       subtitle: subtitle,
+      multiplier: multiplier,
       group: selectedGroupName,
       isManualMatch: isManualMatch,
       levels: selectedSongDifficulties.join(","),
@@ -131,6 +134,16 @@ export default function CreateMatchModal({
             value={subtitle}
             onChange={(e) => setSubtitle(e.target.value)}
             placeholder="Type subtitle"
+          />
+        </div>
+        <div className="w-full">
+          <h3>Multiplier</h3>
+          <input
+            className="w-full border border-gray-300 px-2 py-2 rounded-lg"
+            type="number"
+            value={multiplier}
+            onChange={(e) => setMultiplier(+e.target.value)}
+            placeholder="Type multiplier (number)"
           />
         </div>
         <div>
