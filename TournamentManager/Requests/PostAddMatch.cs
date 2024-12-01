@@ -8,6 +8,7 @@
         public string Group { get; set; }
         public string Subtitle { get; set; }
         public bool IsManualMatch { get; set; }
+        public double Multiplier { get; set; }
         public string Notes { get; set; }
         public string Levels { get; set; }
         public List<int> SongIds { get; set; }

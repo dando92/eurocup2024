@@ -61,6 +61,7 @@ namespace TournamentManager.Controllers
             {
                 Name = request.Name,
                 PhaseId = request.MatchId,
+                Multiplier = request.Multiplier
             };
 
             _scheduler.Schedule((token) =>
@@ -88,6 +89,9 @@ namespace TournamentManager.Controllers
 
                 if (request.Notes != null)
                     match.Notes = request.Notes;
+                
+                if (request.Multiplier != 0)
+                    match.Multiplier = request.Multiplier;
 
                 _repo.Save();
                 token.SetResult(match);

@@ -92,6 +92,8 @@ namespace TournamentManager.Services
             int maxPoints = standings.Count - disabledPlayers;
             var orderedStandings = standings.Where(s => !s.IsFailed).OrderByDescending(s => s.Percentage).ToList();
             int tieCount = 0;
+            
+            
 
             for (int i = 0; i < orderedStandings.Count; i++)
             {

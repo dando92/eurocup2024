@@ -107,7 +107,7 @@ namespace TournamentManager.Controllers
         {
             var match = _scheduler.Schedule((token) =>
             {
-                var match = _matchManager.AddMatch(request.MatchName, request.Notes, request.Subtitle, request.PlayerIds, request.PhaseId, request.IsManualMatch);
+                var match = _matchManager.AddMatch(request.MatchName, request.Notes, request.Subtitle, request.PlayerIds, request.PhaseId, request.IsManualMatch, request.Multiplier);
                 
                 if (request.SongIds != null)
                     _matchManager.AddSongsToMatch(match, request.SongIds.ToArray());
@@ -187,6 +187,7 @@ namespace TournamentManager.Controllers
                 Subtitle = match.Subtitle,
                 Notes = match.Notes,
                 IsManualMatch = match.IsManualMatch,
+                Multiplier = match.Multiplier,
                 Players = match.PlayerInMatches.Select(p => p.Player).ToList(),
                 Songs = match.SongInMatches.Select(s => s.Song).ToList(),
                 Rounds = match.Rounds.ToList()
@@ -207,6 +208,7 @@ namespace TournamentManager.Controllers
                     PhaseId = match.PhaseId,
                     Name = match.Name,
                     Subtitle = match.Subtitle,
+                    Multiplier = match.Multiplier,
                     Notes = match.Notes,
                     IsManualMatch = match.IsManualMatch,
                     Players = match.PlayerInMatches.Select(p => p.Player).ToList(),
