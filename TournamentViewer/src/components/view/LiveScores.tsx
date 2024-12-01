@@ -110,7 +110,7 @@ export default function LiveScores() {
             style={{ backgroundColor: getTeamColor(score.score.playerName) }}
             className={`flex flex-col items-start p-2  rounded-md shadow-md transition-transform transform ${
               score.score.isFailed ? "bg-red-300 opacity-50" : ""
-            } text-upper ${idx === 0 ? "animate-first-place" : ""} `}
+            } text-sfondoPagina ${idx === 0 ? "animate-first-place" : ""} `}
           >
             <div className="flex flex-row gap-5 justify-between items-end w-full">
               <span className="text-xl">

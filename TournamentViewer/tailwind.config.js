@@ -16,6 +16,7 @@ export default {
         gialloQualifica: "#FFC505",
         rossoTag: "#CE2B37",
         rossoTesto: "#f15467",
+        sfondoPagina: "#280202"
       },
     },
   },
