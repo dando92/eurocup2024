@@ -6,6 +6,12 @@ namespace TournamentManager
 {
     public static class Extension
     {
+
+        public static bool IsDisabled(this Standing standing)
+        {
+            return standing.IsFailed && standing.Percentage == (double)-1;
+        }
+
         public static void Update(this IMatchUpdate remote, Match activeMatch)
         {
             if (activeMatch.Phase == null)

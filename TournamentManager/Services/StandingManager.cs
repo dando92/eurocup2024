@@ -117,7 +117,7 @@ namespace TournamentManager.Services
                     if (!activeMatch.IsManualMatch)
                     {
                         _logHub.LogMessage("Standing recalc...");
-                        _calculator.Recalc(round.Standings);
+                        _calculator.Recalc(round.Standings, activeMatch.Multiplier);
                     }
                 }
                 
