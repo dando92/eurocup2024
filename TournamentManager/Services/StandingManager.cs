@@ -158,20 +158,14 @@ namespace TournamentManager.Services
                 {
                     if (standing.PlayerId == playerdId && standing.SongId == songId)
                     {
-                        standing.Player.Team.Score -= standing.Score;
-
                         standing.Percentage = percentage;
-                        standing.Score = score;
+                        standing.SetScore(score);
 
-                        standing.Player.Team.Score += standing.Score;
                         //_standingRepo.Update(standing);
 
                         edited = true;
                     }
                 }
-
-                if(edited)
-                    _standingRepo.Save();
             }
             catch (Exception ex)
             {
@@ -204,24 +198,20 @@ namespace TournamentManager.Services
             {
                 foreach (var standing in round.Standings)
                 {
-                    if (!activeMatch.IsManualMatch)
-                    {
-                        standing.Player.Score -= standing.Score;
-                        standing.Player.Team.Score -= standing.Score;
-                    }
-
                     if (standing.PlayerId == playerdId && standing.SongId == songId)
                     {
+                        standing.SetScore(0);
                         _standingRepo.DeleteById(standing.Id);
                         round.Standings.Remove(standing);
                         removed = true;
                     }
                     else
                     {
-                        if(!activeMatch.IsManualMatch)
-                            standing.Score = 0;
+                        if (!activeMatch.IsManualMatch)
+                            standing.SetScore(0);
                     }
                 }
+
                 _standingRepo.Save();
 
                 _hub?.Update(activeMatch);

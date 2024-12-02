@@ -13,5 +13,18 @@ namespace TournamentManager.DbModels
         public bool IsFailed { get; set; }
 
         public Player Player { get; set; }
+
+        public void SetScore(int score)
+        {
+            if (score == Score)
+                return;
+
+            var prevScore = Score;
+
+            Score = score;
+
+            Player.Score += score - prevScore;
+            Player.Team.Score += score - prevScore;
+        }
     }
 }

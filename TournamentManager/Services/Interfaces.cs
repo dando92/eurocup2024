@@ -90,6 +90,11 @@ namespace TournamentManager.Services
 
         public void RecalcRound(ICollection<Standing> standings, double multiplier = 1)
         {
+
+        }
+
+        public void Recalc(ICollection<Standing> standings, double multiplier = 1)
+        {
             int disabledPlayers = standings.Count(s => s.IsDisabled());
             int maxPoints = standings.Count - disabledPlayers;
             var orderedStandings = standings.Where(s => !s.IsDisabled()).OrderByDescending(s => s.Percentage).OrderByDescending(s => s.IsFailed ? 0 : 1).ToList();
@@ -97,7 +102,7 @@ namespace TournamentManager.Services
 
             for (int i = 0; i < orderedStandings.Count; i++)
             {
-                orderedStandings[i].Score = (int)(maxPoints * multiplier);
+                orderedStandings[i].SetScore((int)(maxPoints * multiplier));
 
                 if (i + 1 < orderedStandings.Count)
                 {
@@ -126,7 +131,7 @@ namespace TournamentManager.Services
                     }
                     else if (orderedStandings[i].Percentage == orderedStandings[i + 1].Percentage)
                     {
-                        if(orderedStandings[i].IsFailed == orderedStandings[i + 1].IsFailed)
+                        if (orderedStandings[i].IsFailed == orderedStandings[i + 1].IsFailed)
                             tieCount++;
                         else
                         {
@@ -136,17 +141,6 @@ namespace TournamentManager.Services
                         }
                     }
                 }
-            }
-        }
-
-        public void Recalc(ICollection<Standing> standings, double multiplier = 1)
-        {
-            RecalcRound(standings, multiplier);
-
-            foreach (var standing in standings)
-            {
-                standing.Player.Score += standing.Score;
-                standing.Player.Team.Score += standing.Score;
             }
         }
     }
