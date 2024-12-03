@@ -22,7 +22,7 @@ namespace TournamentManager.Controllers
         }
 
         [HttpPost("addBatchPlayer")]
-        [TypeFilter(typeof(AuthorizationFilterAttribute))]
+        //[TypeFilter(typeof(AuthorizationFilterAttribute))]
         public IActionResult AddBatchPlayer([FromBody] PostBatchPlayerRequest request)
         {
             List<Player> players = new List<Player>();
@@ -50,8 +50,6 @@ namespace TournamentManager.Controllers
                             teamsRepo.Save();
                             teams.Add(team);
                         }).Wait();
-
-                        teams.Add(team);
                     }
                 }
 
@@ -59,7 +57,7 @@ namespace TournamentManager.Controllers
                 {
                     Name = p.Name,
                     Score = 0,
-                    TeamId = team == null ? null : team?.Id
+                    TeamId = team?.Id
                 });
             }
             
