@@ -22,7 +22,7 @@ namespace TournamentManager.Controllers
         }
 
         [HttpPost("addBatchPlayer")]
-        //[TypeFilter(typeof(AuthorizationFilterAttribute))]
+        [TypeFilter(typeof(AuthorizationFilterAttribute))]
         public IActionResult AddBatchPlayer([FromBody] PostBatchPlayerRequest request)
         {
             List<Player> players = new List<Player>();
