@@ -26,4 +26,18 @@ public static class Extension
 
         return end;
     }
+
+    public static void DeploySmFolder(this Player player, string outputFolder)
+    {
+        Directory.CreateDirectory(Path.Combine(outputFolder, "EditCourses"));
+        Directory.CreateDirectory(Path.Combine(outputFolder, "Edits"));
+        Directory.CreateDirectory(Path.Combine(outputFolder, "Rivals"));
+        Directory.CreateDirectory(Path.Combine(outputFolder, "Screenshots"));
+
+        File.WriteAllText(Path.Combine(outputFolder, "Editable.ini"), player.SerializeEditable());
+        File.WriteAllText(Path.Combine(outputFolder, "Simply Love UserPrefs.ini"), player.SerializeUserPrefs());
+
+        File.Copy("Stats.xml", Path.Combine(outputFolder, "Stats.xml"));
+        File.Copy("Type.ini", Path.Combine(outputFolder, "Type.ini"));
+    }
 }

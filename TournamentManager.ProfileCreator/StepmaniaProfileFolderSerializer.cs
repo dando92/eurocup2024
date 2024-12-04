@@ -76,11 +76,8 @@
             string folderName = Path.Combine(OutputFolder, p.Name);
             Directory.CreateDirectory(folderName);
 
-            DeploySmPLayer(folderName, p);
+            p.DeploySmFolder(folderName);;
         }
-        string fileName = Path.Combine(OutputFolder, "Players.json");
-
-        File.WriteAllText(fileName, players.Serialize());
     }
 
     public static void DeploySmPLayer(string outputFolder, Player player)
