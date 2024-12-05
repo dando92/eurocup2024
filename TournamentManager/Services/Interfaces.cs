@@ -185,6 +185,23 @@ namespace TournamentManager.Services
         }
     }
 
+    public class FinalsCalculator : IScoringSystem
+    {
+        public string Name => "EurocupFinalsScoringSystem";
+
+        public string Description => "First to n";
+
+        public void Recalc(ICollection<Standing> standings, double multiplier = 1)
+        {
+            var orderedStandings = standings
+                                    .Where(s => !s.IsDisabled())
+                                    .OrderByDescending(s => s.Percentage)
+                                    .OrderByDescending(s => s.IsFailed ? 0 : 1).ToList();
+            
+            orderedStandings[0].Score = 1;
+            orderedStandings[1].Score = 0;
+        }
+    }
 
     public class TagTeamScoreCalculatorFailNotCount : IScoringSystem
     {
