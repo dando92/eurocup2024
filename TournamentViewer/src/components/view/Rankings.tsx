@@ -102,7 +102,7 @@ function TeamRanking({ teams }: { teams: Team[] }) {
             </span>
           )}
           <span className="flex-1 text-lg font-semibold text-gray-200">
-            {team.name}
+            #{index+1} {team.name}
           </span>
           <span
             className="text-gray-300 text-2xl font-bold"
@@ -153,7 +153,7 @@ function PlayerRanking({ players }: { players: Player[] }) {
             </span>
           )}
           <span className="flex-1 text-lg font-semibold text-gray-200">
-            {player.name}
+             #{index+1} {player.name}
           </span>
           <span
             className="text-gray-300 text-2xl font-bold"
