@@ -12,7 +12,7 @@
         public string Notes { get; set; }
         public string Levels { get; set; }
         public List<int> SongIds { get; set; }
-
+        public string ScoringSystem { get; set; }
         public int[] PlayerIds { get; set; }
     }
 

@@ -13,6 +13,8 @@ namespace TournamentManager.DbModels
         public double Multiplier { get; set; } = 1;
         public bool IsManualMatch { get; set; }
 
+        public string ScoringSystem { get; set; }
+
         [JsonIgnore]
         public Phase Phase { get; set; }
         public ICollection<Round> Rounds { get; set; }

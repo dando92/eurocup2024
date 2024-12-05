@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Owin.Security.Provider;
 using TournamentManager.DbModels;
 using TournamentManager.DTOs;
 using TournamentManager.Requests;
@@ -15,16 +16,18 @@ namespace TournamentManager.Controllers
         private readonly ITournamentCache _cache;
         private IStandingManager _standingManager;
         private readonly IMatchManager _matchManager;
-
+        private readonly IScoringSystemProvider _provider;
         public TournamentController(ITournamentCache cache,
             IStandingManager standingManager,
             IMatchManager matchManager,
+            IScoringSystemProvider provider,
             Scheduler scheduler)
         {
             _standingManager = standingManager;
             _cache = cache;
             _matchManager = matchManager;
             _scheduler = scheduler;
+            _provider = provider;
         }
 
         [HttpGet("matches/{id}")]
@@ -107,7 +110,7 @@ namespace TournamentManager.Controllers
         {
             var match = _scheduler.Schedule((token) =>
             {
-                var match = _matchManager.AddMatch(request.MatchName, request.Notes, request.Subtitle, request.PlayerIds, request.PhaseId, request.IsManualMatch, request.Multiplier);
+                var match = _matchManager.AddMatch(request.MatchName, request.Notes, request.Subtitle, request.PlayerIds, request.PhaseId, request.IsManualMatch, request.ScoringSystem, request.Multiplier);
                 
                 if (request.SongIds != null)
                     _matchManager.AddSongsToMatch(match, request.SongIds.ToArray());
@@ -139,6 +142,13 @@ namespace TournamentManager.Controllers
 
             return Ok(GetMatchDtoFromId(_cache.ActiveMatch));
         }
+
+        [HttpGet("possibleScoringSystem")]
+        public IActionResult GetPossibleScoringSystem()
+        {
+            return Ok(_provider.GetPossibleScoringSystem());
+        }
+
 
         [HttpGet("activeMatch")]
         public IActionResult GetActiveMatch()

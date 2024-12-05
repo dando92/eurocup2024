@@ -6,7 +6,7 @@ namespace TournamentManager.Services
 {
     public interface IMatchManager
     {
-        Match AddMatch(string matchName, string notes, string subtitle, int[] playerIds, int phaseId, bool isManualMatch, double multiplier = 1);
+        Match AddMatch(string matchName, string notes, string subtitle, int[] playerIds, int phaseId, bool isManualMatch, string scoringSystem, double multiplier = 1);
         void AddRandomSongsToMatch(int matchId, int divisionId, string group, string levels);
         void AddRandomSongsToMatch(Match match, int divisionId, string group, string levels);
         void AddSongsToMatch(Match match, int[] songIds);
@@ -46,9 +46,9 @@ namespace TournamentManager.Services
         }
 
         public Match AddMatch(string matchName, string notes, string subtitle, int[] playerIds, int phaseId,
-            bool isManualMatch, double multiplier = 1)
+            bool isManualMatch, string scoringSystem, double multiplier = 1)
         {
-            var newMatch = CreateMatch(matchName, notes, subtitle, playerIds, isManualMatch, multiplier);
+            var newMatch = CreateMatch(matchName, notes, subtitle, playerIds, isManualMatch, scoringSystem, multiplier);
 
             newMatch.PhaseId = phaseId;
 
@@ -127,7 +127,7 @@ namespace TournamentManager.Services
             _roundRepo.Add(CreateRound(match, songId));
         }
 
-        private Match CreateMatch(string matchName, string notes, string subTitle, int[] players, bool isManualMatch, double multiplier = 1)
+        private Match CreateMatch(string matchName, string notes, string subTitle, int[] players, bool isManualMatch, string scoringSystem, double multiplier = 1)
         {
             var match = new Match()
             {
@@ -138,7 +138,8 @@ namespace TournamentManager.Services
                 PlayerInMatches = new List<PlayerInMatch>(players.Length),
                 SongInMatches = new List<SongInMatch>(),
                 Rounds = new List<Round>(),
-                Multiplier = multiplier
+                Multiplier = multiplier,
+                ScoringSystem = scoringSystem
             };
 
             foreach (var player in players)

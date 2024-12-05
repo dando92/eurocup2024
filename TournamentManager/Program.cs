@@ -27,7 +27,10 @@ builder.Services.AddSignalR();
 builder.Services
     .AddSingleton<Scheduler>()
     .AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>))
-    .AddScoped<IScoreCalculator, TeamScoreCalculator>() //To restore the eurocup use MatchScoreCalculator
+    .AddScoped<IScoringSystem, TagTeamScoreCalculatorFailCount>() 
+    .AddScoped<IScoringSystem, EurocupScoreCalculator>() 
+    .AddScoped<IScoringSystem, TagTeamScoreCalculatorFailNotCount>()
+    .AddScoped<IScoringSystemProvider, ManualScoringSystemProvider>()
     .AddScoped<IMatchManager, MatchManager>()
     .AddScoped<IStandingManager, StandingManager>()
     .AddScoped<ISongRoller, SongRoller>()

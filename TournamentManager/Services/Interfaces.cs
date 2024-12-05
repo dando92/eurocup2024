@@ -40,18 +40,59 @@ namespace TournamentManager.Services
         void SetActiveMatch(Match match);
     }
 
-
-    public interface IScoreCalculator
+    public interface IScoringSystemProvider
     {
+        IScoringSystem GetScoringSystem(string key);
+
+        IEnumerable<string> GetPossibleScoringSystem();
+    }
+
+    public class ManualScoringSystemProvider : IScoringSystemProvider
+    {
+        public Dictionary<string, IScoringSystem> _systems;
+
+        public ManualScoringSystemProvider(IEnumerable<IScoringSystem> scoringSystems)
+        {
+            _systems = new Dictionary<string, IScoringSystem>();
+
+            foreach (IScoringSystem system in scoringSystems)
+                Add(system);
+        }
+
+        public void Add(IScoringSystem scoreCalculator)
+        {
+            _systems.Add(scoreCalculator.Name, scoreCalculator);
+        }
+
+        public IEnumerable<string> GetPossibleScoringSystem()
+        {
+            return _systems.Keys;
+        }
+
+        public IScoringSystem GetScoringSystem(string key)
+        {
+            return _systems[key];
+        }
+    }
+
+    public interface IScoringSystem
+    {
+        string Name { get; }
+        string Description { get; }
+
         void Recalc(ICollection<Standing> standings, double multiplier = 1);
     }
 
-    public class MatchScoreCalculator : IScoreCalculator
+    public class EurocupScoreCalculator : IScoringSystem
     {
-        public MatchScoreCalculator()
+        public EurocupScoreCalculator()
         {
 
         }
+
+        public string Name => "EurocupScoreCalculator";
+
+        public string Description => "Fail count 0";
 
         public void Recalc(ICollection<Standing> standings, double multiplier = 1)
         {
@@ -82,15 +123,77 @@ namespace TournamentManager.Services
         }
     }
 
-    public class TeamScoreCalculator : IScoreCalculator
+    public class TagTeamScoreCalculatorFailCount : IScoringSystem
     {
-        public TeamScoreCalculator()
+        public string Name => "TagTeamScoreCalculatorFailCount";
+
+        public string Description => "Fail count points";
+
+        public TagTeamScoreCalculatorFailCount()
         {
         }
 
-        public void RecalcRound(ICollection<Standing> standings, double multiplier = 1)
+        public void Recalc(ICollection<Standing> standings, double multiplier = 1)
         {
+            int disabledPlayers = standings.Count(s => s.IsDisabled());
+            int maxPoints = standings.Count - disabledPlayers;
+            var orderedStandings = standings.Where(s => !s.IsDisabled()).OrderByDescending(s => s.Percentage).OrderByDescending(s => s.IsFailed ? 0 : 1).ToList();
+            int tieCount = 0;
 
+            for (int i = 0; i < orderedStandings.Count; i++)
+            {
+                orderedStandings[i].SetScore((int)(maxPoints * multiplier));
+
+                if (i + 1 < orderedStandings.Count)
+                {
+                    if (orderedStandings[i].Percentage > orderedStandings[i + 1].Percentage)
+                    {
+                        if (tieCount > 0)
+                        {
+                            maxPoints -= tieCount;
+                            tieCount = 0;
+                        }
+
+                        maxPoints--;
+                    }
+                    else if (orderedStandings[i].Percentage < orderedStandings[i + 1].Percentage)
+                    {
+                        if (orderedStandings[i].IsFailed != orderedStandings[i + 1].IsFailed)
+                        {
+                            if (tieCount > 0)
+                            {
+                                maxPoints -= tieCount;
+                                tieCount = 0;
+                            }
+
+                            maxPoints--;
+                        }
+                    }
+                    else if (orderedStandings[i].Percentage == orderedStandings[i + 1].Percentage)
+                    {
+                        if (orderedStandings[i].IsFailed == orderedStandings[i + 1].IsFailed)
+                            tieCount++;
+                        else
+                        {
+                            maxPoints -= tieCount;
+                            tieCount = 0;
+                            maxPoints--;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    public class TagTeamScoreCalculatorFailNotCount : IScoringSystem
+    {
+        public string Name => "TagTeamScoreCalculatorFailNotCount";
+
+        public string Description => "Fail count 0 points";
+
+        public TagTeamScoreCalculatorFailNotCount()
+        {
         }
 
         public void Recalc(ICollection<Standing> standings, double multiplier = 1)

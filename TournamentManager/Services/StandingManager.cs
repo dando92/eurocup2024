@@ -15,7 +15,7 @@ namespace TournamentManager.Services
         private readonly IGenericRepository<Song> _songRepo;
         private readonly IGenericRepository<Player> _playerRepo;
         private readonly IMatchManager _matchManager;
-        private readonly IScoreCalculator _calculator;
+        private readonly IScoringSystemProvider _provider;
 
         public StandingManager(IGenericRepository<Song> songRepo,
             IGenericRepository<Player> playerRepo,
@@ -24,7 +24,7 @@ namespace TournamentManager.Services
             IMatchUpdate matchUpdate,
             ILogUpdate logHub,
             IMatchManager matchManager,
-            IScoreCalculator calculator)
+            IScoringSystemProvider provider)
         {
             _songRepo = songRepo;
             _playerRepo = playerRepo;
@@ -33,7 +33,7 @@ namespace TournamentManager.Services
             _hub = matchUpdate;
             _logHub = logHub;
             _matchManager = matchManager;
-            _calculator = calculator;
+            _provider = provider;
         }
 
         public bool AddStanding(Score score)
@@ -117,7 +117,10 @@ namespace TournamentManager.Services
                     if (!activeMatch.IsManualMatch)
                     {
                         _logHub.LogMessage("Standing recalc...");
-                        _calculator.Recalc(round.Standings, activeMatch.Multiplier);
+
+                        _provider
+                            .GetScoringSystem(activeMatch.ScoringSystem)
+                            .Recalc(round.Standings, activeMatch.Multiplier);
                     }
                 }
                 
