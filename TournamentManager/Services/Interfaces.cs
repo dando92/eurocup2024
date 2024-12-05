@@ -198,14 +198,14 @@ namespace TournamentManager.Services
 
         public void Recalc(ICollection<Standing> standings, double multiplier = 1)
         {
-            int disabledPlayers = standings.Count(s => s.IsDisabled());
+            int disabledPlayers = standings.Count(s => s.IsFailed && s.Percentage == (double)-1);
             int maxPoints = standings.Count - disabledPlayers;
-            var orderedStandings = standings.Where(s => !s.IsDisabled()).OrderByDescending(s => s.Percentage).OrderByDescending(s => s.IsFailed ? 0 : 1).ToList();
+            var orderedStandings = standings.Where(s => !s.IsFailed).OrderByDescending(s => s.Percentage).ToList();
             int tieCount = 0;
 
             for (int i = 0; i < orderedStandings.Count; i++)
             {
-                orderedStandings[i].SetScore((int)(maxPoints * multiplier));
+                orderedStandings[i].Score = maxPoints;
 
                 if (i + 1 < orderedStandings.Count)
                 {
@@ -219,30 +219,8 @@ namespace TournamentManager.Services
 
                         maxPoints--;
                     }
-                    else if (orderedStandings[i].Percentage < orderedStandings[i + 1].Percentage)
-                    {
-                        if (orderedStandings[i].IsFailed != orderedStandings[i + 1].IsFailed)
-                        {
-                            if (tieCount > 0)
-                            {
-                                maxPoints -= tieCount;
-                                tieCount = 0;
-                            }
-
-                            maxPoints--;
-                        }
-                    }
                     else if (orderedStandings[i].Percentage == orderedStandings[i + 1].Percentage)
-                    {
-                        if (orderedStandings[i].IsFailed == orderedStandings[i + 1].IsFailed)
-                            tieCount++;
-                        else
-                        {
-                            maxPoints -= tieCount;
-                            tieCount = 0;
-                            maxPoints--;
-                        }
-                    }
+                        tieCount++;
                 }
             }
         }
