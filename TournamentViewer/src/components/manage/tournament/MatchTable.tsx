@@ -368,7 +368,7 @@ export default function MatchTable({
                   {match.songs.map((song, i) => (
                     <div key={i} className="border-x border-rossoTag p-2">
                       <div className="text-center font-bold text-blue-100">
-                        {song.title}{" "}
+                        {song.title}
                         {controls && isActive && (
                           <>
                             <button

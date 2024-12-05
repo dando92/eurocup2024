@@ -21,7 +21,7 @@ namespace TournamentManager.Controllers
             {
                 token.SetResult(_repo.GetAll().ToList());
             }).WaitResult<List<Match>>();
-            
+
             return Ok(matches);
         }
 
@@ -61,7 +61,8 @@ namespace TournamentManager.Controllers
             {
                 Name = request.Name,
                 PhaseId = request.MatchId,
-                Multiplier = request.Multiplier
+                Multiplier = request.Multiplier,
+                ScoringSystem = request.ScoringSystem
             };
 
             _scheduler.Schedule((token) =>
@@ -89,7 +90,7 @@ namespace TournamentManager.Controllers
 
                 if (request.Notes != null)
                     match.Notes = request.Notes;
-                
+
                 if (request.Multiplier != 0)
                     match.Multiplier = request.Multiplier;
 
@@ -97,7 +98,7 @@ namespace TournamentManager.Controllers
                 token.SetResult(match);
 
             }).WaitResult<Match>();
-            
+
             if (match == null)
                 return NotFound();
 

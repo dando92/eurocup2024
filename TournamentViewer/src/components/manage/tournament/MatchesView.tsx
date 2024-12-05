@@ -65,7 +65,7 @@ export default function MatchesView({
           state.activeMatch.phaseId === phase.id && (
             <div className="pb-20">
               <div>
-                <h3 className="text-3xl text-center">Active match:</h3>
+                <h3 className="text-3xl text-rossoTesto text-center">Active match:</h3>
                 <MatchTable
                   controls={controls}
                   division={division}
