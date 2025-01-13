@@ -6,7 +6,7 @@ import { Division } from './division.entity'
 export class Phase {
   @PrimaryGeneratedColumn()
   id: number;
-  
+
   @Column()
   name: string;
 

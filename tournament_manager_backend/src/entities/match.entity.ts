@@ -7,7 +7,7 @@ import { Player } from './player.entity'
 export class Match {
   @PrimaryGeneratedColumn()
   id: number;
-  
+
   @Column()
   name: string;
 
@@ -16,11 +16,11 @@ export class Match {
 
   @Column()
   notes: string;
-  
+
   // public double Multiplier { get; set; } = 1;
   // public bool IsManualMatch { get; set; }
   // public string ScoringSystem { get; set; }
-  
+
   @ManyToMany(() => Player)
   @JoinTable()
   players: Player[];

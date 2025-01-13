@@ -6,10 +6,10 @@ import { Team } from '../entities/team.entity'
 
 @Injectable()
 export class TeamsService {
-    constructor(
-      @InjectRepository(Team)
-      private repo: Repository<Team>,
-    ) {}
+  constructor(
+    @InjectRepository(Team)
+    private repo: Repository<Team>,
+  ) { }
 
   async create(dto: CreateTeamDto) {
     const newTeam = new Team();
@@ -29,12 +29,12 @@ export class TeamsService {
   }
 
   async update(id: number, dto: UpdateTeamDto) {
-    const team = await this.repo.findOneBy({ id }); 
+    const team = await this.repo.findOneBy({ id });
 
-    if(!team){
+    if (!team) {
       throw Error(`Team with id ${id} not found. Update failed`)
     }
-    
+
     await this.repo.update({ id: id }, {
       name: dto.name,
     });

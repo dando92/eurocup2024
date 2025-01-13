@@ -3,7 +3,7 @@ import { Phase } from './phase.entity'
 import { Tournament } from './tournament.entity';
 
 @Entity()
-export class Division{
+export class Division {
   @PrimaryGeneratedColumn()
   id: number;
 

@@ -6,19 +6,19 @@ import { Player } from './player.entity'
 export class Score {
   @PrimaryGeneratedColumn()
   id: number;
-  
+
   @Column()
   percentage: number;
-  
+
   @Column()
   score: number;
-  
+
   @Column()
   isFailed: boolean;
-  
-  @ManyToOne(() => Song, (song) => song.scores, { cascade: true }) 
+
+  @ManyToOne(() => Song, (song) => song.scores, { cascade: true })
   song: Song
 
-  @ManyToOne(() => Player, (song) => song.scores, { cascade: true }) 
+  @ManyToOne(() => Player, (player) => player.scores, { cascade: true })
   player: Player
 }

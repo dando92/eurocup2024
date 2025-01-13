@@ -11,6 +11,6 @@ export class Standing {
   @JoinColumn()
   score: Score
 
-  @ManyToOne(() => Round, (round) => round.standings, { cascade: true }) 
+  @ManyToOne(() => Round, (round) => round.standings, { cascade: true })
   round: Round
 }

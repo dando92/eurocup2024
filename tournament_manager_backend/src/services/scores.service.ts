@@ -8,14 +8,14 @@ import { Player } from '../entities/player.entity'
 
 @Injectable()
 export class ScoresService {
-    constructor(
-      @InjectRepository(Score)
-      private repo: Repository<Score>,
-      @InjectRepository(Song)
-      private songRepository: Repository<Song>,
-      @InjectRepository(Player)
-      private playerRepository: Repository<Player>,
-    ) {}
+  constructor(
+    @InjectRepository(Score)
+    private repo: Repository<Score>,
+    @InjectRepository(Song)
+    private songRepository: Repository<Song>,
+    @InjectRepository(Player)
+    private playerRepository: Repository<Player>,
+  ) { }
 
   async create(createScoreDto: CreateScoreDto) {
     const song = await this.songRepository.findOneBy({ id: createScoreDto.songId });
@@ -47,32 +47,28 @@ export class ScoresService {
   }
 
   async update(id: number, updateScoreDto: UpdateScoreDto) {
-    const score = await this.repo.findOneBy({ id }); 
+    const score = await this.repo.findOneBy({ id });
 
-    if (!score) { 
-      throw new Error('Score not found'); 
+    if (!score) {
+      throw new Error(`Score with id ${id} not found`)
     }
 
-    const song = await this.songRepository.findOneBy({ id: updateScoreDto.songId });
-    const player = await this.playerRepository.findOneBy({ id: updateScoreDto.playerId });
-
-    if (!song || !player) {
-      throw new Error('Song or Player not found');
+    //Check if the song or the player are updated
+    if (updateScoreDto.songId) {
+      const song = await this.songRepository.findOneBy({ id: updateScoreDto.songId });
+      if (!song) {
+        throw new Error(`Song with id ${updateScoreDto.songId} not found`)
+      }
     }
 
-    score.percentage = updateScoreDto.percentage;
-    score.score = updateScoreDto.score;
-    score.isFailed = updateScoreDto.isFailed;
-    score.song = song;
-    score.player = player;
+    if (updateScoreDto.playerId) {
+      const player = await this.playerRepository.findOneBy({ id: updateScoreDto.playerId });
+      if (!player) {
+        throw new Error(`Player with id ${updateScoreDto.playerId} not found`)
+      }
+    }
 
-    await this.repo.update({ id: id }, {
-      percentage: updateScoreDto.percentage,
-      score: updateScoreDto.score,
-      isFailed: updateScoreDto.isFailed,
-      song: song,
-      player: player
-    });
+    await this.repo.update({ id: id }, updateScoreDto);
 
     return score;
   }
