@@ -10,10 +10,10 @@ export class Player {
   @Column()
   name: string;
 
-  @OneToMany(() => Score, (score) => score.player)
+  @OneToMany(() => Score, (score) => score.player, { eager: true })
   scores: Score[]
 
-  @ManyToOne(() => Team, (team) => team.players)
+  @ManyToOne(() => Team, (team) => team.players, { eager: true })
   team: Team;
 }
 

@@ -22,12 +22,12 @@ export class Match {
   // public string ScoringSystem { get; set; }
 
   @ManyToMany(() => Player)
-  @JoinTable()
+  @JoinTable({ name: 'player_in_matches' })
   players: Player[];
 
   @OneToMany(() => Round, (round) => round.match)
-  matches: Round[];
+  rounds: Round[];
 
-  @ManyToOne(() => Phase, (round) => round.matches)
+  @ManyToOne(() => Phase, (phase) => phase.matches)
   phase: Phase;
 }

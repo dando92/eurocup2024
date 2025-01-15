@@ -1,3 +1,4 @@
+// Suggested code may be subject to a license. Learn more: ~LicenseLog:175172732.
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScoresController } from './controllers/scores.controller'
@@ -13,10 +14,8 @@ import { Match } from './entities/match.entity';
 import { Phase } from './entities/phase.entity';
 import { Tournament } from './entities/tournament.entity';
 import { Team } from './entities/team.entity';
-import { TeamsController } from './controllers/teams.controller';
-import { TeamsService } from './services/teams.service ';
-import { PlayerService } from './services/players.service';
-import { PlayersController } from './controllers/players.controller';
+import { Services } from './services';
+import { Controllers } from './controllers';
 
 @Module({
   imports: [
@@ -28,7 +27,7 @@ import { PlayersController } from './controllers/players.controller';
     }),
     TypeOrmModule.forFeature([Player, Song, Score, Standing,  Round, Match, Phase, Division, Tournament, Team]),
   ],
-  controllers: [ScoresController, TeamsController, PlayersController],
-  providers: [ScoresService, TeamsService, PlayerService],
+  controllers: Controllers,
+  providers: Services,
 })
 export class AppModule {}

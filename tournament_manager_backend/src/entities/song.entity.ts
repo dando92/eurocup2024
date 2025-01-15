@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Score } from './score.entity'
+import { Round } from './round.entity'
 
 @Entity()
 export class Song {
@@ -17,5 +18,8 @@ export class Song {
 
   @OneToMany(() => Score, (score) => score.song)
   scores: Score[]
+
+  @OneToMany(() => Round, (round) => round.song)
+  rounds: Round[]
 }
 

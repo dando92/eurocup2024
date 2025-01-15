@@ -5,12 +5,13 @@ import { Repository } from 'typeorm';
 import { Score } from '../entities/score.entity'
 import { Song } from '../entities/song.entity'
 import { Player } from '../entities/player.entity'
+import { ICrudService } from '../interface/ICrudService';
 
 @Injectable()
-export class ScoresService {
+export class ScoresService implements ICrudService<Score, CreateScoreDto, UpdateScoreDto> {
   constructor(
     @InjectRepository(Score)
-    private repo: Repository<Score>,
+    private scoreRepository: Repository<Score>,
     @InjectRepository(Song)
     private songRepository: Repository<Song>,
     @InjectRepository(Player)
@@ -33,47 +34,51 @@ export class ScoresService {
     newScore.song = song;
     newScore.player = player;
 
-    await this.repo.insert(newScore);
+    await this.scoreRepository.insert(newScore);
 
     return newScore;
   }
 
   async findAll() {
-    return await this.repo.find();
+    return await this.scoreRepository.find();
   }
 
   async findOne(id: number) {
-    return await this.repo.findOneBy({ id });
+    return await this.scoreRepository.findOneBy({ id });
   }
 
-  async update(id: number, updateScoreDto: UpdateScoreDto) {
-    const score = await this.repo.findOneBy({ id });
+  async update(id: number, dto: UpdateScoreDto) {
+    const score = await this.scoreRepository.findOneBy({ id });
 
     if (!score) {
       throw new Error(`Score with id ${id} not found`)
     }
 
     //Check if the song or the player are updated
-    if (updateScoreDto.songId) {
-      const song = await this.songRepository.findOneBy({ id: updateScoreDto.songId });
+    if (dto.songId) {
+      const song = await this.songRepository.findOneBy({ id: dto.songId });
       if (!song) {
-        throw new Error(`Song with id ${updateScoreDto.songId} not found`)
+        throw new Error(`Song with id ${dto.songId} not found`)
       }
+      dto.song = song
+      delete dto.songId
     }
 
-    if (updateScoreDto.playerId) {
-      const player = await this.playerRepository.findOneBy({ id: updateScoreDto.playerId });
+    if (dto.playerId) {
+      const player = await this.playerRepository.findOneBy({ id: dto.playerId });
       if (!player) {
-        throw new Error(`Player with id ${updateScoreDto.playerId} not found`)
+        throw new Error(`Player with id ${dto.playerId} not found`)
       }
+      dto.player = player
+      delete dto.playerId
     }
 
-    await this.repo.update({ id: id }, updateScoreDto);
+    await this.scoreRepository.merge(score, dto);
 
     return score;
   }
 
   async remove(id: number) {
-    await this.repo.delete(id);
+    await this.scoreRepository.delete(id);
   }
 }

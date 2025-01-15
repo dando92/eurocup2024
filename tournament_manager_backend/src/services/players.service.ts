@@ -4,10 +4,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Player } from '../entities/player.entity'
 import { Team } from '../entities/team.entity'
-import { distinct } from 'rxjs';
+import { ICrudService } from '../interface/ICrudService';
 
 @Injectable()
-export class PlayerService {
+export class PlayerService implements ICrudService<Player, CreatePlayerDto, UpdatePlayerDto> {
   constructor(
     @InjectRepository(Player)
     private playersRepo: Repository<Player>,
@@ -58,7 +58,7 @@ export class PlayerService {
       delete dto.teamId;
     }
 
-    await this.playersRepo.update({ id: id }, dto);
+    await this.playersRepo.merge(player, dto);
 
     return player;
   }

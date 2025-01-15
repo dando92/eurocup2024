@@ -3,9 +3,10 @@ import { CreateTeamDto, UpdateTeamDto } from '../dtos/team.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Team } from '../entities/team.entity'
+import { ICrudService } from '../interface/ICrudService';
 
 @Injectable()
-export class TeamsService {
+export class TeamsService implements ICrudService<Team, CreateTeamDto, UpdateTeamDto> {
   constructor(
     @InjectRepository(Team)
     private repo: Repository<Team>,
@@ -35,9 +36,7 @@ export class TeamsService {
       throw Error(`Team with id ${id} not found. Update failed`)
     }
 
-    await this.repo.update({ id: id }, {
-      name: dto.name,
-    });
+    await this.repo.merge(team, dto);
 
     return team;
   }
