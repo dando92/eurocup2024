@@ -3,7 +3,7 @@ import { CreateRoundDto, UpdateRoundDto } from '../dtos';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Round, Match, Song } from '../entities'
-import { ICrudService } from '../interface/ICrudService';
+import { ICrudService } from './ICrudService';
 
 @Injectable()
 export class RoundsService implements ICrudService<Round, CreateRoundDto, UpdateRoundDto> {

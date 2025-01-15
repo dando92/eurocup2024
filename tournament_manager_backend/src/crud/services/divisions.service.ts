@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Division, Tournament } from '../entities';
 import { CreateDivisionDto, UpdateDivisionDto } from '../dtos';
-import { ICrudService } from '../interface/ICrudService';
+import { ICrudService } from './ICrudService';
 
 @Injectable()
 export class DivisionsService implements ICrudService<Division, CreateDivisionDto, UpdateDivisionDto> {
