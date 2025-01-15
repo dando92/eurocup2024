@@ -5,8 +5,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { Player } from '../entities/player.entity';
-import { Phase } from '../entities/phase.entity';
+import { Player, Phase } from '../entities';
 
 export class CreateMatchDto {
   @IsNotEmpty()

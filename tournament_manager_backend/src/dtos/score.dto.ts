@@ -1,8 +1,7 @@
 import { IsNotEmpty, IsNumber, IsOptional, IsBoolean } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { Song } from 'src/entities/song.entity';
-import { Player } from 'src/entities/player.entity';
+import { Song, Player }  from '../entities';
 
 export class CreateScoreDto {
   @ApiProperty({ description: 'The percentage of the score', example: 95 })

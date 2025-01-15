@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { CreateTeamDto, UpdateTeamDto } from '../dtos/team.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateTeamDto, UpdateTeamDto } from '../dtos';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Team } from '../entities/team.entity'
+import { Team } from '../entities'
 import { ICrudService } from '../interface/ICrudService';
 
 @Injectable()
@@ -13,12 +13,13 @@ export class TeamsService implements ICrudService<Team, CreateTeamDto, UpdateTea
   ) { }
 
   async create(dto: CreateTeamDto) {
-    const newTeam = new Team();
-    newTeam.name = dto.name;
+    const team = new Team();
 
-    await this.repo.insert(newTeam);
+    team.name = dto.name;
 
-    return newTeam;
+    await this.repo.insert(team);
+
+    return team;
   }
 
   async findAll() {
@@ -33,10 +34,10 @@ export class TeamsService implements ICrudService<Team, CreateTeamDto, UpdateTea
     const team = await this.repo.findOneBy({ id });
 
     if (!team) {
-      throw Error(`Team with id ${id} not found. Update failed`)
+      throw new NotFoundException(`Team with ID ${id} not found`);
     }
 
-    await this.repo.merge(team, dto);
+    this.repo.merge(team, dto);
 
     return team;
   }

@@ -1,10 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { CreateStandingDto, UpdateStandingDto } from '../dtos/standing.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateStandingDto, UpdateStandingDto } from '../dtos';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Standing } from '../entities/standing.entity'
-import { Round } from '../entities/round.entity'
-import { Score } from '../entities/score.entity'
+import { Standing, Round, Score } from '../entities'
 import { ICrudService } from '../interface/ICrudService';
 
 @Injectable()
@@ -19,19 +17,19 @@ export class StandingsService implements ICrudService<Standing, CreateStandingDt
     ) { }
 
     async create(dto: CreateStandingDto) {
-        const newStanding = new Standing();
-
         const score = await this.scoreRepo.findOneBy({ id: dto.scoreId });
 
         if (!score) {
-            throw Error(`Score with id ${dto.scoreId} not found. Insert standing failed`)
+            throw new NotFoundException(`Score with id ${dto.scoreId} not found. Insert standing failed`)
         }
 
         const round = await this.roundRepo.findOneBy({ id: dto.roundId });
 
         if (!round) {
-            throw Error(`Round with id ${dto.roundId} not found. Insert standing failed`)
+            throw new NotFoundException(`Round with id ${dto.roundId} not found. Insert standing failed`)
         }
+
+        const newStanding = new Standing();
 
         newStanding.score = score;
         newStanding.round = round;
@@ -50,37 +48,37 @@ export class StandingsService implements ICrudService<Standing, CreateStandingDt
     }
 
     async update(id: number, dto: UpdateStandingDto) {
-        const score = await this.standingRepo.findOneBy({ id });
+        const standing = await this.standingRepo.findOneBy({ id });
 
-        if (!score) {
-            throw Error(`Standing with id ${id} not found. Update standing failed`);
+        if (!standing) {
+            throw new NotFoundException(`Standing with id ${id} not found. Update standing failed`);
         }
 
         if (dto.scoreId) {
-            const score = await this.scoreRepo.findOneBy({ id: dto.scoreId });
+            const updatedScore = await this.scoreRepo.findOneBy({ id: dto.scoreId });
 
-            if (!score) {
-                throw Error(`Score with id ${dto.scoreId} not found. Update standing failed`)
+            if (!updatedScore) {
+                throw new NotFoundException(`Score with id ${dto.scoreId} not found. Update standing failed`)
             }
 
-            dto.score = score;
+            dto.score = updatedScore;
             delete dto.scoreId;
         }
 
         if (dto.roundId) {
-            const round = await this.roundRepo.findOneBy({ id: dto.roundId });
-    
-            if (!round) {
-                throw Error(`Round with id ${dto.roundId} not found. Update standing failed`)
+            const updatedRound = await this.roundRepo.findOneBy({ id: dto.roundId });
+
+            if (!updatedRound) {
+                throw new NotFoundException(`Round with id ${dto.roundId} not found. Update standing failed`)
             }
 
-            dto.round = round;
+            dto.round = updatedRound;
             delete dto.roundId;
         }
 
-        await this.standingRepo.merge(score, dto);
+        this.standingRepo.merge(standing, dto);
 
-        return score;
+        return standing;
     }
 
     async remove(id: number) {

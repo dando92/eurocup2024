@@ -1,17 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { CreateRoundDto, UpdateRoundDto } from '../dtos/round.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateRoundDto, UpdateRoundDto } from '../dtos';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Round } from '../entities/round.entity'
-import { Song } from '../entities/song.entity'
-import { Match } from '../entities/match.entity'
+import { Round, Match, Song } from '../entities'
 import { ICrudService } from '../interface/ICrudService';
 
 @Injectable()
 export class RoundsService implements ICrudService<Round, CreateRoundDto, UpdateRoundDto> {
     constructor(
         @InjectRepository(Round)
-        private playersRepo: Repository<Round>,
+        private roundsRepo: Repository<Round>,
         @InjectRepository(Match)
         private matchRepo: Repository<Match>,
         @InjectRepository(Song)
@@ -21,50 +19,45 @@ export class RoundsService implements ICrudService<Round, CreateRoundDto, Update
     async create(dto: CreateRoundDto) {
         const newRound = new Round();
 
-        if (dto.matchId) {
-            const match = await this.matchRepo.findOneBy({ id: dto.matchId });
+        const match = await this.matchRepo.findOneBy({ id: dto.matchId });
 
-            if (!match) {
-                throw Error(`Match with id ${dto.matchId} not found. Insert round failed`)
-            }
-
-            newRound.match = match;
+        if (!match) {
+            throw Error(`Match with id ${dto.matchId} not found. Insert round failed`)
         }
 
-        if (dto.songId) {
-            const song = await this.songRepo.findOneBy({ id: dto.songId });
+        const song = await this.songRepo.findOneBy({ id: dto.songId });
 
-            if (!song) {
-                throw Error(`Song with id ${dto.songId} not found. Insert round failed`)
-            }
-
-            newRound.song = song;
+        if (!song) {
+            throw new NotFoundException(`Song with id ${dto.songId} not found. Insert round failed`)
         }
 
-        await this.playersRepo.insert(newRound);
+        newRound.match = match;
+        newRound.song = song;
+
+        await this.roundsRepo.insert(newRound);
 
         return newRound;
     }
 
     async findAll() {
-        return await this.playersRepo.find();
+        return await this.roundsRepo.find();
     }
 
     async findOne(id: number) {
-        return await this.playersRepo.findOneBy({ id });
+        return await this.roundsRepo.findOneBy({ id });
     }
 
     async update(id: number, dto: UpdateRoundDto) {
-        const round = await this.playersRepo.findOneBy({ id });
+        const round = await this.roundsRepo.findOneBy({ id });
 
         if (!round) {
-            throw Error(`Round with id ${id} not found. Update round failed`);
+            throw new NotFoundException(`Round with id ${id} not found. Update round failed`);
         }
 
         if (dto.matchId) {
             const match = await this.matchRepo.findOneBy({ id: dto.matchId });
             if (!match) {
-                throw Error(`Match with id ${dto.matchId} not found. Update round failed`);
+                throw new NotFoundException(`Match with id ${dto.matchId} not found. Update round failed`);
             }
             dto.match = match;
             delete dto.matchId;
@@ -73,18 +66,18 @@ export class RoundsService implements ICrudService<Round, CreateRoundDto, Update
         if (dto.songId) {
             const song = await this.songRepo.findOneBy({ id: dto.songId });
             if (!song) {
-                throw Error(`Song with id ${dto.matchId} not found. Update round failed`);
+                throw new NotFoundException(`Song with id ${dto.songId} not found. Update round failed`);
             }
             dto.song = song;
             delete dto.songId;
         }
 
-        await this.playersRepo.merge(round, dto);
+        this.roundsRepo.merge(round, dto);
 
         return round;
     }
 
     async remove(id: number) {
-        await this.playersRepo.delete(id);
+        await this.roundsRepo.delete(id);
     }
 }

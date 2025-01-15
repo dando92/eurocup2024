@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsNumber, IsString, IsOptional, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { Tournament } from '../entities/tournament.entity';
+import { Tournament } from '../entities';
 
 export class CreateDivisionDto {
   @ApiProperty({ description: 'The name of the division', example: 'Division A' })

@@ -1,10 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Match } from '../entities/match.entity';
-import { CreateMatchDto, UpdateMatchDto } from '../dtos/match.dto';
-import { Phase } from '../entities/phase.entity';
-import { Player } from '../entities/player.entity';
+import { CreateMatchDto, UpdateMatchDto } from '../dtos';
+import { Phase, Player, Match } from '../entities';
 import { ICrudService } from '../interface/ICrudService';
 
 @Injectable()
@@ -24,20 +22,20 @@ export class MatchesService implements ICrudService<Match, CreateMatchDto, Updat
         const phase = await this.phaseRepository.findOneBy({ id: dto.phaseId });
 
         if (!phase) {
-            throw new Error(`Tournament with ID ${dto.phaseId} not found`);
+            throw new NotFoundException(`Phase with ID ${dto.phaseId} not found`);
         }
         match.phase = phase;
-        
+
         match.players = [];
 
-        dto.playerIds.forEach(async id => {
-            const player = await this.playerRepository.findOneBy({ id: id });
+        for (const playerId of dto.playerIds) {
+            const player = await this.playerRepository.findOneBy({ id: playerId });
 
             if (!player) {
-                throw new Error(`Tournament with ID ${dto.phaseId} not found`);
+                throw new NotFoundException(`Player with ID ${playerId} not found`);
             }
             match.players.push(player);
-        });
+        }
 
         match.name = dto.name;
         match.notes = dto.notes;
@@ -56,7 +54,7 @@ export class MatchesService implements ICrudService<Match, CreateMatchDto, Updat
         return await this.matchRepository.findOneBy({ id });
     }
 
-    async update( id: number, dto: UpdateMatchDto) {
+    async update(id: number, dto: UpdateMatchDto) {
         const match = await this.matchRepository.findOneBy({ id });
 
         if (!match) {
@@ -66,7 +64,7 @@ export class MatchesService implements ICrudService<Match, CreateMatchDto, Updat
         if (dto.phaseId) {
             const phase = await this.phaseRepository.findOneBy({ id: dto.phaseId });
             if (!phase) {
-                throw new Error(`Phase with ID ${dto.phase} not found`);
+                throw new NotFoundException(`Phase with ID ${dto.phaseId} not found`);
             }
             match.phase = phase;
             delete dto.phaseId
@@ -74,20 +72,20 @@ export class MatchesService implements ICrudService<Match, CreateMatchDto, Updat
 
         if (dto.playerIds) {
             const players = [];
-            dto.playerIds.forEach(async id => {
-                const player = await this.playerRepository.findOneBy({ id: id });
-    
+            for (const playerId of dto.playerIds) {
+                const player = await this.playerRepository.findOneBy({ id: playerId });
+
                 if (!player) {
-                    throw new Error(`Tournament with ID ${dto.phaseId} not found`);
+                    throw new NotFoundException(`Player with ID ${playerId} not found`);
                 }
                 players.push(player);
-            });
+            }
 
             dto.players = players
             delete dto.playerIds
         }
 
-        await this.matchRepository.merge(match, dto);
+        this.matchRepository.merge(match, dto);
 
         return match;
     }

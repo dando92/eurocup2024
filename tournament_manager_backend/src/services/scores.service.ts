@@ -1,10 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { CreateScoreDto, UpdateScoreDto } from '../dtos/score.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateScoreDto, UpdateScoreDto } from '../dtos';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Score } from '../entities/score.entity'
-import { Song } from '../entities/song.entity'
-import { Player } from '../entities/player.entity'
+import { Score, Song, Player } from '../entities'
 import { ICrudService } from '../interface/ICrudService';
 
 @Injectable()
@@ -18,19 +16,24 @@ export class ScoresService implements ICrudService<Score, CreateScoreDto, Update
     private playerRepository: Repository<Player>,
   ) { }
 
-  async create(createScoreDto: CreateScoreDto) {
-    const song = await this.songRepository.findOneBy({ id: createScoreDto.songId });
-    const player = await this.playerRepository.findOneBy({ id: createScoreDto.playerId });
+  async create(dto: CreateScoreDto) {
+    const song = await this.songRepository.findOneBy({ id: dto.songId });
 
-    if (!song || !player) {
-      throw new Error('Song or Player not found');
+    if (!song) {
+      throw new NotFoundException(`Song with ID ${dto.songId} not found`);
+    }
+
+    const player = await this.playerRepository.findOneBy({ id: dto.playerId });
+
+    if (!player) {
+      throw new NotFoundException(`Player with ID ${dto.playerId} not found`);
     }
 
     const newScore = new Score();
 
-    newScore.percentage = createScoreDto.percentage;
-    newScore.score = createScoreDto.score;
-    newScore.isFailed = createScoreDto.isFailed;
+    newScore.percentage = dto.percentage;
+    newScore.score = dto.score;
+    newScore.isFailed = dto.isFailed;
     newScore.song = song;
     newScore.player = player;
 
@@ -48,34 +51,34 @@ export class ScoresService implements ICrudService<Score, CreateScoreDto, Update
   }
 
   async update(id: number, dto: UpdateScoreDto) {
-    const score = await this.scoreRepository.findOneBy({ id });
+    const existingScore = await this.scoreRepository.findOneBy({ id });
 
-    if (!score) {
-      throw new Error(`Score with id ${id} not found`)
+    if (!existingScore) {
+      throw new Error(`Score with ID ${id} not found`);
     }
 
-    //Check if the song or the player are updated
+    // Check if the song or the player needs to be updated
     if (dto.songId) {
       const song = await this.songRepository.findOneBy({ id: dto.songId });
       if (!song) {
-        throw new Error(`Song with id ${dto.songId} not found`)
+        throw new NotFoundException(`Song with ID ${dto.songId} not found`);
       }
       dto.song = song
-      delete dto.songId
+      delete dto.songId;
     }
 
     if (dto.playerId) {
       const player = await this.playerRepository.findOneBy({ id: dto.playerId });
       if (!player) {
-        throw new Error(`Player with id ${dto.playerId} not found`)
+        throw new NotFoundException(`Player with ID ${dto.playerId} not found`);
       }
-      dto.player = player
-      delete dto.playerId
+      dto.player = player;
+      delete dto.playerId;
     }
 
-    await this.scoreRepository.merge(score, dto);
+    this.scoreRepository.merge(existingScore, dto);
 
-    return score;
+    return existingScore;
   }
 
   async remove(id: number) {

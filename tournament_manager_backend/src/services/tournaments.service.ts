@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Tournament } from '../entities/tournament.entity';
-import { CreateTournamentDto, UpdateTournamentDto } from '../dtos/tournament.dto';
+import { Tournament } from '../entities';
+import { CreateTournamentDto, UpdateTournamentDto } from '../dtos';
 import { ICrudService } from '../interface/ICrudService';
 
 @Injectable()
@@ -13,13 +13,13 @@ export class TournamentsService implements ICrudService<Tournament, CreateTourna
   ) {}
 
   async create(dto: CreateTournamentDto){
-    const tournament = new Tournament();
+    const newTournament = new Tournament();
     
-    tournament.name = dto.name;
+    newTournament.name = dto.name;
 
-    await this.tournamentsRepository.insert(tournament);
+    await this.tournamentsRepository.insert(newTournament);
 
-    return tournament;
+    return newTournament;
   }
 
   async findAll(): Promise<Tournament[]> {
@@ -31,15 +31,15 @@ export class TournamentsService implements ICrudService<Tournament, CreateTourna
   }
 
   async update(id: number, dto: UpdateTournamentDto){
-    const tournament = await this.findOne(id);
+    const existingTournament = await this.findOne(id);
 
-    if (!tournament) {
-        throw new Error(`Tournament with ID ${id} not found`);
+    if (!existingTournament) {
+        throw new NotFoundException(`Tournament with id ${id} not found`);
     }
 
-    await this.tournamentsRepository.merge(tournament, dto);
+    this.tournamentsRepository.merge(existingTournament, dto);
 
-    return tournament;
+    return existingTournament;
   }
 
   async remove(id: number){

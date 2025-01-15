@@ -1,9 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Division } from '../entities/division.entity';
-import { CreateDivisionDto, UpdateDivisionDto } from '../dtos/division.dto';
-import { Tournament } from '../entities/tournament.entity';
+import { Division, Tournament } from '../entities';
+import { CreateDivisionDto, UpdateDivisionDto } from '../dtos';
 import { ICrudService } from '../interface/ICrudService';
 
 @Injectable()
@@ -16,17 +15,16 @@ export class DivisionsService implements ICrudService<Division, CreateDivisionDt
     ) { }
 
     async create(dto: CreateDivisionDto) {
-        const division = new Division();
+        const tournament = await this.tournamentRepository.findOneBy({ id: dto.tournamentId });
 
-        if (dto.tournamentId) {
-            const tournament = await this.tournamentRepository.findOneBy({ id: dto.tournamentId });
-            if (!tournament) {
-                throw new Error(`Tournament with ID ${dto.tournamentId} not found`);
-            }
-            division.tournament = tournament;
+        if (!tournament) {
+            throw new NotFoundException(`Tournament with ID ${dto.tournamentId} not found`);
         }
 
+        const division = new Division();
+
         division.name = dto.name;
+        division.tournament = tournament;
 
         await this.divisionRepository.insert(division);
 
@@ -41,24 +39,24 @@ export class DivisionsService implements ICrudService<Division, CreateDivisionDt
         return await this.divisionRepository.findOneBy({ id });
     }
 
-    async update( id: number, dto: UpdateDivisionDto) {
+    async update(id: number, dto: UpdateDivisionDto) {
         const division = await this.divisionRepository.findOneBy({ id });
 
         if (!division) {
-            throw new Error(`Division with ID ${id} not found`);
+            throw new NotFoundException(`Division with ID ${id} not found`);
         }
 
         // Check and update tournament if provided
-        if (dto.tournament) {
+        if (dto.tournamentId) {
             const tournament = await this.tournamentRepository.findOneBy({ id: dto.tournamentId });
             if (!tournament) {
-                throw new Error(`Tournament with ID ${dto.tournamentId} not found`);
+                throw new NotFoundException(`Tournament with ID ${dto.tournamentId} not found`);
             }
             division.tournament = tournament;
-            delete dto.tournament
+            delete dto.tournamentId;
         }
 
-        await this.divisionRepository.merge(division, dto);
+        this.divisionRepository.merge(division, dto);
 
         return await this.divisionRepository.save(division);
     }

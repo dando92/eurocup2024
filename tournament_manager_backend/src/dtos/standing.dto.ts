@@ -3,8 +3,7 @@ import {
     IsNumber,
     IsOptional,
 } from 'class-validator';
-import { Score } from '../entities/stading.entity';
-import { Round } from '../entities/round.entity';
+import { Score, Round }  from '../entities';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateStandingDto {

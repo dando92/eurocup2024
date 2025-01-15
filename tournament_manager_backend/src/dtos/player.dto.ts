@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsNumber, IsString, IsOptional, } from 'class-validator';
 import { Type } from 'class-transformer';
-import { Team } from '../entities/team.entity'
+import { Team }  from '../entities';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreatePlayerDto {
