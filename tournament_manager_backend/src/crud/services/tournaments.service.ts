@@ -3,10 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Tournament } from '../entities';
 import { CreateTournamentDto, UpdateTournamentDto } from '../dtos';
-import { ICrudService } from './ICrudService';
 
 @Injectable()
-export class TournamentsService implements ICrudService<Tournament, CreateTournamentDto, UpdateTournamentDto> {
+export class TournamentsService {
   constructor(
     @InjectRepository(Tournament)
     private readonly tournamentsRepository: Repository<Tournament>

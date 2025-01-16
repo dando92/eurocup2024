@@ -3,10 +3,9 @@ import { CreateStandingDto, UpdateStandingDto } from '../dtos';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Standing, Round, Score } from '../entities'
-import { ICrudService } from './ICrudService';
 
 @Injectable()
-export class StandingsService implements ICrudService<Standing, CreateStandingDto, UpdateStandingDto> {
+export class StandingsService {
     constructor(
         @InjectRepository(Standing)
         private standingRepo: Repository<Standing>,

@@ -3,10 +3,9 @@ import { CreateScoreDto, UpdateScoreDto } from '../dtos';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Score, Song, Player } from '../entities'
-import { ICrudService } from './ICrudService';
 
 @Injectable()
-export class ScoresService implements ICrudService<Score, CreateScoreDto, UpdateScoreDto> {
+export class ScoresService {
   constructor(
     @InjectRepository(Score)
     private scoreRepository: Repository<Score>,

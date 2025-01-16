@@ -3,10 +3,9 @@ import { CreateTeamDto, UpdateTeamDto } from '../dtos';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Team } from '../entities'
-import { ICrudService } from './ICrudService';
 
 @Injectable()
-export class TeamsService implements ICrudService<Team, CreateTeamDto, UpdateTeamDto> {
+export class TeamsService {
   constructor(
     @InjectRepository(Team)
     private repo: Repository<Team>,
