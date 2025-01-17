@@ -25,7 +25,7 @@ export class Match {
   @JoinTable({ name: 'player_in_matches' })
   players: Player[];
 
-  @OneToMany(() => Round, (round) => round.match, { eager: true })
+  @OneToMany(() => Round, (round) => round.match, { eager: true, cascade: true })
   rounds: Round[];
 
   @ManyToOne(() => Phase, (phase) => phase.matches)

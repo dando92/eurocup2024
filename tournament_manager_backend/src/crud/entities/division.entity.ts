@@ -10,7 +10,7 @@ export class Division {
   @Column()
   name: string;
 
-  @OneToMany(() => Phase, (phase) => phase, { eager: true })
+  @OneToMany(() => Phase, (phase) => phase, { eager: true, cascade: true })
   phases: Phase[];
 
   @ManyToOne(() => Tournament, (tournament) => tournament.divisions)

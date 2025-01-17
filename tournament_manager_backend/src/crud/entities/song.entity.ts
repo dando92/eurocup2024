@@ -16,10 +16,10 @@ export class Song {
   @Column()
   difficulty: number;
 
-  @OneToMany(() => Score, (score) => score.song, { eager: true })
+  @OneToMany(() => Score, (score) => score.song, { eager: true, cascade: true })
   scores: Score[]
 
-  @OneToMany(() => Round, (round) => round.song, { eager: true })
+  @OneToMany(() => Round, (round) => round.song, { eager: true, cascade: true })
   rounds: Round[]
 }
 

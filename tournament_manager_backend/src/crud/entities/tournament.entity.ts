@@ -9,6 +9,6 @@ export class Tournament {
   @Column()
   name: string;
 
-  @OneToMany(() => Division, (division) => division.tournament, { eager: true })
+  @OneToMany(() => Division, (division) => division.tournament, { eager: true, cascade: true })
   divisions: Division[]
 }

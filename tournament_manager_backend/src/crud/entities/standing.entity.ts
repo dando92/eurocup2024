@@ -7,13 +7,13 @@ export class Standing {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => Score, { cascade: true })
+  @OneToOne(() => Score)
   @JoinColumn()
   score: Score
 
   @Column()
   points: number;
   
-  @ManyToOne(() => Round, (round) => round.standings, { cascade: true })
+  @ManyToOne(() => Round, (round) => round.standings)
   round: Round
 }

@@ -8,7 +8,7 @@ export class Round {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToMany(() => Standing, (standing) => standing.round, { eager: true })
+  @OneToMany(() => Standing, (standing) => standing.round, { eager: true, cascade: true })
   standings: Standing[]
   
   @ManyToOne(() => Match, (round) => round.rounds)

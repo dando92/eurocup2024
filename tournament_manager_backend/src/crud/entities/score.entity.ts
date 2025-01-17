@@ -13,9 +13,9 @@ export class Score {
   @Column()
   isFailed: boolean;
 
-  @ManyToOne(() => Song, (song) => song.scores, { cascade: true })
+  @ManyToOne(() => Song, (song) => song.scores)
   song: Song
 
-  @ManyToOne(() => Player, (player) => player.scores, { cascade: true })
+  @ManyToOne(() => Player, (player) => player.scores)
   player: Player
 }
