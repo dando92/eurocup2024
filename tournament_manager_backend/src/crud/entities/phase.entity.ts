@@ -10,7 +10,7 @@ export class Phase {
   @Column()
   name: string;
 
-  @OneToMany(() => Match, (match) => match)
+  @OneToMany(() => Match, (match) => match, { eager: true })
   matches: Match[];
 
   @ManyToOne(() => Division, (round) => round.phases)

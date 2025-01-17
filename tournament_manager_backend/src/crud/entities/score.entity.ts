@@ -11,9 +11,6 @@ export class Score {
   percentage: number;
 
   @Column()
-  score: number;
-
-  @Column()
   isFailed: boolean;
 
   @ManyToOne(() => Song, (song) => song.scores, { cascade: true })
