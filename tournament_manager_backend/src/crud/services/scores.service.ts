@@ -31,7 +31,6 @@ export class ScoresService {
     const newScore = new Score();
 
     newScore.percentage = dto.percentage;
-    newScore.score = dto.score;
     newScore.isFailed = dto.isFailed;
     newScore.song = song;
     newScore.player = player;

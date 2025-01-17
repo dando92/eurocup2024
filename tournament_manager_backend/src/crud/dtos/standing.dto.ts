@@ -24,9 +24,19 @@ export class CreateStandingDto {
     @IsNotEmpty()
     @IsNumber()
     roundId: number;
+    
+    @ApiProperty({ description: 'The score value', example: 1, required: true })
+    @IsNotEmpty()
+    @IsNumber()
+    points: number;
 }
 
 export class UpdateStandingDto {
+    @ApiProperty({ description: 'The score value', example: 1, required: true })
+    @IsOptional()
+    @IsNumber()
+    points: number;
+
     @ApiProperty({
         example: 2,
         description: 'ID of the score',

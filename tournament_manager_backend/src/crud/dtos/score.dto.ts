@@ -27,12 +27,6 @@ export class CreateScoreDto {
   @IsNumber()
   @Type(() => Number)
   playerId: number;
-
-  @ApiProperty({ description: 'The score value', example: 12345, required: false })
-  @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  score: number;
 }
 
 export class UpdateScoreDto {
@@ -59,12 +53,6 @@ export class UpdateScoreDto {
   @IsNumber()
   @Type(() => Number)
   playerId: number;
-
-  @ApiProperty({ description: 'The score value', example: 12345, required: false })
-  @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  score: number;
 
   song?: Song;
   player?: Player;

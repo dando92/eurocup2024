@@ -32,6 +32,7 @@ export class StandingsService {
 
         newStanding.score = score;
         newStanding.round = round;
+        newStanding.points = dto.points;
 
         await this.standingRepo.insert(newStanding);
 
