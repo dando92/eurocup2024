@@ -11,12 +11,18 @@ export class TournamentCache {
         private readonly matchService: MatchesService
     ) {
         this.activeMatchId = 0;
+        this.activeMatch = null;
     }
 
     public async SetActiveMatch(matchId: number) {
         if (matchId != this.activeMatchId) {
             this.activeMatchId = matchId;
-            this.activeMatch = await this.matchService.findOne(matchId);
+            
+            if(this.activeMatchId != 0) {
+                this.activeMatch = await this.matchService.findOne(matchId);
+            } else {
+                this.activeMatch = null;
+            }
         }
     }
 

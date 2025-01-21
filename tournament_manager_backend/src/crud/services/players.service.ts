@@ -40,6 +40,10 @@ export class PlayerService {
     return await this.playersRepo.findOneBy({ id });
   }
 
+  async findByName(name: string) {
+    return await this.playersRepo.findOneBy({ name });
+  }
+
   async update(id: number, dto: UpdatePlayerDto) {
     const player = await this.playersRepo.findOneBy({ id });
 

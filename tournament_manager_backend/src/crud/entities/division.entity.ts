@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 import { Phase } from './phase.entity'
 import { Tournament } from './tournament.entity';
 
@@ -10,7 +10,7 @@ export class Division {
   @Column()
   name: string;
 
-  @OneToMany(() => Phase, (phase) => phase, { eager: true, cascade: true })
+  @OneToMany(() => Phase, (phase) => phase.division, { eager: true, cascade: true })
   phases: Phase[];
 
   @ManyToOne(() => Tournament, (tournament) => tournament.divisions)

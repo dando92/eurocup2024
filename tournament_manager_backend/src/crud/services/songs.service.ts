@@ -28,6 +28,10 @@ export class SongService {
     return await this.songRepository.findOneBy({ id });
   }
 
+  async findByName(title: string): Promise<Song> {
+    return await this.songRepository.findOneBy({ title });
+  }
+
   async update(id: number, updateSongDto: UpdateSongDto): Promise<Song> {
     const song = await this.songRepository.findOneBy({ id });
 
