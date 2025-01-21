@@ -1,7 +1,20 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, ValidationPipe } from '@nestjs/common';
-import { DivisionsService } from '../services';
-import { Division } from '../entities';
+import { DivisionsService, PhasesService } from '../services';
+import { Division, Phase, Match } from '../entities';
 import { CreateDivisionDto, UpdateDivisionDto } from '../dtos';
+
+@Controller('tournament')
+export class BackwardCompatibilityController {
+    constructor(private readonly service: PhasesService) { }
+
+    @Get('expandphase/:id')
+    async allMatchesFrom(@Param('id') id: number): Promise<Match[]> {
+        return this.service.findOne(id)
+            .then(body => {
+                return body.matches
+            }); 
+    }
+}
 
 @Controller('divisions')
 export class DivisionsController {
@@ -30,5 +43,14 @@ export class DivisionsController {
     @Delete(':id')
     remove(@Param('id') id: number): Promise<void> {
         return this.service.remove(id);
+    }
+
+    //TODO: Backward compatibility
+    @Get(':id/phases')
+    getPhaseFromDivision(@Param('id') id: number): Promise<Phase[] | null> {
+        return this.service.findOne(id)
+            .then(body => {
+                return body.phases
+            }); 
     }
 }

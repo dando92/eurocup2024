@@ -48,7 +48,7 @@ export class PhasesService {
 
     this.phasesRepository.merge(phase, dto);
 
-    return phase;
+    return await this.phasesRepository.save(phase);
   }
 
   async remove(id: number): Promise<void> {

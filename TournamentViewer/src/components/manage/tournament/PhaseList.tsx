@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Phase } from "../../../models/Phase";
+import { Division } from "../../../models/Division";
 import Select from "react-select";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -20,11 +21,12 @@ export default function PhaseList({
   const [selectedPhaseId, setSelectedPhaseId] = useState<number>(-1);
 
   useEffect(() => {
-    axios.get<Phase[]>(`divisions/${divisionId}/phases`).then((response) => {
-      setPhases(response.data);
-      if (response.data.length > 0) {
-        setSelectedPhaseId(response.data[0].id);
-        onPhaseSelect(response.data[0]);
+    axios.get<Division>(`divisions/${divisionId}`).then((response) => {
+      const phases = response.data.phases;
+      setPhases(phases);
+      if (phases.length > 0) {
+        setSelectedPhaseId(phases[0].id);
+        onPhaseSelect(phases[0]);
       }
     });
 
