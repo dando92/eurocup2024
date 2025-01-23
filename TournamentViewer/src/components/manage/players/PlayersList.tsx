@@ -83,7 +83,7 @@ export default function PlayersList() {
 
   const removeFromTeam = (playerId: number) => {
     try {
-      axios.post(`players/${playerId}/removeFromTeam`).then(() => {
+      axios.post(`tournament/${playerId}/removeFromTeam`).then(() => {
         setPlayers(
           players.map((p) =>
             p.id === playerId ? { ...p, teamId: undefined } : p,

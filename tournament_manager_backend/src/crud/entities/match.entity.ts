@@ -17,10 +17,6 @@ export class Match {
   @Column()
   notes: string;
 
-  // public double Multiplier { get; set; } = 1;
-  // public bool IsManualMatch { get; set; }
-  // public string ScoringSystem { get; set; }
-
   @ManyToMany(() => Player)
   @JoinTable({ name: 'player_in_matches' })
   players: Player[];
@@ -31,3 +27,8 @@ export class Match {
   @ManyToOne(() => Phase, (phase) => phase.matches)
   phase: Phase;
 }
+
+
+  // public double Multiplier { get; set; } = 1;
+  // public bool IsManualMatch { get; set; }
+  // public string ScoringSystem { get; set; }

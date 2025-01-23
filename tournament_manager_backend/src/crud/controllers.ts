@@ -1,4 +1,5 @@
-import { DivisionsController, BackwardCompatibilityController } from './controllers/divisions.controller';
+import { DivisionsController } from './controllers/divisions.controller';
+import { BackwardCompatibilityController } from './controllers/backwardcompatibility.controller';
 import { MatchesController } from './controllers/matches.controller';
 import { PhasesController } from './controllers/phases.controller';
 import { PlayersController } from './controllers/players.controller';
@@ -9,7 +10,7 @@ import { ScoresController } from './controllers/scores.controller';
 import { SongsController } from './controllers/songs.controller';
 import { StandingsController } from './controllers/standings.controller';
 
-export { DivisionsController, BackwardCompatibilityController } from './controllers/divisions.controller';
+export { DivisionsController } from './controllers/divisions.controller';
 export { MatchesController } from './controllers/matches.controller';
 export { PhasesController } from './controllers/phases.controller';
 export { PlayersController } from './controllers/players.controller';

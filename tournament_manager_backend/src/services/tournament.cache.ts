@@ -26,7 +26,7 @@ export class TournamentCache {
         }
     }
 
-    public GetActiveMatch() {
+    public GetActiveMatch() : Match | null {
         return this.activeMatch;
     }
 }
