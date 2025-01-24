@@ -10,7 +10,7 @@ import { Server, Socket } from 'socket.io';
 import { Match } from '../crud/entities/match.entity';
 
 @WebSocketGateway({
-  path: "/match",
+  path: "/matchupdatehub",
   cors: {
     origin: '*', // Adjust this for security in production
   },
@@ -29,6 +29,22 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   UpdateMatch(match: Match) {
-    this.server.emit('match', match);
+    this.server.emit('UpdateMatch', match);
   }
+
+  OnMatchUpdate(match: Match) {
+    if(!match) {
+      return;
+    }
+      
+    const msg = {matchId: match.id};
+
+    if(match.phase)
+      msg['phaseId'] = match.phase;
+
+    if(match.phase.division)
+      msg['divisionId'] = match.phase.division.id;
+
+    this.server.emit('OnMatchUpdate', msg);
+  }  
 }

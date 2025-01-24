@@ -75,8 +75,7 @@ export class ScoresService {
     }
 
     this.scoreRepository.merge(existingScore, dto);
-
-    return existingScore;
+    return await this.scoreRepository.save(existingScore);
   }
 
   async remove(id: number) {

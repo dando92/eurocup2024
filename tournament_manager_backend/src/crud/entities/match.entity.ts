@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, ManyToMany, JoinTable, JoinColumn } from 'typeorm';
 import { Round } from './round.entity'
 import { Phase } from './phase.entity'
 import { Player } from './player.entity'
@@ -11,24 +11,29 @@ export class Match {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ nullable: true })
   subtitle: string;
 
-  @Column()
+  @Column({ nullable: true })
   notes: string;
 
-  @ManyToMany(() => Player)
+  @Column()
+  multiplier: number;
+
+  @Column()
+  isManualMatch: boolean;
+
+  @Column()
+  scoringSystem: string;
+
+  @ManyToMany(() => Player, (player) => player.matches, { eager: true})
   @JoinTable({ name: 'player_in_matches' })
   players: Player[];
 
-  @OneToMany(() => Round, (round) => round.match, { eager: true, cascade: true })
+  @OneToMany(() => Round, (round) => round.match, { eager: true, cascade: true  })
   rounds: Round[];
 
-  @ManyToOne(() => Phase, (phase) => phase.matches)
+  @ManyToOne(() => Phase, (phase) => phase.matches, { onDelete: 'CASCADE' })
+  @JoinColumn()
   phase: Phase;
 }
-
-
-  // public double Multiplier { get; set; } = 1;
-  // public bool IsManualMatch { get; set; }
-  // public string ScoringSystem { get; set; }

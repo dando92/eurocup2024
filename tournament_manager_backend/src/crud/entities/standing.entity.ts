@@ -14,6 +14,6 @@ export class Standing {
   @Column()
   points: number;
   
-  @ManyToOne(() => Round, (round) => round.standings)
+  @ManyToOne(() => Round, (round) => round.standings, { onDelete: 'CASCADE' })
   round: Round
 }

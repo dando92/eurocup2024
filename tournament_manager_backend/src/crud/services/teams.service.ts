@@ -37,8 +37,7 @@ export class TeamsService {
     }
 
     this.repo.merge(team, dto);
-
-    return team;
+    return await this.repo.save(team);
   }
 
   async remove(id: number) {

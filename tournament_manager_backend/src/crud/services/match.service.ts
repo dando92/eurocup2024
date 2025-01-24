@@ -36,8 +36,13 @@ export class MatchesService{
             match.players.push(player);
         }
 
+        match.multiplier = 1;
+        match.scoringSystem = "Eurocup 2025";
+        match.isManualMatch = false;
         match.name = dto.name;
-        match.notes = dto.notes;
+        if(dto.notes){
+            match.notes = dto.notes;
+        }
         match.subtitle = dto.subtitle;
 
         await this.matchRepository.insert(match);
@@ -85,11 +90,17 @@ export class MatchesService{
         }
 
         this.matchRepository.merge(match, dto);
-
-        return match;
+        
+        return await this.matchRepository.save(match);
     }
 
     async remove(id: number) {
-        await this.matchRepository.delete(id);
+        const match = await this.findOne(id);
+        
+        if(!match) {
+            return;
+        }
+
+        await this.matchRepository.remove(match);
     }
 }

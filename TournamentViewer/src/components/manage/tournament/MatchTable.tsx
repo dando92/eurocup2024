@@ -349,31 +349,31 @@ export default function MatchTable({
           <Tab.Panels className="mt-3">
             <Tab.Panel>
               <div
-                style={{ minWidth: match.songs.length * 200 }}
+                style={{ minWidth: match.rounds.length * 200 }}
                 className={`shadow-lg overflow-auto lg:min-w-fit`}
               >
                 <div
                   className={`grid grid-cols-${
-                    match.songs.length + 2
+                    match.rounds.length + 2
                   } w-full bg-rossoTesto rounded-t-lg`}
                   style={{
                     gridTemplateColumns: `repeat(${
-                      match.songs.length + 2
+                      match.rounds.length + 2
                     }, 1fr)`,
                   }}
                 >
                   <div className=" border-rossoTag p-2">
                     <div className="text-center font-bold text-rossoTag"></div>
                   </div>
-                  {match.songs.map((song, i) => (
+                  {match.rounds.map((round, i) => (
                     <div key={i} className="border-x border-rossoTag p-2">
                       <div className="text-center font-bold text-blue-100">
-                        {song.title}
+                        {round.song.title}
                         {controls && isActive && (
                           <>
                             <button
                               onClick={() => {
-                                setEditSongId(song.id);
+                                setEditSongId(round.song.id);
                                 setAddSongToMatchModalOpen(true);
                               }}
                               className="ml-3"
@@ -397,11 +397,11 @@ export default function MatchTable({
                   <div
                     key={i}
                     className={`grid grid-cols-${
-                      match.songs.length + 2
+                      match.rounds.length + 2
                     } w-full odd:bg-white even:bg-gray-50`}
                     style={{
                       gridTemplateColumns: `repeat(${
-                        match.songs.length + 2
+                        match.rounds.length + 2
                       }, 1fr)`,
                     }}
                   >
@@ -410,8 +410,8 @@ export default function MatchTable({
                         {player.name}
                       </div>
                     </div>
-                    {match.songs.map((song, j) => {
-                      const key = `${player.id}-${song.id}`;
+                    {match.rounds.map((round, j) => {
+                      const key = `${player.id}-${round.song.id}`;
                       const scoreData = scoreTable[key];
 
                       const playerDisabled =
@@ -429,7 +429,7 @@ export default function MatchTable({
                               <button
                                 className={"underline font-red-800 text-xs"}
                                 onClick={() =>
-                                  onDeleteStanding(player.id, song.id)
+                                  onDeleteStanding(player.id, round.song.id)
                                 }
                               >
                                 Reactivate
@@ -471,7 +471,7 @@ export default function MatchTable({
                                           "Are you sure you want to delete this standing?",
                                         )
                                       ) {
-                                        onDeleteStanding(player.id, song.id);
+                                        onDeleteStanding(player.id, round.song.id);
                                       }
                                     }}
                                   >
@@ -490,9 +490,9 @@ export default function MatchTable({
                                     setAddStandingToMatchModalOpen(true);
                                     setSongIdPlayerId({
                                       playerId: player.id,
-                                      songId: song.id,
+                                      songId: round.song.id,
                                       playerName: player.name,
-                                      songTitle: song.title,
+                                      songTitle: round.song.title,
                                     });
                                   }}
                                 >
@@ -504,7 +504,7 @@ export default function MatchTable({
                                   onClick={() => {
                                     onAddStandingToMatch(
                                       player.id,
-                                      song.id,
+                                      round.song.id,
                                       -1,
                                       0,
                                       true,

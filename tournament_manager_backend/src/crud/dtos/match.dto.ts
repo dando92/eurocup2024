@@ -39,7 +39,7 @@ export class CreateMatchDto {
 
 export class UpdateMatchDto {
   @ApiProperty({ description: 'The name of the match', example: 'Match 1' })
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   name: string;
 

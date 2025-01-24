@@ -17,6 +17,14 @@ export class PhasesService {
     const phase = new Phase();
     phase.name = phaseDto.name;
 
+    const division = await this.divisionRepo.findOneBy({ id: phaseDto.divisionId });
+
+    if (!division) {
+      throw new NotFoundException(`division with ID ${phaseDto.divisionId} not found`);
+    }
+
+    phase.division = division
+
     await this.phasesRepository.insert(phase)
 
     return phase;

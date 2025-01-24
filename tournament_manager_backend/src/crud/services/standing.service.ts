@@ -77,8 +77,8 @@ export class StandingsService {
         }
 
         this.standingRepo.merge(standing, dto);
-
-        return standing;
+        
+        return await this.standingRepo.save(standing);
     }
 
     async remove(id: number) {

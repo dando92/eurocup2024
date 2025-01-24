@@ -19,7 +19,7 @@ export class Song {
   @OneToMany(() => Score, (score) => score.song, { eager: true, cascade: true })
   scores: Score[]
 
-  @OneToMany(() => Round, (round) => round.song, { eager: true, cascade: true })
+  @OneToMany(() => Round, (round) => round.song, { cascade: true })
   rounds: Round[]
 }
 

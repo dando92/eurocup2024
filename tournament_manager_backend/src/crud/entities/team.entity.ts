@@ -9,6 +9,6 @@ export class Team {
   @Column()
   name: string;
 
-  @OneToMany(() => Player, (score) => score.team, { eager: true, cascade: true })
+  @OneToMany(() => Player, (score) => score.team, { eager: true })
   players: Player[]
 }

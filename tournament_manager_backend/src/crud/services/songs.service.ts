@@ -38,10 +38,10 @@ export class SongService {
     if (!song) {
       throw new NotFoundException(`Song with ID ${id} not found`);
     }
-
+    
     this.songRepository.merge(song, updateSongDto);
-
-    return song;
+    
+    return await this.songRepository.save(song);
   }
 
   async remove(id: number): Promise<void> {

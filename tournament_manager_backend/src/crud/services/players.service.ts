@@ -61,8 +61,8 @@ export class PlayerService {
     }
 
     this.playersRepo.merge(player, dto);
-
-    return player;
+    
+    return await this.playersRepo.save(player);
   }
 
   async remove(id: number) {

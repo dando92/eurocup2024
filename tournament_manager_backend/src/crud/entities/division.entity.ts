@@ -10,10 +10,11 @@ export class Division {
   @Column()
   name: string;
 
-  @OneToMany(() => Phase, (phase) => phase.division, { eager: true, cascade: true })
+  @OneToMany(() => Phase, (phase) => phase.division, { eager: true, cascade: true  })
   phases: Phase[];
 
-  @ManyToOne(() => Tournament, (tournament) => tournament.divisions)
+  @ManyToOne(() => Tournament, (tournament) => tournament.divisions, { onDelete: 'CASCADE' })
+  @JoinColumn()
   tournament: Tournament;
 }
 

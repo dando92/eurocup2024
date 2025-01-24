@@ -4,6 +4,7 @@ import { LiveScore } from "../gateways/live.score.gateway"
 import { CreateScoreDto, CreateStandingDto, UpdateStandingDto } from "src/crud/dtos";
 import { TournamentCache } from "./tournament.cache";
 import { Standing } from "src/crud/entities";
+import { MatchGateway } from '../gateways/match.gateway';
 
 @Injectable()
 export class StandingManager {
@@ -17,7 +18,9 @@ export class StandingManager {
         @Inject()
         private readonly playerService: PlayerService,
         @Inject()
-        private readonly tournamentCache: TournamentCache
+        private readonly tournamentCache: TournamentCache,
+        @Inject()
+        private readonly matchHub: MatchGateway
     ) { }
 
     async AddScore(score: LiveScore) {
@@ -69,6 +72,8 @@ export class StandingManager {
             //TODO: is it necessary?
             await this.standingService.update(updatedStandings[0], updatedStandings[1]);
         }
+
+        this.matchHub.OnMatchUpdate(activeMatch);
     }
     
     async recalc(standings: Standing[]) : Promise<([id: number, UpdateStandingDto])[]> {
@@ -76,6 +81,6 @@ export class StandingManager {
     }
 
     async RemoveStanding(playerId: number, songId: number) {
-
+        //this.matchHub.OnMatchUpdate(activeMatch);
     }
 }

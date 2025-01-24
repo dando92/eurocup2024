@@ -1,6 +1,5 @@
 import { Player } from "./Player";
 import { Round } from "./Round";
-import { Song } from "./Song";
 
 export interface Match {
   id: number;
@@ -10,6 +9,5 @@ export interface Match {
   notes: string;
   isManualMatch: boolean;
   players: Player[];
-  songs: Song[];
   rounds: Round[];
 }

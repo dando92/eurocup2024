@@ -72,8 +72,8 @@ export class RoundsService {
         }
 
         this.roundsRepo.merge(round, dto);
-
-        return round;
+        
+        return await this.roundsRepo.save(round);
     }
 
     async remove(id: number) {

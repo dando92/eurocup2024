@@ -3,6 +3,7 @@ import { MatchesService, RoundsService } from '../crud/services';
 import { CreateRoundDto } from '../crud/dtos';
 import { Match } from '../crud/entities/match.entity';
 import { SongExtractor } from './song.extractor';
+import { MatchGateway } from '../gateways/match.gateway';
 
 @Injectable()
 export class MatchManager {
@@ -12,7 +13,9 @@ export class MatchManager {
         @Inject()
         private readonly roundService: RoundsService,
         @Inject()
-        private readonly songExtractor: SongExtractor
+        private readonly songExtractor: SongExtractor,
+        @Inject()
+        private readonly matchHub: MatchGateway
     ) { }
     
     public async AddSongsToMatchById(matchId: number, songIds: number[]): Promise<void> {
@@ -58,6 +61,8 @@ export class MatchManager {
         }
 
         await this.roundService.remove(round.id);
+        
+        this.matchHub.OnMatchUpdate(match);
     }
 
     public async AddRandomSongsToMatch(match: Match, divisionId: number, group: string, levels: string): Promise<void> {
@@ -70,6 +75,8 @@ export class MatchManager {
         for (const songId of songIds) {
             await this.AddSongToMatch(match, songId);
         }
+        
+        this.matchHub.OnMatchUpdate(match);
     }
 
     private async AddSongToMatch(match: Match, songId: number): Promise<void> {

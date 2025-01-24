@@ -13,9 +13,9 @@ export class Score {
   @Column()
   isFailed: boolean;
 
-  @ManyToOne(() => Song, (song) => song.scores)
+  @ManyToOne(() => Song, (song) => song.scores, { onDelete: 'CASCADE' })
   song: Song
 
-  @ManyToOne(() => Player, (player) => player.scores)
+  @ManyToOne(() => Player, (player) => player.scores, { onDelete: 'CASCADE' })
   player: Player
 }
