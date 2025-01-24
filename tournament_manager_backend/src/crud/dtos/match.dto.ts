@@ -64,5 +64,5 @@ export class UpdateMatchDto {
   phaseId: number;
 
   players?: Player[];
-  phase?: Phase;
+  phase?: Promise<Phase>;
 }

@@ -7,7 +7,7 @@ export class Standing {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => Score)
+  @OneToOne(() => Score, { eager: true })
   @JoinColumn()
   score: Score
 

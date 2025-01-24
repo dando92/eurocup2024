@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, ManyToMany, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, ManyToMany, JoinColumn, JoinTable } from 'typeorm';
 import { Score } from './score.entity'
 import { Team } from './team.entity'
 import { Match } from './match.entity';
@@ -11,10 +11,10 @@ export class Player {
   @Column()
   name: string;
 
-  @OneToMany(() => Score, (score) => score.player, { eager: true, cascade: true })
+  @OneToMany(() => Score, (score) => score.player, { cascade: true })
   scores: Score[]
 
-  @ManyToOne(() => Team, (team) => team.players)
+  @ManyToOne(() => Team, (team) => team.players, { orphanedRowAction:  "nullify" })
   @JoinColumn()
   team: Team;
   

@@ -47,5 +47,5 @@ export class UpdatePhaseDto {
   })
   divisionId: number;
 
-  division?: Division;
+  division?: Promise<Division>;
 }

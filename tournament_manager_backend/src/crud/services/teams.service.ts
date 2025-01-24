@@ -16,7 +16,7 @@ export class TeamsService {
 
     team.name = dto.name;
 
-    await this.repo.insert(team);
+    await this.repo.save(team);
 
     return team;
   }

@@ -1,9 +1,16 @@
-export interface Standing {
+import { Player } from './Player'
+import { Song } from './Song'
+
+export interface Score {
   id: number;
-  roundId: number;
-  songId: number;
-  playerId: number;
   percentage: number;
   isFailed: boolean;
-  score: number;
+  player: Player;
+  song: Song;
+}
+
+export interface Standing {
+  id: number;
+  score: Score;
+  points: number;
 }

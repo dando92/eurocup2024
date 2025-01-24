@@ -23,9 +23,9 @@ export class PhasesService {
       throw new NotFoundException(`division with ID ${phaseDto.divisionId} not found`);
     }
 
-    phase.division = division
+    phase.division = Promise.resolve(division);
 
-    await this.phasesRepository.insert(phase)
+    await this.phasesRepository.save(phase)
 
     return phase;
   }
@@ -50,7 +50,7 @@ export class PhasesService {
       if (!division) {
         throw new NotFoundException(`Division with id ${dto.divisionId} not found. Update phase failed.`);
       }
-      dto.division = division;
+      dto.division = Promise.resolve(division);
       delete dto.divisionId;
     }
 

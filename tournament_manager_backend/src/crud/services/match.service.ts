@@ -23,7 +23,7 @@ export class MatchesService{
         if (!phase) {
             throw new NotFoundException(`Phase with ID ${dto.phaseId} not found`);
         }
-        match.phase = phase;
+        match.phase = Promise.resolve(phase);
 
         match.players = [];
 
@@ -45,7 +45,7 @@ export class MatchesService{
         }
         match.subtitle = dto.subtitle;
 
-        await this.matchRepository.insert(match);
+        await this.matchRepository.save(match);
 
         return match;
     }
@@ -70,7 +70,7 @@ export class MatchesService{
             if (!phase) {
                 throw new NotFoundException(`Phase with ID ${dto.phaseId} not found`);
             }
-            match.phase = phase;
+            match.phase = Promise.resolve(phase);
             delete dto.phaseId
         }
 

@@ -16,7 +16,7 @@ export class TournamentsService {
 
     newTournament.name = dto.name;
 
-    await this.tournamentsRepository.insert(newTournament);
+    await this.tournamentsRepository.save(newTournament);
 
     return newTournament;
   }

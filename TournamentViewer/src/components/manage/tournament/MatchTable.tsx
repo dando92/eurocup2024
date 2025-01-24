@@ -134,11 +134,11 @@ export default function MatchTable({
 
   match.rounds.forEach((round) => {
     round.standings.forEach((standing) => {
-      const key = `${standing.playerId}-${standing.songId}`;
+      const key = `${standing.score.player.id}-${standing.score.song.id}`;
       scoreTable[key] = {
-        score: standing.score,
-        percentage: standing.percentage,
-        isFailed: standing.isFailed,
+        score: standing.points,
+        percentage: standing.score.percentage,
+        isFailed: standing.score.isFailed,
       };
     });
   });
@@ -199,10 +199,10 @@ export default function MatchTable({
   // Calculate total points for each player
   const getTotalPoints = (playerId: number) => {
     return match.rounds
-      .map((round) => round.standings.find((s) => s.playerId === playerId))
+      .map((round) => round.standings.find((s) => s.score.player.id === playerId))
       .reduce((acc, standing) => {
         if (standing) {
-          return acc + standing.score;
+          return acc + standing.points;
         }
         return acc;
       }, 0);
@@ -524,12 +524,12 @@ export default function MatchTable({
                         {match.rounds
                           .map((round) =>
                             round.standings.find(
-                              (s) => s.playerId === player.id,
+                              (s) => s.score.player.id === player.id,
                             ),
                           )
                           .reduce((acc, standing) => {
                             if (standing) {
-                              return acc + standing.score;
+                              return acc + standing.points;
                             }
                             return acc;
                           }, 0)}

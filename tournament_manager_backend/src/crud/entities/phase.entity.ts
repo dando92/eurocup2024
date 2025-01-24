@@ -14,5 +14,5 @@ export class Phase {
   matches: Match[];
 
   @ManyToOne(() => Division, (division) => division.phases, { onDelete: 'CASCADE' })
-  division: Division;
+  division: Promise<Division>;
 }

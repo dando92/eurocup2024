@@ -25,7 +25,7 @@ export class DivisionsService {
         division.name = dto.name;
         division.tournament = tournament;
 
-        await this.divisionRepository.insert(division);
+        await this.divisionRepository.save(division);
 
         return division;
     }

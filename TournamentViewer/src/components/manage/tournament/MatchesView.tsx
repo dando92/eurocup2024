@@ -61,8 +61,7 @@ export default function MatchesView({
       )}
       <div className="w-full mt-10">
         {state.activeMatch &&
-          phase &&
-          state.activeMatch.phaseId === phase.id && (
+          phase && (
             <div className="pb-20">
               <div>
                 <h3 className="text-3xl text-rossoTesto text-center">Active match:</h3>

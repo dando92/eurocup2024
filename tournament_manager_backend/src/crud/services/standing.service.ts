@@ -34,7 +34,7 @@ export class StandingsService {
         newStanding.round = round;
         newStanding.points = dto.points;
 
-        await this.standingRepo.insert(newStanding);
+        await this.standingRepo.save(newStanding);
 
         return newStanding;
     }

@@ -32,18 +32,15 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.emit('UpdateMatch', match);
   }
 
-  OnMatchUpdate(match: Match) {
+  async OnMatchUpdate(match: Match) {
     if(!match) {
       return;
     }
-      
-    const msg = {matchId: match.id};
+    
+    const phase = await match.phase;
+    const division = await phase.division;
 
-    if(match.phase)
-      msg['phaseId'] = match.phase;
-
-    if(match.phase.division)
-      msg['divisionId'] = match.phase.division.id;
+    const msg = {matchId: match.id, phaseId: phase.id, divisionId: division.id};
 
     this.server.emit('OnMatchUpdate', msg);
   }  

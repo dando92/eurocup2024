@@ -16,7 +16,7 @@ export class SongService {
     song.title = dto.title;
     song.group = dto.group;
     song.difficulty = dto.difficulty;
-    await this.songRepository.insert(song);
+    await this.songRepository.save(song);
     return song;
   }
 

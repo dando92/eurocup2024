@@ -35,7 +35,7 @@ export class ScoresService {
     newScore.song = song;
     newScore.player = player;
 
-    await this.scoreRepository.insert(newScore);
+    await this.scoreRepository.save(newScore);
 
     return newScore;
   }

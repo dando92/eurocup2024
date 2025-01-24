@@ -27,7 +27,7 @@ export class Match {
   scoringSystem: string;
 
   @ManyToMany(() => Player, (player) => player.matches, { eager: true})
-  @JoinTable({ name: 'player_in_matches' })
+  @JoinTable()
   players: Player[];
 
   @OneToMany(() => Round, (round) => round.match, { eager: true, cascade: true  })
@@ -35,5 +35,5 @@ export class Match {
 
   @ManyToOne(() => Phase, (phase) => phase.matches, { onDelete: 'CASCADE' })
   @JoinColumn()
-  phase: Phase;
+  phase: Promise<Phase>;
 }

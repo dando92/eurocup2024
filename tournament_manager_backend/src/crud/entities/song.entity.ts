@@ -16,7 +16,7 @@ export class Song {
   @Column()
   difficulty: number;
 
-  @OneToMany(() => Score, (score) => score.song, { eager: true, cascade: true })
+  @OneToMany(() => Score, (score) => score.song, { cascade: true })
   scores: Score[]
 
   @OneToMany(() => Round, (round) => round.song, { cascade: true })

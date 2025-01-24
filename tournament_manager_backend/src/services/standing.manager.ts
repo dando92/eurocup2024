@@ -46,7 +46,7 @@ export class StandingManager {
         const actualScoreEntity = await this.scoresService.create(newScore)
 
         const activeMatch = this.tournamentCache.GetActiveMatch();
-        const round = activeMatch.rounds.find(round=> round.song.id === song.id);
+        const round = activeMatch.rounds.find(async round=> (await round.song).id === song.id);
 
         if(!activeMatch) {
             //TODO: Log score added but no active match found

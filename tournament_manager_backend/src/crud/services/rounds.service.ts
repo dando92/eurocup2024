@@ -33,7 +33,7 @@ export class RoundsService {
         newRound.match = match;
         newRound.song = song;
 
-        await this.roundsRepo.insert(newRound);
+        await this.roundsRepo.save(newRound);
 
         return newRound;
     }

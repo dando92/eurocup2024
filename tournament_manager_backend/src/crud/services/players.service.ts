@@ -27,7 +27,7 @@ export class PlayerService {
       player.team = team;
     }
 
-    await this.playersRepo.insert(player);
+    await this.playersRepo.save(player);
 
     return player;
   }
