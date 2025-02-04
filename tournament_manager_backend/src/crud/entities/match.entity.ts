@@ -2,7 +2,6 @@ import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, ManyToMan
 import { Round } from './round.entity'
 import { Phase } from './phase.entity'
 import { Player } from './player.entity'
-
 @Entity()
 export class Match {
   @PrimaryGeneratedColumn()

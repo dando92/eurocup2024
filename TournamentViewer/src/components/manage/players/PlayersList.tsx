@@ -69,7 +69,7 @@ export default function PlayersList() {
   const addToTeam = (playerId: number, teamId: number) => {
     try {
       axios
-        .post(`players/${playerId}/assignToTeam/${teamId}`)
+        .post(`tournament/${playerId}/assignToTeam/${teamId}`)
         .then((response) => {
           setPlayers(
             players.map((p) => (p.id === playerId ? response.data : p)),

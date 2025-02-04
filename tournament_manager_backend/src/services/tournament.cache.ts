@@ -20,17 +20,14 @@ export class TournamentCache {
         if (matchId != this.activeMatchId) {
             this.activeMatchId = matchId;
             
-            if(this.activeMatchId != 0) {
-                this.activeMatch = await this.matchService.findOne(matchId);
-            } else {
-                this.activeMatch = null;
-            }
-            
-            this.matchHub.OnMatchUpdate(this.activeMatch);
+            this.matchHub.OnMatchUpdate(await this.GetActiveMatch());
         }
     }
 
-    public GetActiveMatch() : Match | null {
-        return this.activeMatch;
+    public async GetActiveMatch() : Promise<Match | null> {
+        if(this.activeMatchId == 0)
+            return null;
+
+        return await this.matchService.findOne(this.activeMatchId);
     }
 }

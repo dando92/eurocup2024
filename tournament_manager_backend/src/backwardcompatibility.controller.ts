@@ -1,11 +1,37 @@
 import { Controller, Delete, Get, Param, Post, Body } from '@nestjs/common';
 import { DivisionsService, MatchesService, PhasesService, PlayerService } from './crud/services';
-import { Match, Phase, Player } from './crud/entities';
+import { Match, Phase, Player, Song, Standing } from './crud/entities';
 import { TournamentCache } from 'src/services/tournament.cache';
 import { CreateMatchDto, UpdatePlayerDto } from './crud/dtos';
 import { MatchManager } from './services/match.manager';
 import { StandingManager } from './services/standing.manager';
 import { LiveScore } from './gateways/live.score.gateway';
+import { Transform } from 'class-transformer';
+
+export class RoundDTO {
+    id: number;
+    song: Song;
+    standings: Standing[]
+}
+
+export class MatchDto {
+    id: number;
+    phaseId: number;
+    name: string;
+    subtitle: string;
+    notes: string;
+    multiplier: number;
+    isManualMatch: boolean;
+
+    @Transform(({ value }) => value ?? [])
+    songs: Song[];
+
+    @Transform(({ value }) => value ?? [])
+    players: Player[];
+
+    @Transform(({ value }) => value ?? [])
+    rounds: RoundDTO[];
+}
 
 export class SetActiveMatchDTO {
     matchId: number;
@@ -72,8 +98,8 @@ export class BackwardCompatibilityController {
     }
 
     @Get('activeMatch')
-    getActiveMatch(): Match | null {
-        return this.tournamentCache.GetActiveMatch();
+    async getActiveMatch(): Promise<Match | null> {
+        return await this.tournamentCache.GetActiveMatch();
     }
 
     @Get('possibleScoringSystem')
@@ -85,32 +111,34 @@ export class BackwardCompatibilityController {
     async removeFromTeam(@Param('playerId') playerId: number): Promise<Player | null> {
         const dto = new UpdatePlayerDto();
         dto.teamId = null;
-        
+
         return await this.playerService.update(playerId, dto);
     }
 
     @Post('setActiveMatch')
     async setActiveMatch(@Body() dto: SetActiveMatchDTO): Promise<Match | null> {
         await this.tournamentCache.SetActiveMatch(dto.matchId);
-        
+
         return this.getActiveMatch();
     }
 
     @Post('addSongToMatch')
-    async addSongToMatch(@Body() dto: PostAddSongToMatch): Promise<Match | null> {
-        if(dto.songId) {
-            await this.matchManager.AddSongsToMatchById(dto.matchId, [dto.songId])
+    async addSongToMatch(@Body() dto: PostAddSongToMatch): Promise<MatchDto | null> {
+        const match = await this.matchService.findOne(dto.matchId);
+
+        if (dto.songId) {
+            await this.matchManager.AddSongsToMatch(match, [dto.songId])
         }
-        else if(dto.level) {
-            await this.matchManager.AddRandomSongsToMatchById(dto.matchId, dto.divisionId, dto.group, dto.level);
+        else if (dto.level) {
+            await this.matchManager.AddRandomSongsToMatch(match, dto.divisionId, dto.group, dto.level);
         }
-        
-        return this.getActiveMatch();
+
+        return await this.convert(match);
     }
-    
-    
+
+
     @Post('addMatch')
-    async addMatch(@Body() dto: PostAddMatch): Promise<Match> {
+    async addMatch(@Body() dto: PostAddMatch): Promise<MatchDto> {
         const newMatchDto = new CreateMatchDto();
         newMatchDto.name = dto.matchName;
         newMatchDto.notes = dto.notes;
@@ -120,34 +148,68 @@ export class BackwardCompatibilityController {
 
         const match = await this.matchService.create(newMatchDto);
 
-        if(dto.songIds) {
+        if (dto.songIds) {
             await this.matchManager.AddSongsToMatch(match, dto.songIds)
         }
-        else if(dto.levels) {
+        else if (dto.levels) {
             await this.matchManager.AddRandomSongsToMatch(match, dto.divisionId, dto.group, dto.levels);
         }
 
-        return match;
+        return await Promise.resolve(this.convert(match));
     }
-    
+
     @Post('editMatchSong')
-    async editMatchSong(@Body() dto: PostEditSongToMatch): Promise<Match | null> {
+    async editMatchSong(@Body() dto: PostEditSongToMatch): Promise<MatchDto | null> {
         this.matchManager.RemoveSongFromMatchById(dto.matchId, dto.songId);
         return await this.addSongToMatch(dto);
     }
 
     @Post('addstanding')
-    async addStanding(@Body() dto: PostStanding): Promise<Match | null> {
+    async addStanding(@Body() dto: PostStanding): Promise<MatchDto | null> {
         //TODO:
         // const liveScore = new LiveScore();
         // liveScore = dto.
-        // this.standingManager.AddScore()
-        return this.getActiveMatch();
+         this.standingManager.AddScore()
+        
+        return await this.convert(await this.getActiveMatch());
     }
 
     @Delete('deletestanding/:playerId/:songId')
-    async deleteStanding(@Param('playerId') playerId: number, @Param('songId') songId: number): Promise<Match | null> {
+    async deleteStanding(@Param('playerId') playerId: number, @Param('songId') songId: number): Promise<MatchDto | null> {
         this.standingManager.RemoveStanding(playerId, songId);
-        return this.getActiveMatch();
+        return await this.convert(await this.getActiveMatch());
+    }
+    
+    @Post(':playerId/assignToTeam/:teamId')
+    async assignToTeam(@Param('playerId') playerId: number, @Param('teamId') teamId: number) {
+        const dto = new UpdatePlayerDto();
+        dto.teamId = teamId;
+        return await this.playerService.update(playerId, dto);
+    }
+
+    async convert(match: Match) {
+        const dto = new MatchDto();
+        dto.id = match.id;
+        dto.isManualMatch = match.isManualMatch;
+        dto.multiplier = match.multiplier;
+        dto.name = match.name;
+        dto.notes = match.notes;
+        dto.phaseId = (await match.phase).id;
+        dto.players = match.players;
+        dto.songs = match.rounds.flatMap(r => r.song);
+        dto.subtitle = match.subtitle;
+        dto.rounds = [];
+        match.rounds.forEach(element => {
+            const roundDto = new RoundDTO();
+            roundDto.id = element.id;
+            roundDto.song = element.song;
+            if(element.standings == null) {
+                roundDto.standings = []
+            } else {
+                roundDto.standings = element.standings;
+            }
+            dto.rounds.push(roundDto);
+        });
+        return dto;
     }
 }

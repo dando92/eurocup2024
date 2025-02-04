@@ -61,7 +61,7 @@ export class MatchManager {
         }
 
         await this.roundService.remove(round.id);
-        
+        match.rounds = match.rounds.filter(round => round.id == round.id);
         this.matchHub.OnMatchUpdate(match);
     }
 
@@ -72,6 +72,9 @@ export class MatchManager {
     }
 
     public async AddSongsToMatch(match: Match, songIds: number[]): Promise<void> {
+        if(!match.rounds){
+            match.rounds = [];
+        }
         for (const songId of songIds) {
             await this.AddSongToMatch(match, songId);
         }
@@ -80,7 +83,11 @@ export class MatchManager {
     }
 
     private async AddSongToMatch(match: Match, songId: number): Promise<void> {
-        await this.roundService.create(this.GetRoundDto(match, songId));
+        const round = await this.roundService.create(this.GetRoundDto(match, songId));
+        
+        delete round.match;
+
+        match.rounds.push(round);
     }
 
     private GetRoundDto(match: Match, songId: number): CreateRoundDto {

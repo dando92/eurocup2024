@@ -43,5 +43,6 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const msg = {matchId: match.id, phaseId: phase.id, divisionId: division.id};
 
     this.server.emit('OnMatchUpdate', msg);
+    delete match.phase;
   }  
 }
