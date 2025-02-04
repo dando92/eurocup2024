@@ -5,6 +5,7 @@ import { CreateScoreDto, CreateStandingDto, UpdateStandingDto } from "src/crud/d
 import { TournamentCache } from "./tournament.cache";
 import { Standing, Player, Round } from "src/crud/entities";
 import { MatchGateway } from '../gateways/match.gateway';
+import { ScoringSystemProvider } from './IScoringSystem'
 
 @Injectable()
 export class StandingManager {
@@ -20,7 +21,9 @@ export class StandingManager {
         @Inject()
         private readonly tournamentCache: TournamentCache,
         @Inject()
-        private readonly matchHub: MatchGateway
+        private readonly matchHub: MatchGateway,
+        @Inject()
+        private readonly scoringSystemProvider: ScoringSystemProvider
     ) { }
 
     async AddScore(score: CreateScoreDto) {
@@ -49,6 +52,8 @@ export class StandingManager {
         const activePlayerInRound = this.CountActivePlayersInRound(activeMatch.players, round);
         
         if(round.standings.length >= activePlayerInRound) {
+            const scoreSystem = this.scoringSystemProvider.getScoringSystem(activeMatch.scoringSystem);
+            scoreSystem.recalc(round.standings);
             await this.recalc(round.standings);
         }
 
@@ -81,8 +86,8 @@ export class StandingManager {
     async recalc(standings: Standing[]) {
         standings.forEach(async standing => {
             const dto = new UpdateStandingDto();
-            dto.points = 2;
-            await this.standingService.update(standing.id, dto)    
+            dto.points = standing.points;
+            await this.standingService.update(standing.id, dto);   
         });
     }
 

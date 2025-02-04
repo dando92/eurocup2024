@@ -1,17 +1,17 @@
 import { Standing } from "src/crud/entities";
 
-class IScoringSystem {
+export class IScoringSystem {
     constructor() {
         if (this.constructor === IScoringSystem) {
             throw new Error("Cannot instantiate an abstract class.");
         }
     }
 
-    getName() {
+    getName() : string {
         throw new Error("Method 'Name' should be implemented.");
     }
 
-    getDescription() {
+    getDescription() : string {
         throw new Error("Method 'Description' should be implemented.");
     }
 
@@ -25,11 +25,11 @@ class EurocupScoreCalculator extends IScoringSystem {
         super();
     }
 
-    getName() {
+    getName() : string {
         return "EurocupScoreCalculator";
     }
 
-    getDescription() {
+    getDescription() : string {
         return "Fail count 0";
     }
 
@@ -61,11 +61,11 @@ class FinalsCalculator extends IScoringSystem {
         super();
     }
 
-    getName() {
+    getName() : string {
         return "EurocupFinalsScoringSystem";
     }
 
-    getDescription() {
+    getDescription() : string {
         return "First to n";
     }
 
@@ -74,5 +74,17 @@ class FinalsCalculator extends IScoringSystem {
 
         orderedStandings[0].points = 1;
         orderedStandings[1].points = 0;
+    }
+}
+
+export class ScoringSystemProvider {
+    systems: IScoringSystem[];
+    constructor() {
+        this.systems.push(new EurocupScoreCalculator())
+        this.systems.push(new FinalsCalculator())
+    }
+
+    getScoringSystem(name: string) : IScoringSystem {
+        return this.systems.find((e) => e.getName() === name);
     }
 }
