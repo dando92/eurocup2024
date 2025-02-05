@@ -78,13 +78,23 @@ class FinalsCalculator extends IScoringSystem {
 }
 
 export class ScoringSystemProvider {
-    systems: IScoringSystem[];
+    systems: Map<string, IScoringSystem>;
     constructor() {
-        this.systems.push(new EurocupScoreCalculator())
-        this.systems.push(new FinalsCalculator())
+        this.systems = new Map<string, IScoringSystem>();
+        
+        this.add(new EurocupScoreCalculator())
+        this.add(new FinalsCalculator())
+    }
+    
+    add(scoreCalculator: IScoringSystem): void {
+        this.systems.set(scoreCalculator.getName(), scoreCalculator);
     }
 
     getScoringSystem(name: string) : IScoringSystem {
-        return this.systems.find((e) => e.getName() === name);
+        return this.systems.get(name);
+    }
+
+    getAll() : string[] {
+        return Array.from(this.systems.keys());
     }
 }

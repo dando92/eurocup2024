@@ -1,12 +1,13 @@
 import { Controller, Delete, Get, Param, Post, Body } from '@nestjs/common';
-import { DivisionsService, MatchesService, PhasesService, PlayerService } from './crud/services';
+import { DivisionsService, MatchesService, PhasesService, PlayerService, RoundsService } from './crud/services';
 import { Match, Phase, Player, Song, Standing } from './crud/entities';
 import { TournamentCache } from 'src/services/tournament.cache';
-import { CreateMatchDto, UpdatePlayerDto } from './crud/dtos';
+import { CreateMatchDto, CreateScoreDto, UpdatePlayerDto, UpdateRoundDto } from './crud/dtos';
 import { MatchManager } from './services/match.manager';
 import { StandingManager } from './services/standing.manager';
 import { LiveScore } from './gateways/live.score.gateway';
 import { Transform } from 'class-transformer';
+import { ScoringSystemProvider } from './services/IScoringSystem';
 
 export class RoundDTO {
     id: number;
@@ -85,6 +86,8 @@ export class BackwardCompatibilityController {
         private readonly matchManager: MatchManager,
         private readonly matchService: MatchesService,
         private readonly standingManager: StandingManager,
+        private readonly roundService: RoundsService,
+        private readonly scoringSystemProvider: ScoringSystemProvider
     ) { }
 
     @Get('expandphase/:id')
@@ -104,7 +107,7 @@ export class BackwardCompatibilityController {
 
     @Get('possibleScoringSystem')
     getScoringSystem(@Param('id') id: number): string[] | null {
-        return ["Eurocup 2025"];
+        return this.scoringSystemProvider.getAll();
     }
 
     @Post(':playerId/removeFromTeam')
@@ -166,10 +169,29 @@ export class BackwardCompatibilityController {
 
     @Post('addstanding')
     async addStanding(@Body() dto: PostStanding): Promise<MatchDto | null> {
-        //TODO:
-        // const liveScore = new LiveScore();
-        // liveScore = dto.
-         this.standingManager.AddScore()
+        
+        if(dto.isFailed && dto.percentage == -1) {
+            const match = await this.getActiveMatch();
+            const round = match.rounds.find(round => round.song.id == dto.songId);
+            
+            if(round.disabledPlayerIds == null)
+                round.disabledPlayerIds = []
+
+            round.disabledPlayerIds.push(dto.playerId);
+            const roundDTO = new UpdateRoundDto();
+            roundDTO.disabledPlayerIds = round.disabledPlayerIds;
+            await this.roundService.update(round.id, roundDTO);
+        } else {
+            const score = new CreateScoreDto();
+        
+            score.isFailed = dto.isFailed;
+            score.percentage = dto.percentage;
+            score.playerId = dto.playerId;
+            score.songId = dto.songId;
+    
+            await this.standingManager.AddScore(score)
+        }
+
         
         return await this.convert(await this.getActiveMatch());
     }

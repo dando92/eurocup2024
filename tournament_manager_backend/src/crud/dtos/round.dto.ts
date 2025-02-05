@@ -13,6 +13,10 @@ export class CreateRoundDto {
   @IsNotEmpty()
   @IsNumber()
   songId: number;
+
+  @ApiProperty({ description: 'list of disabled players' })
+  @IsOptional()
+  disabledPlayerIds: number[];
 }
 
 export class UpdateRoundDto {
@@ -29,6 +33,10 @@ export class UpdateRoundDto {
   @IsNumber()
   songId: number;
 
+  @ApiProperty({ description: 'list of disabled players' })
+  @IsOptional()
+  disabledPlayerIds: number[];
+  
   match?: Match;
   song?: Song;
 }
