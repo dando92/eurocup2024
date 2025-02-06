@@ -31,12 +31,13 @@ export class StandingManager {
         const actualScoreEntity = await this.scoresService.create(score)
 
         const activeMatch = await this.tournamentCache.GetActiveMatch();
-        const round = activeMatch.rounds.find(async round=> round.song.id === score.songId);
-
+        
         if(!activeMatch) {
             //TODO: Log score added but no active match found
             return;
         }
+
+        const round = activeMatch.rounds.find(async round=> round.song.id === score.songId);
 
         if(!round) {
             //TODO: Log socre added but no round found in active match
@@ -45,19 +46,24 @@ export class StandingManager {
         
         const newStanding = new CreateStandingDto();
         
-        newStanding.roundId = activeMatch.id;
-        newStanding.scoreId = actualScoreEntity.id
-
-        await this.standingService.create(newStanding);
-        const activePlayerInRound = this.CountActivePlayersInRound(activeMatch.players, round);
+        newStanding.roundId = round.id;
+        newStanding.scoreId = actualScoreEntity.id;
+        newStanding.points = 0;
         
-        if(round.standings.length >= activePlayerInRound) {
+        const standing = await this.standingService.create(newStanding);
+
+        round.standings.push(standing);
+
+        const activePlayers = this.GetActivePlayers(activeMatch.players, round);
+        const standings = this.GetStandingsOfActivePlayers(activePlayers, round);
+
+        if(standings.length >= activePlayers.length) {
             const scoreSystem = this.scoringSystemProvider.getScoringSystem(activeMatch.scoringSystem);
-            scoreSystem.recalc(round.standings);
-            await this.recalc(round.standings);
+            scoreSystem.recalc(standings);
+            await this.recalc(standings);
         }
 
-        this.matchHub.OnMatchUpdate(activeMatch);
+        await this.matchHub.OnMatchUpdate(activeMatch);
     }
 
     async AddLiveScore(score: LiveScore) {
@@ -92,10 +98,37 @@ export class StandingManager {
     }
 
     async RemoveStanding(playerId: number, songId: number) {
-        //this.matchHub.OnMatchUpdate(activeMatch);
+        const activeMatch = await this.tournamentCache.GetActiveMatch();
+        
+        if(!activeMatch) {
+            //TODO: Log score added but no active match found
+            return;
+        }
+
+        const round = activeMatch.rounds.find(async round=> round.song.id === songId);
+
+        if(!round) {
+            //TODO: Log socre added but no round found in active match
+            return;
+        }
+        
+        const standings = round.standings.filter(standing => standing.score.player.id == playerId && standing.score.song.id == songId);
+
+        if(standings.length <= 0)
+            return;
+        
+        await this.standingService.remove(standings[0].id);
+        
+        this.matchHub.OnMatchUpdate(activeMatch);
     }
 
-    CountActivePlayersInRound(players: Player[], round: Round) {
-        return players.flatMap((value) => round.disabledPlayerIds.includes(value.id)).length
+    GetActivePlayers(players: Player[], round: Round) {
+        const disabledPlayers = round.disabledPlayerIds ? round.disabledPlayerIds : [];
+
+        return players.filter((value) => !disabledPlayers.some(disabledplayer => disabledplayer == value.id));
+    }
+
+    GetStandingsOfActivePlayers(players: Player[], round: Round) {
+        return round.standings.filter(standing => players.some(player => standing.score.player.id == player.id));
     }
 }

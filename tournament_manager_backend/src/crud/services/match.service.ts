@@ -37,7 +37,7 @@ export class MatchesService{
         }
 
         match.multiplier = 1;
-        match.scoringSystem = "Eurocup 2025";
+        match.scoringSystem = dto.scoringSystem;
         match.isManualMatch = false;
         match.name = dto.name;
         if(dto.notes){

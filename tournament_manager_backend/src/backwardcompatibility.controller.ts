@@ -148,7 +148,8 @@ export class BackwardCompatibilityController {
         newMatchDto.phaseId = dto.phaseId;
         newMatchDto.playerIds = dto.playerIds;
         newMatchDto.subtitle = dto.subtitle;
-
+        newMatchDto.scoringSystem = dto.scoringSystem;
+        
         const match = await this.matchService.create(newMatchDto);
 
         if (dto.songIds) {
@@ -169,7 +170,6 @@ export class BackwardCompatibilityController {
 
     @Post('addstanding')
     async addStanding(@Body() dto: PostStanding): Promise<MatchDto | null> {
-        
         if(dto.isFailed && dto.percentage == -1) {
             const match = await this.getActiveMatch();
             const round = match.rounds.find(round => round.song.id == dto.songId);
@@ -178,21 +178,22 @@ export class BackwardCompatibilityController {
                 round.disabledPlayerIds = []
 
             round.disabledPlayerIds.push(dto.playerId);
+            
             const roundDTO = new UpdateRoundDto();
             roundDTO.disabledPlayerIds = round.disabledPlayerIds;
-            await this.roundService.update(round.id, roundDTO);
-        } else {
-            const score = new CreateScoreDto();
-        
-            score.isFailed = dto.isFailed;
-            score.percentage = dto.percentage;
-            score.playerId = dto.playerId;
-            score.songId = dto.songId;
-    
-            await this.standingManager.AddScore(score)
-        }
 
+            await this.roundService.update(round.id, roundDTO);
+        }
         
+        const score = new CreateScoreDto();
+        
+        score.isFailed = dto.isFailed;
+        score.percentage = dto.percentage;
+        score.playerId = dto.playerId;
+        score.songId = dto.songId;
+
+        await this.standingManager.AddScore(score)
+
         return await this.convert(await this.getActiveMatch());
     }
 

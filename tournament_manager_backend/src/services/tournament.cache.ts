@@ -20,7 +20,7 @@ export class TournamentCache {
         if (matchId != this.activeMatchId) {
             this.activeMatchId = matchId;
             
-            this.matchHub.OnMatchUpdate(await this.GetActiveMatch());
+            await this.matchHub.OnMatchUpdate(await this.GetActiveMatch());
         }
     }
 

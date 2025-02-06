@@ -33,6 +33,11 @@ export class CreateMatchDto {
   @IsNotEmpty()
   @IsNumber()
   phaseId: number;
+  
+  @ApiProperty({ description: 'Which scoring system shall be used', example: 'Eurocup2025' })
+  @IsNotEmpty()
+  @IsString()
+  scoringSystem: string;
 
   players?: Player[];
 }
@@ -62,6 +67,11 @@ export class UpdateMatchDto {
   @IsOptional()
   @IsNumber()
   phaseId: number;
+
+  @ApiProperty({ description: 'Which scoring system shall be used', example: 'Eurocup2025' })
+  @IsOptional()
+  @IsString()
+  scoringSystem: string;
 
   players?: Player[];
   phase?: Promise<Phase>;

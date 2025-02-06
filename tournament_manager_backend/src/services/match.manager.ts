@@ -62,7 +62,7 @@ export class MatchManager {
 
         await this.roundService.remove(round.id);
         match.rounds = match.rounds.filter(round => round.id == round.id);
-        this.matchHub.OnMatchUpdate(match);
+        await this.matchHub.OnMatchUpdate(match);
     }
 
     public async AddRandomSongsToMatch(match: Match, divisionId: number, group: string, levels: string): Promise<void> {
@@ -79,7 +79,7 @@ export class MatchManager {
             await this.AddSongToMatch(match, songId);
         }
         
-        this.matchHub.OnMatchUpdate(match);
+        await this.matchHub.OnMatchUpdate(match);
     }
 
     private async AddSongToMatch(match: Match, songId: number): Promise<void> {

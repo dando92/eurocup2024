@@ -6,6 +6,7 @@ import {
     SubscribeMessage
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { StandingManager } from 'src/services/standing.manager';
 
 export class HoldNote {
     none: number;
@@ -51,12 +52,15 @@ export class LiveScore {
         origin: '*', // Adjust this for security in production
     },
 })
+
 export class LiveScoreGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer()
     server: Server;
     currentSong: string;
     scoreByPlayer: { [playerName: string]: LiveScore } = {};
 
+    constructor(private readonly standingManger: StandingManager) { }
+    
     @SubscribeMessage('scoreChange')
     scoreChange(client: Socket, payload: any): void {
         console.log('Received message:', payload);
@@ -71,12 +75,14 @@ export class LiveScoreGateway implements OnGatewayConnection, OnGatewayDisconnec
         this.scoreByPlayer[score.playerName] = score;
 
         this.UpdateLiveScore(score);
-    }    @SubscribeMessage('scoreChange')
+    }
 
     @SubscribeMessage('onFinalResults')
     onFinalResults(client: Socket, payload: any): void {
         console.log('Received message:', payload);
-        //TODO: Add
+        
+        const score: LiveScore = payload;
+        this.standingManger.AddLiveScore(score);
     }
 
 
