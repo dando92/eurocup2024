@@ -11,6 +11,7 @@ import { SongExtractor } from './services/song.extractor';
 import { TournamentCache } from './services/tournament.cache';
 import { MatchGateway } from './gateways/match.gateway'
 import { ScoringSystemProvider } from './services/IScoringSystem';
+import { GameGateway } from './gateways/game.gateway';
 
 const controllers = [
   Controllers[0],
@@ -45,7 +46,8 @@ const services = [
   MatchManager,
   StandingManager,
   MatchGateway,
-  ScoringSystemProvider
+  ScoringSystemProvider,
+  GameGateway
 ]
 
 

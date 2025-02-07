@@ -28,7 +28,7 @@ export default function DivisionList({
     const name = prompt("Enter division name");
 
     if (name) {
-      axios.post<Division>("divisions", { name }).then((response) => {
+      axios.post<Division>("divisions", { tournamentId: 1 , name: name }).then((response) => {
         setDivisions([...divisions, response.data]);
         setSelectedDivisionId(response.data.id);
       });
