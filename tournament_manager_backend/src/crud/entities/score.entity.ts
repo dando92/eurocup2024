@@ -7,7 +7,7 @@ export class Score {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column("decimal")
   percentage: number;
 
   @Column()

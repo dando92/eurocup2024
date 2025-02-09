@@ -207,15 +207,15 @@ export class BackwardCompatibilityController {
         score.playerId = dto.playerId;
         score.songId = dto.songId;
 
-        await this.standingManager.AddScore(score)
+        const match = await this.standingManager.AddScore(score)
 
-        return await this.convert(await this.getActiveMatch());
+        return await this.convert(match);
     }
 
     @Delete('deletestanding/:playerId/:songId')
     async deleteStanding(@Param('playerId') playerId: number, @Param('songId') songId: number): Promise<MatchDto | null> {
-        this.standingManager.RemoveStanding(playerId, songId);
-        return await this.convert(await this.getActiveMatch());
+        const match = await this.standingManager.RemoveStanding(playerId, songId);
+        return await this.convert(match);
     }
     
     @Post(':playerId/assignToTeam/:teamId')

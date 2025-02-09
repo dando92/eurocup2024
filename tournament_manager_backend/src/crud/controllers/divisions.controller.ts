@@ -14,7 +14,8 @@ export class DivisionsController {
 
     @Get()
     async findAll(): Promise<Division[]> {
-        return await this.service.findAll();
+        const divisions = await this.service.findAll();
+        return divisions;
     }
 
     @Get(':id')

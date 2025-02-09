@@ -8,7 +8,7 @@ import {
 import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway({
-  path: "/log",
+  path: "/logupdatehub",
   cors: {
     origin: '*', // Adjust this for security in production
   },
