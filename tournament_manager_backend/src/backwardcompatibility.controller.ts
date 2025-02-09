@@ -1,13 +1,20 @@
 import { Controller, Delete, Get, Param, Post, Body } from '@nestjs/common';
-import { DivisionsService, MatchesService, PhasesService, PlayerService, RoundsService } from './crud/services';
+import { DivisionsService, MatchesService, PhasesService, PlayerService, RoundsService, SongService } from './crud/services';
 import { Match, Phase, Player, Song, Standing } from './crud/entities';
 import { TournamentCache } from 'src/services/tournament.cache';
-import { CreateMatchDto, CreateScoreDto, UpdatePlayerDto, UpdateRoundDto } from './crud/dtos';
+import { CreateMatchDto, CreateScoreDto, UpdatePlayerDto, UpdateRoundDto, CreateSongDto, CreatePlayerDto } from './crud/dtos';
 import { MatchManager } from './services/match.manager';
 import { StandingManager } from './services/standing.manager';
 import { LiveScore } from './gateways/live.score.gateway';
 import { Transform } from 'class-transformer';
 import { ScoringSystemProvider } from './services/IScoringSystem';
+
+export class PostBatchSongRequest{
+    songs: CreateSongDto[]
+}
+export class PostBatchPlayerRequest{
+    players: CreatePlayerDto[]
+}
 
 export class RoundDTO {
     id: number;
@@ -82,6 +89,7 @@ export class BackwardCompatibilityController {
     constructor(private readonly phaseService: PhasesService,
         private readonly divisionService: DivisionsService,
         private readonly playerService: PlayerService,
+        private readonly songService: SongService,
         private readonly tournamentCache: TournamentCache,
         private readonly matchManager: MatchManager,
         private readonly matchService: MatchesService,
@@ -108,6 +116,13 @@ export class BackwardCompatibilityController {
     @Get('possibleScoringSystem')
     getScoringSystem(@Param('id') id: number): string[] | null {
         return this.scoringSystemProvider.getAll();
+    }
+
+    @Post('AddBatchSongs')
+    async addBatchSongs(@Body() dto: PostBatchSongRequest) {
+        dto.songs.forEach(async song => {
+            await this.songService.create(song);
+        });
     }
 
     @Post(':playerId/removeFromTeam')

@@ -12,6 +12,7 @@ import { TournamentCache } from './services/tournament.cache';
 import { MatchGateway } from './gateways/match.gateway'
 import { ScoringSystemProvider } from './services/IScoringSystem';
 import { GameGateway } from './gateways/game.gateway';
+import { LiveScoreGateway } from './gateways/live.score.gateway'
 
 const controllers = [
   Controllers[0],
@@ -47,7 +48,8 @@ const services = [
   StandingManager,
   MatchGateway,
   ScoringSystemProvider,
-  GameGateway
+  GameGateway,
+  LiveScoreGateway
 ]
 
 

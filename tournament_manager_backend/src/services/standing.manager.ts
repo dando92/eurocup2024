@@ -6,6 +6,7 @@ import { TournamentCache } from "./tournament.cache";
 import { Standing, Player, Round } from "src/crud/entities";
 import { MatchGateway } from '../gateways/match.gateway';
 import { ScoringSystemProvider } from './IScoringSystem'
+import * as path from 'path';
 
 @Injectable()
 export class StandingManager {
@@ -66,8 +67,8 @@ export class StandingManager {
         await this.matchHub.OnMatchUpdate(activeMatch);
     }
 
-    async AddLiveScore(score: LiveScore) {
-        const song = await this.songService.findByName(score.song);
+    async AddLiveScore(score: LiveScore) {      
+        const song = await this.songService.findByName(path.basename(score.song));
 
         if (!song) {
             throw new Error(`Song with title ${score.song} not found`);

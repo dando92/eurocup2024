@@ -7,6 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { StandingManager } from 'src/services/standing.manager';
+import { WebSocket } from 'ws';
 
 export class HoldNote {
     none: number;
@@ -47,12 +48,11 @@ export class LiveScore {
 }
 
 @WebSocketGateway({
-    path: "/liveScore",
+    path: "/ws",
     cors: {
         origin: '*', // Adjust this for security in production
     },
 })
-
 export class LiveScoreGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer()
     server: Server;
@@ -78,10 +78,10 @@ export class LiveScoreGateway implements OnGatewayConnection, OnGatewayDisconnec
     }
 
     @SubscribeMessage('onFinalResults')
-    onFinalResults(client: Socket, payload: any): void {
-        console.log('Received message:', payload);
+    onFinalResults(client: WebSocket, data: any): void {
+        console.log('Received message:', data);
         
-        const score: LiveScore = payload;
+        const score: LiveScore = JSON.parse(data);
         this.standingManger.AddLiveScore(score);
     }
 
@@ -94,12 +94,15 @@ export class LiveScoreGateway implements OnGatewayConnection, OnGatewayDisconnec
         this.server.emit('LiveScore', score);
     }
   
-    handleConnection(client: Socket) {
-        console.log(`Client connected to match gateway: ${client.id}`);
-        // You could store connected clients here for later use
+    handleConnection(client: WebSocket) {
+        console.log(`Client connected to match gateway`);
+        // client.on('message', async (messageBuffer: Buffer) => {
+        //     const messageString = messageBuffer.toString();
+        //     this.onFinalResults(messageString);
+        // });
     }
 
-    handleDisconnect(client: Socket) {
-        console.log(`Client disconnected to match gateway: ${client.id}`);
+    handleDisconnect(client: WebSocket) {
+        console.log(`Client disconnected to match gateway`);
     }
 }
