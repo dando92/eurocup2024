@@ -8,6 +8,8 @@ import { Tournament } from './entities/tournament.entity';
 import { Score } from './entities/score.entity';
 import { Song } from './entities/song.entity';
 import { Standing } from './entities/standing.entity';
+import { MatchAssignment } from './entities/match_assignment.entity';
+import { Setup } from './entities/setup.entity';
 
 export { Division } from './entities/division.entity';
 export { Match } from './entities/match.entity';
@@ -19,6 +21,8 @@ export { Tournament } from './entities/tournament.entity';
 export { Score } from './entities/score.entity';
 export { Song } from './entities/song.entity';
 export { Standing } from './entities/standing.entity';
+export { MatchAssignment } from './entities/match_assignment.entity';
+export { Setup } from './entities/setup.entity';
 
 export const Entities = [
     Division,
@@ -30,5 +34,7 @@ export const Entities = [
     Tournament,
     Score,
     Song,
-    Standing
+    Standing,
+    MatchAssignment,
+    Setup
 ];
