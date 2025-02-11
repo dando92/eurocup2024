@@ -3,7 +3,7 @@ import { DivisionsService, SongService } from '../crud/services';
 import { Division, Song } from '../crud/entities';
 
 @Injectable()
-export class SongExtractor {
+export class SongRoller {
     constructor(
         @Inject()
         private readonly divisionService: DivisionsService,

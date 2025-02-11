@@ -7,7 +7,7 @@ import { Controllers } from './crud/controllers';
 import { BackwardCompatibilityController } from './backwardcompatibility.controller';
 import { MatchManager } from './services/match.manager';
 import { StandingManager } from './services/standing.manager';
-import { SongExtractor } from './services/song.extractor';
+import { SongRoller } from './services/song.roller';
 import { TournamentCache } from './services/tournament.cache';
 import { MatchGateway } from './gateways/match.gateway'
 import { ScoringSystemProvider } from './services/IScoringSystem';
@@ -43,7 +43,7 @@ const services = [
   Services[8],
   Services[9],
   TournamentCache,
-  SongExtractor,
+  SongRoller,
   MatchManager,
   StandingManager,
   MatchGateway,

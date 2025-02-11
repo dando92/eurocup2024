@@ -129,7 +129,7 @@ export class StandingManager {
 
             if(index != -1) {
                 for (let i = 0; i < round.standings.length; i++) {
-                    let standing = round.standings[i];
+                    const standing = round.standings[i];
     
                     if (index == i) {
                         round.standings.splice(index, 1);

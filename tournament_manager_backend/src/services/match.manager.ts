@@ -2,21 +2,25 @@ import { Injectable, Inject } from '@nestjs/common';
 import { MatchesService, RoundsService } from '../crud/services';
 import { CreateRoundDto } from '../crud/dtos';
 import { Match } from '../crud/entities/match.entity';
-import { SongExtractor } from './song.extractor';
+import { SongRoller } from './song.roller';
 import { MatchGateway } from '../gateways/match.gateway';
 
 @Injectable()
 export class MatchManager {
+    activeMatchId: number;
+    activeMatch: Match;
+
     constructor(
         @Inject()
         private readonly matchService: MatchesService,
         @Inject()
         private readonly roundService: RoundsService,
         @Inject()
-        private readonly songExtractor: SongExtractor,
+        private readonly songExtractor: SongRoller,
         @Inject()
         private readonly matchHub: MatchGateway
-    ) { }
+    ) { 
+    }
     
     public async AddSongsToMatchById(matchId: number, songIds: number[]): Promise<void> {
         const match = await this.matchService.findOne(matchId);
