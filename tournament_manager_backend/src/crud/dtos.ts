@@ -8,6 +8,8 @@ import { CreateSongDto, UpdateSongDto } from './dtos/song.dto';
 import { CreateStandingDto, UpdateStandingDto } from './dtos/standing.dto';
 import { CreateTeamDto, UpdateTeamDto } from './dtos/team.dto';
 import { CreateTournamentDto, UpdateTournamentDto } from './dtos/tournament.dto';
+import { CreateMatchAssignmentDto, UpdateMatchAssignmentDto } from './dtos/match_assignment.dto';
+import { CreateSetupDto, UpdateSetupDto } from './dtos/setup.dto';
 
 export { CreateDivisionDto, UpdateDivisionDto };
 export { CreateMatchDto, UpdateMatchDto };
@@ -19,29 +21,5 @@ export { CreateSongDto, UpdateSongDto };
 export { CreateStandingDto, UpdateStandingDto };
 export { CreateTeamDto, UpdateTeamDto };
 export { CreateTournamentDto, UpdateTournamentDto };
-
-export const CreateDtos = [
-    CreateDivisionDto,
-    CreateMatchDto,
-    CreatePhaseDto,
-    CreatePlayerDto,
-    CreateRoundDto,
-    CreateScoreDto,
-    CreateSongDto,
-    CreateStandingDto,
-    CreateTeamDto,
-    CreateTournamentDto
-  ]
-
-  export const UpdateDtos = [
-    UpdateDivisionDto,
-    UpdateMatchDto,
-    UpdatePhaseDto,
-    UpdatePlayerDto,
-    UpdateRoundDto,
-    UpdateScoreDto,
-    UpdateSongDto,
-    UpdateStandingDto,
-    UpdateTeamDto,
-    UpdateTournamentDto
-  ]
+export { CreateMatchAssignmentDto, UpdateMatchAssignmentDto };
+export { CreateSetupDto, UpdateSetupDto };

@@ -1,6 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { Setup } from './setup.entity';
-import { Match } from './match.entity';
 import { Round } from './round.entity';
 import { Player } from './player.entity';
 

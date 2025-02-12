@@ -8,18 +8,21 @@ import { TournamentsService } from './services/tournaments.service';
 import { ScoresService } from './services/scores.service';
 import { SongService } from './services/songs.service';
 import { StandingsService } from './services/standing.service';
+import { SetupService } from './services/setup.service';
+import { MatchAssignmentService } from './services/match_assignment.service';
 
-export { DivisionsService } from './services/divisions.service';
-export { MatchesService } from './services/match.service';
-export { PhasesService } from './services/phases.service';
-export { PlayerService } from './services/players.service';
-export { RoundsService } from './services/rounds.service';
-export { TeamsService } from './services/teams.service';
-export { TournamentsService } from './services/tournaments.service';
-export { ScoresService } from './services/scores.service';
-export { SongService } from './services/songs.service';
-export { StandingsService } from './services/standing.service';
-
+export { DivisionsService }
+export { MatchesService }
+export { PhasesService }
+export { PlayerService }
+export { RoundsService }
+export { TeamsService }
+export { TournamentsService }
+export { ScoresService }
+export { SongService }
+export { StandingsService }
+export { SetupService }
+export { MatchAssignmentService }
 
 export const Services = [
     DivisionsService,
@@ -31,5 +34,7 @@ export const Services = [
     SongService,
     StandingsService,
     TeamsService,
-    TournamentsService
+    TournamentsService,
+    SetupService,
+    MatchAssignmentService
   ]

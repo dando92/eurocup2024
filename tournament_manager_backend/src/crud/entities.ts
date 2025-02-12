@@ -11,18 +11,18 @@ import { Standing } from './entities/standing.entity';
 import { MatchAssignment } from './entities/match_assignment.entity';
 import { Setup } from './entities/setup.entity';
 
-export { Division } from './entities/division.entity';
-export { Match } from './entities/match.entity';
-export { Phase } from './entities/phase.entity';
-export { Player } from './entities/player.entity';
-export { Round } from './entities/round.entity';
-export { Team } from './entities/team.entity';
-export { Tournament } from './entities/tournament.entity';
-export { Score } from './entities/score.entity';
-export { Song } from './entities/song.entity';
-export { Standing } from './entities/standing.entity';
-export { MatchAssignment } from './entities/match_assignment.entity';
-export { Setup } from './entities/setup.entity';
+export { Division }
+export { Match }
+export { Phase }
+export { Player }
+export { Round }
+export { Team }
+export { Tournament }
+export { Score }
+export { Song }
+export { Standing }
+export { MatchAssignment }
+export { Setup }
 
 export const Entities = [
     Division,
