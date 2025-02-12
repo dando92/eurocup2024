@@ -1,4 +1,3 @@
-// Suggested code may be subject to a license. Learn more: ~LicenseLog:175172732.
 import { Module } from '@nestjs/common';
 import { BackwardCompatibilityController } from './backwardcompatibility.controller';
 import { MatchManager } from './services/match.manager';
