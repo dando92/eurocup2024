@@ -1,0 +1,30 @@
+.container {
+  display: flex;
+  border: 1px solid gray;
+  width: 80%;
+  background-color: white;
+  /* Added background color */
+  display: flex;
+  flex-direction: row;
+  gap: 10px; /* Adjust the gap between items */
+}
+
+.droppable-container {
+  display: flex;
+  padding: 10px solid gray;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: rgb(255, 255, 255);
+  flex: 1;
+  /* Added background color */
+}
+
+.locked-button {
+  background-color: white;
+  align-items: left;
+  color: green;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}

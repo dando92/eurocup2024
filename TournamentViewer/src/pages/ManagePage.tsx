@@ -9,6 +9,7 @@ import {
   faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Magic from "../components/manage/development/Development";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export function classNames(...classes: string[]) {
@@ -99,6 +100,18 @@ export default function ManagePage() {
           >
             Players
           </Tab>
+          <Tab
+            className={({ selected }) =>
+              classNames(
+                "py-2 px-4 text-lg",
+                selected
+                  ? "border-b-2 border-rossoTesto font-bold text-rossoTesto"
+                  : "text-gray-500",
+              )
+            }
+          >
+            Development
+          </Tab>
         </Tab.List>
         <Tab.Panels className="mt-3">
           <Tab.Panel>
@@ -109,6 +122,9 @@ export default function ManagePage() {
           </Tab.Panel>
           <Tab.Panel>
             <PlayersList />
+          </Tab.Panel>
+          <Tab.Panel>
+            <Magic />
           </Tab.Panel>
         </Tab.Panels>
       </Tab.Group>
