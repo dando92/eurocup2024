@@ -8,6 +8,13 @@ import { StandingManager } from './services/standing.manager';
 import { LiveScore } from './gateways/live.score.gateway';
 import { Transform } from 'class-transformer';
 import { ScoringSystemProvider } from './services/IScoringSystem';
+import { GameGateway } from './gateways/game.gateway';
+
+export class PostPlayerOnGame {
+    song: string;
+    p1: string;
+    p2: string;
+}
 
 export class PostBatchSongRequest{
     songs: CreateSongDto[]
@@ -95,7 +102,8 @@ export class BackwardCompatibilityController {
         private readonly matchService: MatchesService,
         private readonly standingManager: StandingManager,
         private readonly roundService: RoundsService,
-        private readonly scoringSystemProvider: ScoringSystemProvider
+        private readonly scoringSystemProvider: ScoringSystemProvider, 
+        private readonly gameHub: GameGateway
     ) { }
 
     @Get('expandphase/:id')
@@ -154,6 +162,17 @@ export class BackwardCompatibilityController {
         return await this.convert(match);
     }
 
+    @Post('SetPlayerOnGame')
+    async SetPlayerOnGame(@Body() dto: PostPlayerOnGame) {
+        //"StepMania 5/Goin' Under"
+        //"Dando"
+        //"Asma"
+        this.gameHub.sendState("Cab1", {
+            song: dto.song,
+            P1: dto.p1,
+            P2: dto.p2,
+        })
+    }
 
     @Post('addMatch')
     async addMatch(@Body() dto: PostAddMatch): Promise<MatchDto> {

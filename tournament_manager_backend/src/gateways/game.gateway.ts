@@ -36,11 +36,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         console.log('Received message:', payload);
         
         this.clients[payload.id] = client;
-        this.sendState("Cab1", {
-            song: "StepMania 5/Goin' Under",
-            P1: "Dando",
-            P2: "Asma",
-        })
     }
 
 
@@ -48,9 +43,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.clients[id].send(JSON.stringify({
             event: "state",
             data: state
-        }))
+        }));
         
-        //this.server.emit("state", state);
+        //this.clients[id].emit("state", state);
     }
 
     sendLog(logType: string, logMessage: string) {

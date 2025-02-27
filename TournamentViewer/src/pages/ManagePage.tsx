@@ -9,7 +9,7 @@ import {
   faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Magic from "../components/manage/development/Development";
+import CabOrganizationView from "../components/manage/development/Development";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export function classNames(...classes: string[]) {
@@ -124,7 +124,7 @@ export default function ManagePage() {
             <PlayersList />
           </Tab.Panel>
           <Tab.Panel>
-            <Magic />
+            <CabOrganizationView />
           </Tab.Panel>
         </Tab.Panels>
       </Tab.Group>
