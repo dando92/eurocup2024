@@ -1,0 +1,150 @@
+/* Live Scores Animations */
+@keyframes first-place {
+  0%, 100% { 
+    transform: translateY(0px) scale(1); 
+  }
+  50% { 
+    transform: translateY(-2px) scale(1.02); 
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { 
+    box-shadow: 0 0 5px rgba(251, 191, 36, 0.3); 
+  }
+  50% { 
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.6); 
+  }
+}
+
+.animate-first-place {
+  animation: first-place 2s ease-in-out infinite;
+}
+
+.position-transition {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Smooth position transitions */
+.position-stable {
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), 
+              background-color 0.5s ease,
+              border-color 0.5s ease,
+              box-shadow 0.5s ease;
+}
+
+/* First place special animation - less aggressive */
+.animate-first-place-stable {
+  animation: first-place-stable 3s ease-in-out infinite;
+}
+
+@keyframes first-place-stable {
+  0%, 100% { 
+    transform: translateY(0px) scale(1); 
+    box-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+  }
+  50% { 
+    transform: translateY(-1px) scale(1.01); 
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+  }
+}
+
+/* Progress bar animations */
+@keyframes progress-fill {
+  from { width: 0%; }
+  to { width: var(--target-width); }
+}
+
+.progress-bar-fill {
+  animation: progress-fill 0.8s ease-out;
+}
+
+/* Health trend indicators */
+.health-increasing {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.health-decreasing {
+  animation: pulse-red 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes pulse-red {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Smooth transitions for score cards */
+.score-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.score-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Chart container styling */
+.chart-container {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(51, 65, 85, 0.6) 100%);
+  backdrop-filter: blur(10px);
+}
+
+/* Mini chart animations */
+.mini-chart-enter {
+  animation: chart-slide-in 0.5s ease-out;
+}
+
+@keyframes chart-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Health status colors */
+.health-excellent { color: #10b981; }
+.health-good { color: #3b82f6; }
+.health-warning { color: #f59e0b; }
+.health-critical { color: #ef4444; }
+
+/* Mini chart container */
+.mini-chart-container {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.4) 0%, rgba(51, 65, 85, 0.2) 100%);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  transition: all 0.3s ease;
+}
+
+.mini-chart-container:hover {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(51, 65, 85, 0.4) 100%);
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+/* Score difference indicator */
+.score-difference {
+  animation: score-difference-pulse 2s ease-in-out infinite;
+  transition: all 0.3s ease;
+}
+
+@keyframes score-difference-pulse {
+  0%, 100% { 
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
+
+.score-difference:hover {
+  transform: scale(1.1);
+  background-color: rgba(127, 29, 29, 0.5);
+}
