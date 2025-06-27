@@ -15,20 +15,25 @@ h1, h2, h3 {
 }
 
 
-/* Create an animation on class animate-first-place that scales 95% to 105% */
+/* Animations for live scores */
 
 .animate-first-place {
-    animation: first-place .5s infinite;
+    animation: first-place 1s ease-in-out infinite;
 }
 
 @keyframes first-place {
     0% {
-        transform: scale(0.998);
+        transform: scale(1);
     }
     50% {
         transform: scale(1.01);
     }
     100% {
-        transform: scale(0.998);
+        transform: scale(1);
     }
+}
+
+/* Smooth position transitions */
+.position-transition {
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
