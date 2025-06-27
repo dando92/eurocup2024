@@ -9,6 +9,11 @@ import {
   faRefresh,
   faStickyNote,
   faTrash,
+  faTrophy,
+  faMedal,
+  faAward,
+  faBars,
+  faTable,
 } from "@fortawesome/free-solid-svg-icons";
 import { Division } from "../../../models/Division";
 import { Phase } from "../../../models/Phase";
@@ -111,6 +116,8 @@ export default function MatchTable({
   const [logs, setLogs] = useState<Log[]>([]);
   const [addSongToMatchModalOpen, setAddSongToMatchModalOpen] = useState(false);
   const [editSongId, setEditSongId] = useState<number | null>(null);
+  const [isMobileView, setIsMobileView] = useState(false);
+  const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
 
   const [addStandingToMatchModalOpen, setAddStandingToMatchModalOpen] =
     useState(false);
@@ -141,6 +148,21 @@ export default function MatchTable({
       };
     });
   });
+
+  useEffect(() => {
+    const checkMobileView = () => {
+      setIsMobileView(window.innerWidth < 768);
+      if (window.innerWidth < 768) {
+        setViewMode('cards');
+      } else {
+        setViewMode('table');
+      }
+    };
+
+    checkMobileView();
+    window.addEventListener('resize', checkMobileView);
+    return () => window.removeEventListener('resize', checkMobileView);
+  }, []);
 
   useEffect(() => {
     if (scoreConnection === null && isActive) {
@@ -211,11 +233,138 @@ export default function MatchTable({
     (a, b) => getTotalPoints(b.id) - getTotalPoints(a.id)
   );
 
+  // Get player rank and badge
+  const getPlayerRank = (playerId: number) => {
+    const playerIndex = sortedPlayers.findIndex(p => p.id === playerId);
+    return playerIndex + 1;
+  };
+
+  const getRankIcon = (rank: number) => {
+    switch (rank) {
+      case 1: return { icon: faTrophy, color: 'text-yellow-500' };
+      case 2: return { icon: faMedal, color: 'text-gray-400' };
+      case 3: return { icon: faAward, color: 'text-amber-600' };
+      default: return null;
+    }
+  };
+
+  // Mobile Card Component
+  const PlayerCard = ({ player, rank }: { player: any; rank: number }) => {
+    const rankInfo = getRankIcon(rank);
+    const totalPoints = getTotalPoints(player.id);
+
+    return (
+      <div className={`bg-white rounded-xl shadow-lg p-4 mb-4 border-l-4 transition-all duration-300 hover:shadow-xl ${
+        rank === 1 ? 'border-yellow-500 bg-gradient-to-r from-yellow-50 to-white' :
+        rank === 2 ? 'border-gray-400 bg-gradient-to-r from-gray-50 to-white' :
+        rank === 3 ? 'border-amber-600 bg-gradient-to-r from-amber-50 to-white' :
+        'border-blue-500'
+      }`}>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-3">
+            {rankInfo && (
+              <FontAwesomeIcon icon={rankInfo.icon} className={`${rankInfo.color} text-xl`} />
+            )}
+            <div>
+              <h3 className="font-bold text-lg text-gray-800">{player.name}</h3>
+              <p className="text-sm text-gray-500">Rank #{rank}</p>
+            </div>
+          </div>
+          <div className="text-right">
+            <div className="text-2xl font-bold text-blue-600">{totalPoints}</div>
+            <div className="text-xs text-gray-500">total points</div>
+          </div>
+        </div>
+        
+        <div className="space-y-2">
+          {match.songs.map((song, j) => {
+            const key = `${player.id}-${song.id}`;
+            const scoreData = scoreTable[key];
+            return (
+              <div key={j} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex-1">
+                  <div className="font-medium text-sm text-gray-700 truncate">{song.title}</div>
+                  {controls && isActive && (
+                    <button
+                      onClick={() => {
+                        setEditSongId(song.id);
+                        setAddSongToMatchModalOpen(true);
+                      }}
+                      className="text-xs text-blue-500 mt-1"
+                      title="Change round song"
+                    >
+                      <FontAwesomeIcon icon={faRefresh} className="mr-1" />
+                      Change song
+                    </button>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  {scoreData ? (
+                    <div className="text-right">
+                      <div className={`font-bold ${scoreData.isFailed ? 'text-red-500' : 'text-green-600'}`}>
+                        {scoreData.score}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {scoreData.percentage}%{scoreData.isFailed ? ' F' : ''}
+                      </div>
+                      {controls && isActive && (
+                        <div className="flex gap-1 mt-1">
+                          <button
+                            title="Edit standing manually"
+                            className="text-xs text-blue-500"
+                          >
+                            <FontAwesomeIcon icon={faPencil} />
+                          </button>
+                          <button
+                            title="Delete this standing"
+                            className="text-xs text-red-500"
+                            onClick={() => {
+                              if (window.confirm("Are you sure you want to delete this standing?")) {
+                                onDeleteStanding(player.id, song.id);
+                              }
+                            }}
+                          >
+                            <FontAwesomeIcon icon={faTrash} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-center">
+                      <div className="text-gray-400 text-sm">-</div>
+                      {controls && isActive && (
+                        <button
+                          title="Manually add score"
+                          className="text-green-600 text-sm mt-1"
+                          onClick={() => {
+                            setAddStandingToMatchModalOpen(true);
+                            setSongIdPlayerId({
+                              playerId: player.id,
+                              songId: song.id,
+                              playerName: player.name,
+                              songTitle: song.title,
+                            });
+                          }}
+                        >
+                          <FontAwesomeIcon icon={faPlus} />
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="flex flex-col w-full p-4 my-3 rounded-lg">
-      <div className="flex flex-row mb-6 justify-center items-center">
-        <div>
-          <h2 className="text-center text-4xl font-bold text-blue-600">
+    <div className="flex flex-col w-full p-2 md:p-4 my-3 rounded-lg">
+      <div className="flex flex-col md:flex-row mb-6 justify-center items-center gap-4">
+        <div className="text-center md:text-left">
+          <h2 className="text-center text-2xl md:text-4xl font-bold text-blue-600">
             <div className="flex flex-row justify-center items-center gap-3">
               {isActive && (
                 <FontAwesomeIcon
@@ -223,7 +372,7 @@ export default function MatchTable({
                   className="text-red-800 text-xs animate-pulse"
                 />
               )}
-              <span className="text-xl">{match.name}</span>
+              <span className="text-xl md:text-xl">{match.name}</span>
               {controls && (
                 <button
                   className="text-lg"
@@ -236,12 +385,39 @@ export default function MatchTable({
             </div>
           </h2>
           {match.subtitle && (
-            <p className="text-sm font-normal text-blu flex flex-row items-center gap-1">
+            <p className="text-sm font-normal text-gray-600 flex flex-row items-center gap-1 justify-center md:justify-start mt-2">
               <FontAwesomeIcon icon={faInfoCircle} />
               {match.subtitle}
             </p>
           )}
         </div>
+        
+        {/* View Toggle for larger screens */}
+        <div className="md:hidden flex gap-2">
+          <button
+            onClick={() => setViewMode('cards')}
+            className={`px-3 py-2 rounded-lg transition-colors ${
+              viewMode === 'cards' 
+                ? 'bg-blue-500 text-white' 
+                : 'bg-gray-200 text-gray-700'
+            }`}
+          >
+            <FontAwesomeIcon icon={faBars} className="mr-2" />
+            Cards
+          </button>
+          <button
+            onClick={() => setViewMode('table')}
+            className={`px-3 py-2 rounded-lg transition-colors ${
+              viewMode === 'table' 
+                ? 'bg-blue-500 text-white' 
+                : 'bg-gray-200 text-gray-700'
+            }`}
+          >
+            <FontAwesomeIcon icon={faTable} className="mr-2" />
+            Table
+          </button>
+        </div>
+
         <AddEditSongToMatchModal
           songId={editSongId}
           phaseId={phase.id}
@@ -282,16 +458,17 @@ export default function MatchTable({
           onSave={onEditMatchNotes}
         />
         {controls && (
-          <div className="ml-3 bg-gray-300 rounded-xl p-3 flex flex-row gap-3">
+          <div className="bg-gray-100 rounded-xl p-3 flex flex-row gap-3 shadow-md">
             {!isActive && (
               <button
                 onClick={() =>
                   onSetActiveMatch(division.id, phase.id, match.id)
                 }
                 title="Set as active match"
-                className="text-green-800 font-bold flex flex-row gap-2"
+                className="bg-green-100 hover:bg-green-200 text-green-800 font-bold flex flex-row gap-2 px-3 py-2 rounded-lg transition-colors"
               >
                 <FontAwesomeIcon icon={faPlay} />
+                <span className="hidden sm:inline">Activate</span>
               </button>
             )}
             {isActive && (
@@ -300,39 +477,42 @@ export default function MatchTable({
                 onClick={() => {
                   setAddSongToMatchModalOpen(true);
                 }}
-                className=" text-green-800 font-bold flex flex-row gap-2"
+                className="bg-green-100 hover:bg-green-200 text-green-800 font-bold flex flex-row gap-2 px-3 py-2 rounded-lg transition-colors"
               >
                 <FontAwesomeIcon icon={faPlus} />
+                <span className="hidden sm:inline">Add Round</span>
               </button>
             )}
             <button
               onClick={() => onDeleteMatch(match.id)}
-              className="ml-3 text-red-800 font-bold flex flex-row gap-2"
+              className="bg-red-100 hover:bg-red-200 text-red-800 font-bold flex flex-row gap-2 px-3 py-2 rounded-lg transition-colors"
             >
               <FontAwesomeIcon icon={faTrash} />
+              <span className="hidden sm:inline">Delete</span>
             </button>
           </div>
         )}
       </div>
+      
       <div className="flex flex-col gap-3">
         <Tab.Group>
-          <Tab.List className="flex flex-row gap-10 border-b mt-5">
+          <Tab.List className="flex flex-row gap-4 md:gap-10 border-b mt-5 overflow-x-auto">
             <Tab
               className={({ selected }) =>
                 classNames(
-                  "py-2 px-4 text-lg",
+                  "py-2 px-4 text-lg whitespace-nowrap",
                   selected
                     ? "border-b-2 border-blue-500 font-bold text-blue-500"
                     : "text-gray-500"
                 )
               }
             >
-              Match
+              Match Results
             </Tab>
             {controls && <Tab
               className={({ selected }) =>
                 classNames(
-                  "py-2 px-4 text-lg",
+                  "py-2 px-4 text-lg whitespace-nowrap",
                   selected
                     ? "border-b-2 border-blue-500 font-bold text-blue-500"
                     : "text-gray-500"
@@ -344,157 +524,185 @@ export default function MatchTable({
           </Tab.List>
           <Tab.Panels className="mt-3">
             <Tab.Panel>
-              <div
-                style={{ minWidth: match.songs.length * 200 }}
-                className={`shadow-lg overflow-auto lg:min-w-fit`}
-              >
-                <div
-                  className={`grid grid-cols-${
-                    match.songs.length + 2
-                  } w-full bg-lower rounded-t-lg`}
-                  style={{
-                    gridTemplateColumns: `repeat(${
-                      match.songs.length + 2
-                    }, 1fr)`,
-                  }}
-                >
-                  <div className=" border-blue-400 p-2">
-                    <div className="text-center font-bold text-blue-800"></div>
-                  </div>
-                  {match.songs.map((song, i) => (
-                    <div key={i} className="border-x border-blue-400 p-2">
-                      <div className="text-center font-bold text-blue-100">
-                        {song.title}{" "}
-                        {controls && isActive && (
-                          <>
-                            <button
-                              onClick={() => {
-                                setEditSongId(song.id);
-                                setAddSongToMatchModalOpen(true);
-                              }}
-                              className="ml-3"
-                              title="Change round song"
-                            >
-                              <FontAwesomeIcon icon={faRefresh} />
-                            </button>
-                          </>
-                        )}
-                      </div>
+              {/* Mobile Card View */}
+              {viewMode === 'cards' ? (
+                <div className="space-y-4">
+                  <div className="text-center mb-6">
+                    <h3 className="text-lg font-semibold text-gray-700 mb-2">Tournament Standings</h3>
+                    <div className="text-sm text-gray-500">
+                      {match.songs.length} round{match.songs.length !== 1 ? 's' : ''} • {match.players.length} player{match.players.length !== 1 ? 's' : ''}
                     </div>
+                  </div>
+                  {sortedPlayers.map((player, index) => (
+                    <PlayerCard key={player.id} player={player} rank={index + 1} />
                   ))}
-                  <div className=" p-2">
-                    <div className="text-center font-bold text-blue-100">
-                      Total Points
+                </div>
+              ) : (
+                /* Desktop Table View */
+                <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <div 
+                      className="min-w-full"
+                      style={{ minWidth: `${(match.songs.length + 2) * 150}px` }}
+                    >
+                      {/* Table Header */}
+                      <div
+                        className="grid bg-gradient-to-r from-blue-600 to-blue-700 text-white"
+                        style={{
+                          gridTemplateColumns: `200px repeat(${match.songs.length}, 1fr) 120px`,
+                        }}
+                      >
+                        <div className="p-4">
+                          <div className="font-bold text-lg">Player</div>
+                        </div>
+                        {match.songs.map((song, i) => (
+                          <div key={i} className="border-x border-blue-500 p-4">
+                            <div className="text-center font-bold">
+                              <div className="truncate">{song.title}</div>
+                              {controls && isActive && (
+                                <button
+                                  onClick={() => {
+                                    setEditSongId(song.id);
+                                    setAddSongToMatchModalOpen(true);
+                                  }}
+                                  className="mt-2 text-blue-200 hover:text-white transition-colors"
+                                  title="Change round song"
+                                >
+                                  <FontAwesomeIcon icon={faRefresh} />
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                        <div className="p-4">
+                          <div className="text-center font-bold">
+                            <FontAwesomeIcon icon={faTrophy} className="mr-2" />
+                            Total
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Table Body */}
+                      {sortedPlayers.map((player, i) => {
+                        const rank = i + 1;
+                        const rankInfo = getRankIcon(rank);
+                        return (
+                          <div
+                            key={i}
+                            className={`grid transition-colors hover:bg-blue-50 ${
+                              i % 2 === 0 ? 'bg-gray-50' : 'bg-white'
+                            } ${rank <= 3 ? 'border-l-4' : ''} ${
+                              rank === 1 ? 'border-yellow-500' :
+                              rank === 2 ? 'border-gray-400' :
+                              rank === 3 ? 'border-amber-600' : ''
+                            }`}
+                            style={{
+                              gridTemplateColumns: `200px repeat(${match.songs.length}, 1fr) 120px`,
+                            }}
+                          >
+                            <div className="border border-gray-200 p-4">
+                              <div className="flex items-center gap-3">
+                                {rankInfo && (
+                                  <FontAwesomeIcon 
+                                    icon={rankInfo.icon} 
+                                    className={`${rankInfo.color} text-lg`} 
+                                  />
+                                )}
+                                <div>
+                                  <div className="font-semibold text-gray-800">{player.name}</div>
+                                  <div className="text-xs text-gray-500">Rank #{rank}</div>
+                                </div>
+                              </div>
+                            </div>
+                            {match.songs.map((song, j) => {
+                              const key = `${player.id}-${song.id}`;
+                              const scoreData = scoreTable[key];
+                              return (
+                                <div key={j} className="border border-gray-200 p-4">
+                                  <div className="text-center flex flex-col gap-2 items-center text-gray-600">
+                                    {scoreData ? (
+                                      <div className="w-full">
+                                        <div className={`text-lg font-bold ${
+                                          scoreData?.isFailed
+                                            ? "text-red-500"
+                                            : "text-green-600"
+                                        }`}>
+                                          {scoreData.score}
+                                        </div>
+                                        <div className="text-xs text-gray-500">
+                                          {scoreData.percentage}%{scoreData.isFailed ? " F" : ""}
+                                        </div>
+                                        {controls && isActive && (
+                                          <div className="flex gap-1 justify-center mt-2">
+                                            <button
+                                              title="Edit standing manually"
+                                              className="text-xs text-blue-500 hover:text-blue-700 transition-colors"
+                                            >
+                                              <FontAwesomeIcon icon={faPencil} />
+                                            </button>
+                                            <button
+                                              title="Delete this standing"
+                                              className="text-xs text-red-500 hover:text-red-700 transition-colors"
+                                              onClick={() => {
+                                                if (
+                                                  window.confirm(
+                                                    "Are you sure you want to delete this standing?"
+                                                  )
+                                                ) {
+                                                  onDeleteStanding(player.id, song.id);
+                                                }
+                                              }}
+                                            >
+                                              <FontAwesomeIcon icon={faTrash} />
+                                            </button>
+                                          </div>
+                                        )}
+                                      </div>
+                                    ) : (
+                                      <div className="w-full">
+                                        <div className="text-gray-400 text-lg">-</div>
+                                        {controls && isActive && (
+                                          <button
+                                            title="Manually add score"
+                                            className="text-green-600 hover:text-green-700 transition-colors mt-2"
+                                            onClick={() => {
+                                              setAddStandingToMatchModalOpen(true);
+                                              setSongIdPlayerId({
+                                                playerId: player.id,
+                                                songId: song.id,
+                                                playerName: player.name,
+                                                songTitle: song.title,
+                                              });
+                                            }}
+                                          >
+                                            <FontAwesomeIcon icon={faPlus} />
+                                          </button>
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                            <div className="border border-gray-200 p-4">
+                              <div className="text-center">
+                                <div className="text-xl font-bold text-blue-600">
+                                  {getTotalPoints(player.id)}
+                                </div>
+                                <div className="text-xs text-gray-500">points</div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
-
-                {sortedPlayers.map((player, i) => (
-                  <div
-                    key={i}
-                    className={`grid grid-cols-${
-                      match.songs.length + 2
-                    } w-full odd:bg-white even:bg-gray-50`}
-                    style={{
-                      gridTemplateColumns: `repeat(${
-                        match.songs.length + 2
-                      }, 1fr)`,
-                    }}
-                  >
-                    <div className="border border-gray-300 p-2">
-                      <div className="text-center font-semibold text-gray-700">
-                        {player.name}
-                      </div>
-                    </div>
-                    {match.songs.map((song, j) => {
-                      const key = `${player.id}-${song.id}`;
-                      const scoreData = scoreTable[key];
-                      return (
-                        <div key={j} className="border border-gray-300 p-2">
-                          <div className="text-center  justify-center flex flex-row gap-3 items-center text-gray-600">
-                            <p
-                              className={`${
-                                scoreData?.isFailed
-                                  ? "text-red-500 font-bold"
-                                  : "text-black"
-                              }`}
-                            >
-                              {scoreData
-                                ? `${scoreData.score} (${
-                                    scoreData.percentage
-                                  }%) ${scoreData.isFailed ? "F" : ""}`
-                                : "-"}
-                              {controls && isActive && scoreData && (
-                                <>
-                                  <button
-                                    title="Edit standing manually"
-                                    className="text-xs ml-3 text-blu"
-                                  >
-                                    <FontAwesomeIcon icon={faPencil} />
-                                  </button>
-                                  <button
-                                    title="Delete this standing"
-                                    className="text-xs ml-3 text-red-500"
-                                    onClick={() => {
-                                      if (
-                                        window.confirm(
-                                          "Are you sure you want to delete this standing?"
-                                        )
-                                      ) {
-                                        onDeleteStanding(player.id, song.id);
-                                      }
-                                    }}
-                                  >
-                                    <FontAwesomeIcon icon={faTrash} />
-                                  </button>
-                                </>
-                              )}
-                            </p>
-
-                            {!scoreData && controls && isActive && (
-                              <button
-                                title="Manually add score"
-                                className="text-green-700"
-                                onClick={() => {
-                                  setAddStandingToMatchModalOpen(true);
-                                  setSongIdPlayerId({
-                                    playerId: player.id,
-                                    songId: song.id,
-                                    playerName: player.name,
-                                    songTitle: song.title,
-                                  });
-                                }}
-                              >
-                                <FontAwesomeIcon icon={faPlus} />
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                    <div className="border border-gray-300 p-2">
-                      <div className="text-center text-gray-600">
-                        {match.rounds
-                          .map((round) =>
-                            round.standings.find(
-                              (s) => s.playerId === player.id
-                            )
-                          )
-                          .reduce((acc, standing) => {
-                            if (standing) {
-                              return acc + standing.score;
-                            }
-                            return acc;
-                          }, 0)}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              )}
             </Tab.Panel>
             <Tab.Panel>
               {controls && (
-                <div>
+                <div className="bg-white rounded-lg shadow-lg p-4">
                   <LogViewer logs={logs} />
                 </div>
               )}
