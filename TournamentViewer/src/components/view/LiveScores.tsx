@@ -6,7 +6,7 @@ import {
 import { useEffect, useState, useMemo } from "react";
 import { RawScore } from "../../models/RawScore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart, faArrowUp, faArrowDown, faMinus, faChartLine, faHeartbeat } from "@fortawesome/free-solid-svg-icons";
+import { faChartLine, faHeartbeat } from "@fortawesome/free-solid-svg-icons";
 import { LineChart, Line, ResponsiveContainer, YAxis } from 'recharts';
 
 export default function LiveScores() {
@@ -15,6 +15,7 @@ export default function LiveScores() {
   const [showJudgements, setShowJudgements] = useState(true);
   const [showHealthChart, setShowHealthChart] = useState(false);
   const [healthHistory, setHealthHistory] = useState<{ [playerName: string]: { time: number; life: number; score: number }[] }>({});
+  const [, setCurrentSong] = useState<string | null>(null);
 
   // Color palette for chart lines
   const playerColors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#84cc16', '#f97316'];
@@ -55,7 +56,27 @@ export default function LiveScores() {
       .build();
 
     conn.on("OnScoreUpdate", (msg: RawScore) => {
+      // Check if song has changed - if so, reset everything
+      const newSong = msg.score.song;
+      setCurrentSong((prevSong) => {
+        if (prevSong && prevSong !== newSong) {
+          console.log(`Song changed from "${prevSong}" to "${newSong}" - resetting match data`);
+          // Reset scores and health history for new match
+          setScores([msg]);
+          setHealthHistory({});
+          return newSong;
+        }
+        return prevSong || newSong;
+      });
+
+      // Only update scores if it's the same song or first song
       setScores((prev) => {
+        // If this is a song change, scores were already reset above
+        const isSameSong = prev.length === 0 || prev[0].score.song === newSong;
+        if (!isSameSong) {
+          return [msg]; // Already handled in setCurrentSong, but ensure consistency
+        }
+        
         const newScores = prev.filter(
           (score) => score.score.playerName !== msg.score.playerName
         );
@@ -98,10 +119,11 @@ export default function LiveScores() {
     };
   }, []);
 
-  // Clean up health history when scores are cleared
+  // Clean up health history and current song when scores are cleared
   useEffect(() => {
     if (scores.length === 0) {
       setHealthHistory({});
+      setCurrentSong(null);
     }
   }, [scores.length]);
 
@@ -115,19 +137,6 @@ export default function LiveScores() {
       return scoreB - scoreA;
     });
   }, [scores]);
-
-  // Function to get health trend for a player
-  const getHealthTrend = (playerName: string) => {
-    const history = healthHistory[playerName];
-    if (!history || history.length < 2) return 'stable';
-
-    const recent = history.slice(-3); // Look at last 3 data points
-    const trend = recent[recent.length - 1].life - recent[0].life;
-
-    if (trend > 0.05) return 'increasing';
-    if (trend < -0.05) return 'decreasing';
-    return 'stable';
-  };
 
   if (scores.length === 0) return <></>;
 
