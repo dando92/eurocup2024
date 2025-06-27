@@ -23,7 +23,7 @@ export default function TournamentSettings({
       <div className="flex flex-col justify-start gap-3">
         <div className="flex flex-row gap-3">
           <h2>
-            {controls ? "Configure your tournament" : "History of Eurocup 2024"}
+            {controls ? "Configure your tournament" : "History of Eurocup 2025"}
             !
           </h2>
         </div>

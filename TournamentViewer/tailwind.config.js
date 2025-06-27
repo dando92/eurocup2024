@@ -7,13 +7,13 @@ export default {
   theme: {
     extend: {
       colors: {
-        blu: '#359DD5',
+        blu: '#0c4969',
         bianco: '#F3F9FD',
         giallo: '#FFCC07',
         nero: '#142739',
         grigio: '#E9E9E9',
         lower: '#2E9BD5',
-        middle: '#256CAE',
+        middle: '#0c4969',
         upper: '#0E1928',
         grigioQualifica: '#444443',
         gialloQualifica: '#FFC505',

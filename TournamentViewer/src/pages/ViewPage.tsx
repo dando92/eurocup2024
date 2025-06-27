@@ -8,7 +8,7 @@ import TournamentSettings from "../components/manage/tournament/TournamentSettin
 export default function ViewPage() {
   return (
     <div>
-      <h1 className="text-3xl text-center">In The Groove Eurocup 2024</h1>
+      <h1 className="text-3xl text-center">In The Groove Eurocup 2025</h1>
       <Tab.Group>
         <Tab.List className="flex flex-row gap-10 border-b mt-5">
           <Tab
